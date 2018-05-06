@@ -7,5 +7,18 @@
 
 #include "Arduino.h"
 
+class SmappioSound
+{
+  public:
+    SmappioSound(int pin, int signalBalancer);
+    void begin(int *readBuffer);
+    int read();
+    void print(int *buffer, int len);
+  private:
+    int _pin;
+    int _signalBalancer;
+    void print_buffer_as_binary(int *p, int len, bool printBits);
+    void printBits(size_t const size, void const * const ptr);
+};
 
 #endif
