@@ -1,5 +1,6 @@
 #include "driver/i2s.h"
 #include "freertos/queue.h"
+#include "libraries/SmappioSound/SmappioSound.h"
 
 static const int TX_PIN = 17;
 static const int RX_PIN = 16;
@@ -46,9 +47,9 @@ void loop() {
     int *buffer = (int*)malloc(buffer_size_in_bytes);
     int i;
     // Skip initial frames
-    for(i = 0; i < 6; i++) {
-        frames_read = i2s_read_bytes(I2S_NUM_0, (char*)buffer, FRAMES_REQUESTED, 0) / I2S_BITS_PER_SAMPLE_32BIT;
-    }
+//    for(i = 0; i < 6; i++) {
+//        frames_read = i2s_read_bytes(I2S_NUM_0, (char*)buffer, FRAMES_REQUESTED, 0) / I2S_BITS_PER_SAMPLE_32BIT;
+//    }
   
     // Main loop
     for(i = 0; i < 100; i++) {
