@@ -1,20 +1,19 @@
-#include "libraries/SmappioSound/SmappioSound.h"
 #include "libraries/SmappioSound/SmappioSound.cpp"
 
-int *unBuffer;
+int *buffer;
 int framesRead = 0;
 
-SmappioSound smappioSound(14, 223837953);
+SmappioSound smappioSound(223837953); // 223837953 valor al azar harcodeado para nivelar a 0 la señal media
 
 void setup() {
   // put your setup code here, to run once:
 
-  smappioSound.begin(unBuffer);
+  smappioSound.begin(buffer);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   
   framesRead = smappioSound.read();    
-  smappioSound.print(buffer, framesRead);
+  smappioSound.print(framesRead);
 }
