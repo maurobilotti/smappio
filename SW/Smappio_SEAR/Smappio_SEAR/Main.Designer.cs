@@ -32,8 +32,8 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.button2 = new System.Windows.Forms.Button();
             this.btnBluetooth = new System.Windows.Forms.Button();
-            this.btnOpenFile = new System.Windows.Forms.Button();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.btnStop = new System.Windows.Forms.Button();
+            this.timer = new System.Windows.Forms.Timer(this.components);
             this.serialPort = new System.IO.Ports.SerialPort(this.components);
             this.lblMessages = new System.Windows.Forms.Label();
             this.txtSerialData = new System.Windows.Forms.TextBox();
@@ -60,14 +60,19 @@
             this.btnBluetooth.UseVisualStyleBackColor = true;
             this.btnBluetooth.Click += new System.EventHandler(this.btnBluetooth_Click);
             // 
-            // btnOpenFile
+            // btnStop
             // 
-            this.btnOpenFile.Location = new System.Drawing.Point(151, 36);
-            this.btnOpenFile.Name = "btnOpenFile";
-            this.btnOpenFile.Size = new System.Drawing.Size(75, 23);
-            this.btnOpenFile.TabIndex = 2;
-            this.btnOpenFile.Text = "Open File";
-            this.btnOpenFile.UseVisualStyleBackColor = true;
+            this.btnStop.Location = new System.Drawing.Point(151, 36);
+            this.btnStop.Name = "btnStop";
+            this.btnStop.Size = new System.Drawing.Size(75, 23);
+            this.btnStop.TabIndex = 2;
+            this.btnStop.Text = "Stop";
+            this.btnStop.UseVisualStyleBackColor = true;
+            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
+            // 
+            // timer
+            // 
+            this.timer.Tick += new System.EventHandler(this.timer_Tick);
             // 
             // lblMessages
             // 
@@ -80,10 +85,10 @@
             // 
             // txtSerialData
             // 
-            this.txtSerialData.Location = new System.Drawing.Point(12, 95);
+            this.txtSerialData.Location = new System.Drawing.Point(12, 415);
             this.txtSerialData.Multiline = true;
             this.txtSerialData.Name = "txtSerialData";
-            this.txtSerialData.Size = new System.Drawing.Size(924, 405);
+            this.txtSerialData.Size = new System.Drawing.Size(924, 119);
             this.txtSerialData.TabIndex = 4;
             // 
             // Main
@@ -95,12 +100,13 @@
             this.ClientSize = new System.Drawing.Size(997, 562);
             this.Controls.Add(this.txtSerialData);
             this.Controls.Add(this.lblMessages);
-            this.Controls.Add(this.btnOpenFile);
+            this.Controls.Add(this.btnStop);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.btnBluetooth);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Main";
             this.Text = "Smappio SEAR";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Main_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -110,8 +116,8 @@
 
         private System.Windows.Forms.Button btnBluetooth;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button btnOpenFile;
-        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Button btnStop;
+        private System.Windows.Forms.Timer timer;
         private System.Windows.Forms.Label lblMessages;
         private System.Windows.Forms.TextBox txtSerialData;
         public System.IO.Ports.SerialPort serialPort;

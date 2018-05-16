@@ -39,10 +39,5 @@ namespace Smappio_SEAR
             int baudRate = 9600;
             return baudRate;
         }
-
-        
-
-        /* */
-
     }
 }
