@@ -19,23 +19,23 @@ SmappioSound::SmappioSound(int signalBalancer)
 
 void SmappioSound::begin(int *readBuffer)
 {
-    int bufferSize = FRAMES_REQUESTED * I2S_BITS_PER_SAMPLE_32BIT;  // bufferSize esta medido en cantidad de bytes
+    int bufferSize = FRAMES_REQUESTED * BITS_PER_SAMPLE;  // bufferSize esta medido en cantidad de bytes
 
     _buffer = readBuffer;
     _buffer = (int *)malloc(bufferSize);
 
-    i2s_driver_install(I2S_NUM_0, &SPH_CONFIG, 0, NULL);            // Instalar el driver tambien inicializa la escucha
-    i2s_set_pin(I2S_NUM_0, &SPH_PINS);                              // Setea la conexión física del micrófono al controlador
+    i2s_driver_install(CHANNEL_NUMBER, &SPH_CONFIG, 0, NULL);            // Instalar el driver tambien inicializa la escucha
+    i2s_set_pin(CHANNEL_NUMBER, &SPH_PINS);                              // Setea la conexión física del micrófono al controlador
 }
 
 #pragma endregion Métodos básicos
 
 int SmappioSound::read()
 {
-    return i2s_read_bytes(I2S_NUM_0, (char *)_buffer, FRAMES_REQUESTED, TICKS_TO_WAIT) / I2S_BITS_PER_SAMPLE_32BIT;
+    return i2s_read_bytes(CHANNEL_NUMBER, (char *)_buffer, FRAMES_REQUESTED, TICKS_TO_WAIT) / BITS_PER_SAMPLE;
 }
 
 void SmappioSound::print(int len)
 {
-    bufferPrinter.print_buffer_as_binary(_buffer, len, _signalBalancer, PRINT_DETAILED_MODE);
+    bufferPrinter.print_buffer_as_binary(_buffer, len, _signalBalancer, PRINT_MODE);
 }

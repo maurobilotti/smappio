@@ -14,20 +14,20 @@
 
 
 #pragma region // Sección de Configuración
-
-  static const bool PRINT_DETAILED_MODE = false;    // true: Impresión detallada del buffer. false: Impresión del buffer como números enteros (usar este último modo para el plotter)
-  static const int FRAMES_REQUESTED = 32;           // Parece relacionarse con la cantidad de buffers
-  static const int TICKS_TO_WAIT = 1000;            // Investigar
+  static const print_mode_t PRINT_MODE = FULL_DETEAILED;                            // Tipo de impresión: BITS | BYTES | BINARY | FULL_DETEAILED
+  static const int FRAMES_REQUESTED = 32;                                           // Parece relacionarse con la cantidad de buffers
+  static const int TICKS_TO_WAIT = 1000;                                            // Investigar
+  static const i2s_bits_per_sample_t BITS_PER_SAMPLE = I2S_BITS_PER_SAMPLE_32BIT;   // Datasheet: 24. Ejemplo: 32.
 
   static const i2s_config_t SPH_CONFIG = {
     .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),                                            // El controlador es el Maestro y Recibe, el microfono es Esclavo y Transmite
-    .sample_rate = 32000,                                                                           // Entre 32KHz y 64KHz (Datasheet)
-    .bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT,                                                   // Creo que son 32 (8 del MSB y 24 de Datos)
+    .sample_rate = 48000,                                                                           // Entre 32KHz y 64KHz (Datasheet)
+    .bits_per_sample = BITS_PER_SAMPLE,                                                             
     .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,                                                   // El formato que usa el micrófono. No se encontró el Datasheet
     .communication_format = (i2s_comm_format_t)(I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB),     // Investigar
     .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,                                                       // High interrupt priority (investigar)
-    .dma_buf_count = 14,                                                                            // Cantidad de buffers, 128 max.
-    .dma_buf_len = 32 * 2                                                                           // Tamaño de cada buffer
+    .dma_buf_count = 32,                                                                            // Cantidad de buffers, 128 max.
+    .dma_buf_len = 32 * 2                                                                              // Tamaño de cada buffer
   };
 
 #pragma endregion Sección de Configuración
@@ -75,6 +75,10 @@ class SmappioSound
     int _signalBalancer;                          // Número que nivela los valores de la señal (gráficamente lleva aproxima la señal a 0)
     int *_buffer;                                 // Buffer donde se almacenan los datos obtenidos por el micrófono
 };
+
+#pragma region // Constantes (no debería modificarse esta sección)
+  static const i2s_port_t CHANNEL_NUMBER = I2S_NUM_0;      // Es el canal a usar, necesario para transmisión stereo. Como usamos un solo micrófono se puede usar cualquiera
+#pragma endregion Constantes
 
 #pragma region // Configuración física (no debe modificarse si no se cambian las conexiones)
 
