@@ -15,7 +15,7 @@
 
 
 #pragma region // Sección de Configuración
-  static const print_mode_t PRINT_MODE = INTEGER;                                   // Tipo de impresión: BITS | BYTES | INTEGER | FULL_DETEAILED
+  static const print_mode_t PRINT_MODE = FULL_DETEAILED;                                   // Tipo de impresión: BITS | BYTES | INTEGER | FULL_DETEAILED
   static const int FRAMES_REQUESTED = 32;                                           // Parece relacionarse con la cantidad de buffers
   static const int TICKS_TO_WAIT = 1000;                                            // Investigar
   static const i2s_bits_per_sample_t BITS_PER_SAMPLE = I2S_BITS_PER_SAMPLE_32BIT;   // Datasheet: 24. Ejemplo: 32.
@@ -28,7 +28,7 @@
     .communication_format = (i2s_comm_format_t)(I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB),     // Investigar
     .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,                                                       // High interrupt priority (investigar)
     .dma_buf_count = 32,                                                                            // Cantidad de buffers, 128 max.
-    .dma_buf_len = 32 * 2                                                                              // Tamaño de cada buffer
+    .dma_buf_len = 32 * 2                                                                           // Tamaño de cada buffer
   };
 
 #pragma endregion Sección de Configuración

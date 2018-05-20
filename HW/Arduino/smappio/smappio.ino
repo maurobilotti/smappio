@@ -3,7 +3,7 @@
 int *buffer;
 int framesRead = 0;
 
-SmappioSound smappioSound(223837953); // 223837953 valor al azar harcodeado para nivelar a 0 la señal media
+SmappioSound smappioSound(0); // 223837953 valor al azar harcodeado para nivelar a 0 la señal media
 
 void setup() {
   // put your setup code here, to run once:

@@ -32,6 +32,11 @@ void SmappioSoundBufferPrinter::print_buffer_as_binary(int *p, int len, int sign
                 printf("%d\n", frame); // printf("%14d:", frame);
                 break;
             case FULL_DETEAILED:
+                if (i%2 == 0) 
+                    printf("--- CANAL 0 ---\n");
+                else
+                    printf("--- CANAL 1 ---\n");
+
                 // Iteration
                 printf("Iteración: %d\n", i);
 
@@ -41,7 +46,6 @@ void SmappioSoundBufferPrinter::print_buffer_as_binary(int *p, int len, int sign
                 // Bits
                 printf("Bits:      ");
                 this->printBits(sizeof(frame), &frame); //revisar el sizeof
-                if (i%2 == 0) printf("|");
                 printf("\n");
                 
                 // Bytes
@@ -63,7 +67,7 @@ void SmappioSoundBufferPrinter::printBits(size_t const size, void const *const p
     unsigned char byte;
     int i, j;
 
-    for (i = 0; i < size; i++)
+    for (i = size - 1; i >= 0; i--)
     {
         for (j = 7; j >= 0; j--)
         {
@@ -77,9 +81,9 @@ void SmappioSoundBufferPrinter::printBits(size_t const size, void const *const p
 
 void SmappioSoundBufferPrinter::printBytes(size_t len, void *p)
 {
-    size_t i;
-    int byte;
-    for (i = 0; i < len; ++i) {
+    int i, byte;
+
+    for (i = len - 1; i >= 0; i--) {
         printf("  ");                   // 2 spaces padding left
 
         byte = ((char*)p)[i];
