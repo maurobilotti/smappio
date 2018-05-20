@@ -20,6 +20,7 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   
-  framesRead = smappioSound.read();    
+  framesRead = smappioSound.read();
+  log("Frames read", framesRead);    
   smappioSound.print(framesRead);
 }

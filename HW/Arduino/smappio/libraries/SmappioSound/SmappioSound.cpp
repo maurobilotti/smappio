@@ -21,6 +21,10 @@ void SmappioSound::begin(int *readBuffer)
 {
     int bufferSize = FRAMES_REQUESTED * BITS_PER_SAMPLE;  // bufferSize esta medido en cantidad de bytes
 
+    log("Frames requested", FRAMES_REQUESTED);
+    log("Bits per sample", BITS_PER_SAMPLE);
+    log("Buffer size", bufferSize);
+
     _buffer = readBuffer;
     _buffer = (int *)malloc(bufferSize);
 
@@ -32,7 +36,11 @@ void SmappioSound::begin(int *readBuffer)
 
 int SmappioSound::read()
 {
-    return i2s_read_bytes(CHANNEL_NUMBER, (char *)_buffer, FRAMES_REQUESTED, TICKS_TO_WAIT) / BITS_PER_SAMPLE;
+    int bytesReaded = i2s_read_bytes(CHANNEL_NUMBER, (char *)_buffer, FRAMES_REQUESTED, TICKS_TO_WAIT);
+
+    log("Bytes pushed to DMA buffer", bytesReaded);
+
+    return bytesReaded / BITS_PER_SAMPLE;
 }
 
 void SmappioSound::print(int len)

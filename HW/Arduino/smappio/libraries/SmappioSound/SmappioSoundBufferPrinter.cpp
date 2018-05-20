@@ -10,6 +10,8 @@ SmappioSoundBufferPrinter::SmappioSoundBufferPrinter()
 
 void SmappioSoundBufferPrinter::print_buffer_as_binary(int *p, int len, int signalBalancer, print_mode_t printMode)
 {
+    log("Print lenght", len);
+
     int i;
     int frame = 0;
 
@@ -61,13 +63,14 @@ void SmappioSoundBufferPrinter::printBits(size_t const size, void const *const p
     unsigned char byte;
     int i, j;
 
-    for (i = size - 1; i >= 0; i--)
+    for (i = 0; i < size; i++)
     {
         for (j = 7; j >= 0; j--)
         {
             byte = (b[i] >> j) & 1;
             printf("%u", byte);
         }
+        printf("  ");   // 2 spaces to separate bytes
     }
     printf(" ");
 }
@@ -75,11 +78,22 @@ void SmappioSoundBufferPrinter::printBits(size_t const size, void const *const p
 void SmappioSoundBufferPrinter::printBytes(size_t len, void *p)
 {
     size_t i;
-    //printf("(");
+    int byte;
     for (i = 0; i < len; ++i) {
-        printf("%d", ((char*)p)[i]);
-        //if (i + 1 < len)
-        printf(" ");
+        printf("  ");                   // 2 spaces padding left
+
+        byte = ((char*)p)[i];
+
+        if ( byte < 99) 
+            printf(" ");                // Add 1 space padding left
+
+        printf("%d", byte);
+
+        printf("   ");                  // 3 spaces padding right
+        
+        if( byte < 10)                  
+            printf(" ");                // Add 1 space padding right
+
+        printf("  ");                   // 2 spaces to separate bytes
     }
-    //printf(")");
 }

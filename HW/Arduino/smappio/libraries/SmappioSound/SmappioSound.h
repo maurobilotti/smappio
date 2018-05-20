@@ -11,6 +11,7 @@
 #include "Arduino.h"
 #include "SmappioSoundBufferPrinter.h"
 #include "SmappioSoundBufferPrinter.cpp"
+#include "Helper.h"
 
 
 #pragma region // Sección de Configuración

@@ -5,6 +5,7 @@
 #define SmappioSoundBufferPrinter_h
 
 #include "Arduino.h"
+#include "Helper.h"
 
 typedef enum {
     BITS            = 0,       // Solo bits
@@ -18,6 +19,7 @@ class SmappioSoundBufferPrinter
   public:
     SmappioSoundBufferPrinter();
     void print_buffer_as_binary(int *p, int len, int signalBalancer, print_mode_t printMode);
+    void debug(char* msg);
     
   private:
     void printBits(size_t const size, void const *const p);
