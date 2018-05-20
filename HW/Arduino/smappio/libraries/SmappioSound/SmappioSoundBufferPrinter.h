@@ -18,12 +18,13 @@ class SmappioSoundBufferPrinter
 {
   public:
     SmappioSoundBufferPrinter();
-    void print_buffer_as_binary(int *p, int len, int signalBalancer, print_mode_t printMode);
+    void print(int *p, int len, int signalBalancer, print_mode_t printMode, bool printBothChannels);
     void debug(char* msg);
     
   private:
     void printBits(size_t const size, void const *const p);
     void printBytes(size_t len, void *ptr);
+    void printInteger(int frame);
 };
 
 

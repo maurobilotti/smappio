@@ -19,6 +19,7 @@ SmappioSound::SmappioSound(int signalBalancer)
 
 void SmappioSound::begin(int *readBuffer)
 {
+    int startingTime = 10000;
     int bufferSize = FRAMES_REQUESTED * BITS_PER_SAMPLE;  // bufferSize esta medido en cantidad de bytes
 
     log("Frames requested", FRAMES_REQUESTED);
@@ -30,6 +31,9 @@ void SmappioSound::begin(int *readBuffer)
 
     i2s_driver_install(CHANNEL_NUMBER, &SPH_CONFIG, 0, NULL);            // Instalar el driver tambien inicializa la escucha
     i2s_set_pin(CHANNEL_NUMBER, &SPH_PINS);                              // Setea la conexión física del micrófono al controlador
+    
+    log("Waiting seconds for initialization", startingTime / 1000);
+    delay(startingTime);
 }
 
 #pragma endregion Métodos básicos
@@ -45,5 +49,5 @@ int SmappioSound::read()
 
 void SmappioSound::print(int len)
 {
-    bufferPrinter.print_buffer_as_binary(_buffer, len, _signalBalancer, PRINT_MODE);
+    bufferPrinter.print(_buffer, len, _signalBalancer, PRINT_MODE, PRINT_BOTH_CHANNELS);
 }

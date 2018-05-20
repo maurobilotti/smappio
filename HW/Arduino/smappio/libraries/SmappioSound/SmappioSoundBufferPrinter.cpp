@@ -8,7 +8,7 @@ SmappioSoundBufferPrinter::SmappioSoundBufferPrinter()
 {
 }
 
-void SmappioSoundBufferPrinter::print_buffer_as_binary(int *p, int len, int signalBalancer, print_mode_t printMode)
+void SmappioSoundBufferPrinter::print(int *p, int len, int signalBalancer, print_mode_t printMode, bool printBothChannels)
 {
     log("Print lenght", len);
 
@@ -19,44 +19,48 @@ void SmappioSoundBufferPrinter::print_buffer_as_binary(int *p, int len, int sign
     {
         frame = p[i];
         frame += signalBalancer;
-        switch(printMode)
+        if(printBothChannels || i%2 == 0)
         {
-            case BITS:
-                this->printBits(sizeof(frame), &frame); //revisar el sizeof
-                if (i%2 == 0) printf("|");
-                break;
-            case BYTES:
-                this->printBytes(sizeof(frame), &frame); //revisar el sizeof
-                break;
-            case INTEGER:
-                printf("%d\n", frame); // printf("%14d:", frame);
-                break;
-            case FULL_DETEAILED:
-                if (i%2 == 0) 
-                    printf("--- CANAL 0 ---\n");
-                else
-                    printf("--- CANAL 1 ---\n");
+            switch(printMode)
+            {
+                case BITS:
+                    this->printBits(sizeof(frame), &frame); //revisar el sizeof
+                    if (i%2 == 0) printf("|");
+                    break;
+                case BYTES:
+                    this->printBytes(sizeof(frame), &frame); //revisar el sizeof
+                    break;
+                case INTEGER:
+                    this->printInteger(frame);
+                    break;
+                case FULL_DETEAILED:
+                    if (i%2 == 0) 
+                        printf("--- CANAL 0 ---\n");
+                    else
+                        printf("--- CANAL 1 ---\n");
 
-                // Iteration
-                printf("Iteración: %d\n", i);
+                    // Iteration
+                    printf("Iteración: %d\n", i);
 
-                // Entero
-                printf("Entero:    %d\n", frame); // printf("%14d:", frame);
-                
-                // Bits
-                printf("Bits:      ");
-                this->printBits(sizeof(frame), &frame); //revisar el sizeof
+                    // Entero
+                    printf("Entero:    ", frame);
+                    this->printInteger(frame);
+                    
+                    // Bits
+                    printf("Bits:      ");
+                    this->printBits(sizeof(frame), &frame); //revisar el sizeof
+                    printf("\n");
+                    
+                    // Bytes
+                    printf("Bytes:     ");
+                    this->printBytes(sizeof(frame), &frame); //revisar el sizeof
+                    printf("\n\n");
+                    break;
+                default:
+                    printf("Tipo de impresión no definido");
+                    break;
                 printf("\n");
-                
-                // Bytes
-                printf("Bytes:     ");
-                this->printBytes(sizeof(frame), &frame); //revisar el sizeof
-                printf("\n\n");
-                break;
-            default:
-                printf("Tipo de impresión no definido");
-                break;
-            printf("\n");
+            }
         }
     }
 }
@@ -100,4 +104,9 @@ void SmappioSoundBufferPrinter::printBytes(size_t len, void *p)
 
         printf("  ");                   // 2 spaces to separate bytes
     }
+}
+
+void SmappioSoundBufferPrinter::printInteger(int frame)
+{
+    printf("%u\n", frame); // printf("%14d:", frame);
 }
