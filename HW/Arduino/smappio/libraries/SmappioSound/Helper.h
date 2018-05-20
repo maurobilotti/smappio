@@ -4,7 +4,7 @@
 
 #include "Arduino.h"
 
-const bool DEBUG_MODE = true;
+const bool DEBUG_MODE = false;
 
 void log(char* msg);
 void log(char* msg, int value);

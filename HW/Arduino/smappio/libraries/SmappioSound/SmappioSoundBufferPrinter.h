@@ -10,7 +10,7 @@
 typedef enum {
     BITS            = 0,       // Solo bits
     BYTES           = 1,       // Solo bytes
-    BINARY          = 2,       // Solo resultado binario
+    INTEGER         = 2,       // Solo resultado entero
     FULL_DETEAILED  = 3,       // El resultado formateado de todas las formas y detallado
 } print_mode_t;
 

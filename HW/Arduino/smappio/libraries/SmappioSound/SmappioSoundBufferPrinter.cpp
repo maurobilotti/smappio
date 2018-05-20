@@ -28,15 +28,15 @@ void SmappioSoundBufferPrinter::print_buffer_as_binary(int *p, int len, int sign
             case BYTES:
                 this->printBytes(sizeof(frame), &frame); //revisar el sizeof
                 break;
-            case BINARY:
+            case INTEGER:
                 printf("%d\n", frame); // printf("%14d:", frame);
                 break;
             case FULL_DETEAILED:
                 // Iteration
                 printf("Iteración: %d\n", i);
 
-                // Decimal
-                printf("Decimal:   %d\n", frame); // printf("%14d:", frame);
+                // Entero
+                printf("Entero:    %d\n", frame); // printf("%14d:", frame);
                 
                 // Bits
                 printf("Bits:      ");
