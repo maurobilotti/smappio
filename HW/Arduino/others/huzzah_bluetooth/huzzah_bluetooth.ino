@@ -4,6 +4,9 @@
 //This example creates a bridge between Serial and Classical Bluetooth (SPP)
 //and also demonstrate that SerialBT have the same functionalities of a normal Serial
 
+int sensorPin = A3; 
+int sensorValue = 0
+
 #include "BluetoothSerial.h"
 
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
@@ -13,12 +16,14 @@
 BluetoothSerial SerialBT;
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   SerialBT.begin("smappio3"); //Bluetooth device name
   Serial.println("The device started, now you can pair it with bluetooth!");
 }
 
 void loop() {
-  SerialBT.print("hola");
-  delay(20);
+  
+  sensorValue = analogRead (sensorPin);
+  SerialBT.print(sensorValue);
+  //delay(20);
 }
