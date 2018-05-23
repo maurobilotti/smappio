@@ -19,8 +19,8 @@ SmappioSound::SmappioSound(int signalBalancer)
 
 void SmappioSound::begin(int *readBuffer)
 {
-    int startingTime = 10000;
-    int bufferSize = FRAMES_REQUESTED * BITS_PER_SAMPLE;  // bufferSize esta medido en cantidad de bytes
+    int startingTime = 3000;
+    int bufferSize = FRAMES_REQUESTED * BITS_PER_SAMPLE * 2;  // bufferSize esta medido en cantidad de bytes
 
     log("Frames requested", FRAMES_REQUESTED);
     log("Bits per sample", BITS_PER_SAMPLE);
@@ -40,7 +40,7 @@ void SmappioSound::begin(int *readBuffer)
 
 int SmappioSound::read()
 {
-    int bytesReaded = i2s_read_bytes(CHANNEL_NUMBER, (char *)_buffer, 1024, TICKS_TO_WAIT);
+    int bytesReaded = i2s_read_bytes(CHANNEL_NUMBER, (char *)_buffer, 64, TICKS_TO_WAIT);
 
     log("\nBytes pushed to DMA buffer", bytesReaded);
 

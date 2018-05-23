@@ -3,7 +3,7 @@
 int *buffer;
 int framesRead = 0;
 
-SmappioSound smappioSound(0); // 223837953 valor al azar harcodeado para nivelar a 0 la señal media
+SmappioSound smappioSound(0); // valor al azar harcodeado para nivelar a 0 la señal media
 
 void setup() {
   // put your setup code here, to run once:
@@ -20,7 +20,7 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   
-  framesRead = smappioSound.read();
+  framesRead = smappioSound.read() / 32;
   log("Frames read", framesRead);    
   smappioSound.print(framesRead);
 }

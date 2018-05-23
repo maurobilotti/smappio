@@ -17,49 +17,60 @@ void SmappioSoundBufferPrinter::print(int *p, int len, int signalBalancer, print
 
     for (i = 0; i < len; i++)
     {
-        frame = p[i];
+        // Se hace un corrimiento de bits a la derecha 18 posiciones, dejando a la izq un padding de ceros
+        frame = (p[i] >> 14) & 0b00000000000000111111111111111111; 
+
+        // frame -= 0b00000000000000101110000000000000; // signalBanalncer no funciona, balanceo la señal a mano acá
+
         frame += signalBalancer;
-        if(printBothChannels || i%2 == 0)
+
+        // substraction se puede utilizar para analizar solo datos fuera de la señal estable
+        int substraction = frame - 4000000000;
+
+        if(substraction < 0 || true)
         {
-            switch(printMode)
+            if(printBothChannels || i%2 == 0)
             {
-                case BITS:
-                    this->printBits(sizeof(frame), &frame); //revisar el sizeof
-                    if (i%2 == 0) printf("|");
-                    break;
-                case BYTES:
-                    this->printBytes(sizeof(frame), &frame); //revisar el sizeof
-                    break;
-                case INTEGER:
-                    this->printInteger(frame);
-                    break;
-                case FULL_DETEAILED:
-                    if (i%2 == 0) 
-                        printf("--- CANAL 0 ---\n");
-                    else
-                        printf("--- CANAL 1 ---\n");
+                switch(printMode)
+                {
+                    case BITS:
+                        this->printBits(sizeof(frame), &frame); //revisar el sizeof
+                        if (i%2 == 0) printf("|");
+                        break;
+                    case BYTES:
+                        this->printBytes(sizeof(frame), &frame); //revisar el sizeof
+                        break;
+                    case INTEGER:
+                        this->printInteger(frame);
+                        break;
+                    case FULL_DETEAILED:
+                        if (i%2 == 0) 
+                            printf("--- CANAL 0 ---\n");
+                        else
+                            printf("--- CANAL 1 ---\n");
 
-                    // Iteration
-                    printf("Iteración: %d\n", i);
+                        // Iteration
+                        printf("Iteración: %d\n", i);
 
-                    // Entero
-                    printf("Entero:    ", frame);
-                    this->printInteger(frame);
-                    
-                    // Bits
-                    printf("Bits:      ");
-                    this->printBits(sizeof(frame), &frame); //revisar el sizeof
+                        // Entero
+                        printf("Entero:    ", frame);
+                        this->printInteger(frame);
+                        
+                        // Bits
+                        printf("Bits:      ");
+                        this->printBits(sizeof(frame), &frame); //revisar el sizeof
+                        printf("\n");
+                        
+                        // Bytes
+                        printf("Bytes:     ");
+                        this->printBytes(sizeof(frame), &frame); //revisar el sizeof
+                        printf("\n\n");
+                        break;
+                    default:
+                        printf("Tipo de impresión no definido");
+                        break;
                     printf("\n");
-                    
-                    // Bytes
-                    printf("Bytes:     ");
-                    this->printBytes(sizeof(frame), &frame); //revisar el sizeof
-                    printf("\n\n");
-                    break;
-                default:
-                    printf("Tipo de impresión no definido");
-                    break;
-                printf("\n");
+                }
             }
         }
     }
