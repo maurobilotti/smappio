@@ -5,15 +5,29 @@
 #define SmappioSoundBufferPrinter_h
 
 #include "Arduino.h"
+#include "Helper.h"
+#include "BluetoothSerial.h"
+
+typedef enum {
+    BITS            = 0,       // Solo bits
+    BYTES           = 1,       // Solo bytes
+    INTEGER         = 2,       // Solo resultado entero
+    FULL_DETEAILED  = 3,       // El resultado formateado de todas las formas y detallado
+} print_mode_t;
 
 class SmappioSoundBufferPrinter
 {
   public:
     SmappioSoundBufferPrinter();
-    void print_buffer_as_binary(int *p, int len, int signalBalancer, bool monitorMode);
+    void print(int *p, int len, int signalBalancer, print_mode_t printMode, bool printBothChannels, bool isTransmitted);
+    void debug(char* msg);
     
   private:
-    void printBits(size_t const size, void const *const ptr);
+    void printBits(size_t const size, void const *const p);
+    void printBytes(size_t len, void *ptr);
+    void printInteger(int frame);
+    BluetoothSerial SerialBT;                     //Instancia del objeto que permite realizar la transferencia de datos via bluetooth
 };
+
 
 #endif
