@@ -13,7 +13,6 @@
 #include "SmappioSoundBufferPrinter.cpp"
 #include "Helper.h"
 
-
 #pragma region // Sección de Configuración
   static const print_mode_t PRINT_MODE = INTEGER;                                   // Tipo de impresión: BITS | BYTES | INTEGER | FULL_DETEAILED
   static const bool PRINT_BOTH_CHANNELS = false;                                    // Indica si imprime solo el "Canal 0" ó el "Canal 0" y el "Canal 1"
@@ -75,7 +74,7 @@ class SmappioSound
   private:
     SmappioSoundBufferPrinter bufferPrinter;      // Instancia requerida para hacer impresiones
     int _signalBalancer;                          // Número que nivela los valores de la señal (gráficamente lleva aproxima la señal a 0)
-    int *_buffer;                                 // Buffer donde se almacenan los datos obtenidos por el micrófono
+    int *_buffer;                                 // Buffer donde se almacenan los datos obtenidos por el micrófono    
 };
 
 #pragma region // Constantes (no debería modificarse esta sección)

@@ -8,7 +8,7 @@ SmappioSoundBufferPrinter::SmappioSoundBufferPrinter()
 {
 }
 
-void SmappioSoundBufferPrinter::print(int *p, int len, int signalBalancer, print_mode_t printMode, bool printBothChannels)
+void SmappioSoundBufferPrinter::print(int *p, int len, int signalBalancer, print_mode_t printMode, bool printBothChannels, bool isTransmitted = true)
 {
     log("Print lenght", len);
 
@@ -42,6 +42,8 @@ void SmappioSoundBufferPrinter::print(int *p, int len, int signalBalancer, print
                         break;
                     case INTEGER:
                         this->printInteger(frame);
+                        if(isTransmitted)
+                            SerialBT.print(frame);
                         break;
                     case FULL_DETEAILED:
                         if (i%2 == 0) 

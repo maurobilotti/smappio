@@ -1,8 +1,14 @@
-﻿using NAudio.Wave;
+﻿using NAudio.Lame;
+using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using System;
+using System.Linq;
+using System.IO;
 using System.IO.Ports;
 using System.Threading;
 using System.Windows.Forms;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Smappio_SEAR
 {
@@ -24,14 +30,17 @@ namespace Smappio_SEAR
 
         BluetoothManager bluetoothManager;
         string deviceName = "HC-05";
-        private WaveOutEvent outputDevice;
-        private AudioFileReader audioFile;
         private BufferedWaveProvider bufferedWaveProvider;
         private IWavePlayer waveOut;
         private volatile StreamingPlaybackState playbackState;
         private volatile bool fullyDownloaded;
         private VolumeWaveProvider16 volumeProvider;
         private IMp3FrameDecompressor decompressor = null;
+        private string filePath;
+        private string fileBinary;
+        Stopwatch sw = new Stopwatch();
+        int samplesReceived = 0;
+
 
         private static IMp3FrameDecompressor CreateFrameDecompressor(Mp3Frame frame)
         {
@@ -54,26 +63,39 @@ namespace Smappio_SEAR
 
         private void btnBluetooth_Click(object sender, EventArgs e)
         {
-            bluetoothManager = new BluetoothManager();
-
-            serialPort.PortName = BluetoothHelper.GetBluetoothPort(deviceName);
-
-            serialPort.BaudRate = bluetoothManager.GetBaudRate();
-            if (!serialPort.IsOpen)
-                serialPort.Open();
-
-            serialPort.DataReceived += SerialPort_DataReceived;
-
-            if (playbackState == StreamingPlaybackState.Stopped)
+            try
             {
-                playbackState = StreamingPlaybackState.Buffering;
-                bufferedWaveProvider = null;
-                //ThreadPool.QueueUserWorkItem(StreamAudioFromSmappio);
-                //timer.Enabled = true;
+                bluetoothManager = new BluetoothManager();
+
+                serialPort.PortName = BluetoothHelper.GetBluetoothPort(deviceName);
+                serialPort.BaudRate = 9600;
+                serialPort.DtrEnable = true;
+                serialPort.RtsEnable = true;
+
+                if (!serialPort.IsOpen)
+                    serialPort.Open();
+
+                sw.Start();
+                playbackState = StreamingPlaybackState.Playing;
+                serialPort.DataReceived += SerialPort_DataReceived;
+
+                if (playbackState == StreamingPlaybackState.Stopped)
+                {
+                    playbackState = StreamingPlaybackState.Buffering;
+                    bufferedWaveProvider = null;
+                    //ThreadPool.QueueUserWorkItem(StreamAudioFromSmappio);
+                    //waveOut = new WaveOut();
+                    //timer.Enabled = true;
+                }
+                else if (playbackState == StreamingPlaybackState.Paused)
+                {
+                    playbackState = StreamingPlaybackState.Buffering;
+                }
             }
-            else if (playbackState == StreamingPlaybackState.Paused)
+            catch (Exception ex)
             {
-                playbackState = StreamingPlaybackState.Buffering;
+                serialPort.Dispose();
+                return;
             }
         }
 
@@ -85,63 +107,37 @@ namespace Smappio_SEAR
         /// <param name="e"></param>
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            var buffer = new byte[16384 * 4]; // needs to be big enough to hold a decompressed frame
-            try
+            if (playbackState == StreamingPlaybackState.Playing)
             {
                 SerialPort sp = (SerialPort)sender;
 
-                //reads the bytes while they're available.
-                string text = sp.ReadExisting();
-                SetText(text);
-                var readFullyStream = sp.ReadExisting().ToStream();
-                //do
-                //{
-                //    if (IsBufferNearlyFull)
-                //    {
-                //        Thread.Sleep(500);
-                //    }
-                //    else
-                //    {
-                //        Mp3Frame frame;
-                //        try
-                //        {
-                //            frame = Mp3Frame.LoadFromStream(readFullyStream);
-                //        }
-                //        catch (Exception ex)
-                //        {
-                //            fullyDownloaded = true;
-                //            // reached the end of the MP3 file / stream
-                //            break;
-                //        }
-
-                //        if (frame == null) break;
-                //        if (decompressor == null)
-                //        {
-                //            // don't think these details matter too much - just help ACM select the right codec
-                //            // however, the buffered provider doesn't know what sample rate it is working at
-                //            // until we have a frame
-                //            decompressor = CreateFrameDecompressor(frame);
-                //            bufferedWaveProvider = new BufferedWaveProvider(decompressor.OutputFormat);
-                //            bufferedWaveProvider.BufferDuration =
-                //                TimeSpan.FromSeconds(20); // allow us to get well ahead of ourselves
-                //                                          //this.bufferedWaveProvider.BufferedDuration = 250;
-                //        }
-                //        int decompressed = decompressor.DecompressFrame(frame, buffer, 0);
-                //        //Debug.WriteLine(String.Format("Decompressed a frame {0}", decompressed));
-                //        bufferedWaveProvider.AddSamples(buffer, 0, decompressed);
-                //    }
-
-                //} while (playbackState != StreamingPlaybackState.Stopped);
-                //// was doing this in a finally block, but for some reason
-                //// we are hanging on response stream .Dispose so never get there
-                ////decompressor.Dispose();
-            }
-            finally
-            {
-                if (decompressor != null)
+                //var buffer = new byte[sp.BytesToRead];
+                string raw = sp.ReadExisting();
+                var responseValues = raw.Split(' ');
+                samplesReceived += responseValues.Length;
+                foreach (var item in responseValues)
                 {
-                    decompressor.Dispose();
+                    if (string.IsNullOrWhiteSpace(item))
+                        continue;
+                    var byteVal = Convert.ToInt16(item);
+                    var value = Convert.ToString(byteVal, 2).PadLeft(16, '0');
+                    fileBinary += value;
+
+                    SetText(item);
                 }
+            }
+        }
+
+        public byte[] ConvertWavToMp3(byte[] wavFile)
+        {
+
+            using (var retMs = new MemoryStream())
+            using (var ms = new MemoryStream(wavFile))
+            using (var rdr = new WaveFileReader(ms))
+            using (var wtr = new LameMP3FileWriter(retMs, rdr.WaveFormat, 128))
+            {
+                rdr.CopyTo(wtr);
+                return retMs.ToArray();
             }
         }
 
@@ -174,8 +170,8 @@ namespace Smappio_SEAR
                         StopPlayback();
                     }
                 }
-
             }
+
         }
 
         private void OnPlaybackStopped(object sender, StoppedEventArgs e)
@@ -188,14 +184,14 @@ namespace Smappio_SEAR
 
         private void Play()
         {
-            waveOut.Play();            
+            waveOut.Play();
             playbackState = StreamingPlaybackState.Playing;
         }
 
         private void Pause()
         {
             playbackState = StreamingPlaybackState.Buffering;
-            waveOut.Pause();            
+            waveOut.Pause();
         }
 
         private void StopPlayback()
@@ -211,7 +207,7 @@ namespace Smappio_SEAR
                 }
                 timer.Enabled = false;
                 // n.b. streaming thread may not yet have exited
-                Thread.Sleep(500);                
+                Thread.Sleep(500);
             }
         }
 
@@ -230,24 +226,53 @@ namespace Smappio_SEAR
             }
             else
             {
-                this.txtSerialData.AppendText(text);                
+                txtSerialData.AppendText(text);
             }
         }
 
         #endregion
 
-        private void Main_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (decompressor != null)
-            {
-                decompressor.Dispose();
-            }
-        }
-
         private void btnStop_Click(object sender, EventArgs e)
         {
+            sw.Stop();
+            playbackState = StreamingPlaybackState.Stopped;
+            lblElapsedTime.Text = sw.Elapsed.ToString();
+            lblSamplesReceived.Text = samplesReceived.ToString();
+            byte[] fileBytes = fileBinary.GetBytesFromBinaryString();
+            File.WriteAllBytes(filePath, fileBytes);
+
             if (serialPort.IsOpen)
+            {
+                serialPort.DiscardInBuffer();
                 serialPort.Close();
+            }
+
+
+            //this.Close();
+
+            //if(waveWriter != null)
+            //{
+            //    waveWriter.Flush();
+            //    waveWriter.Close();                
+            //    waveWriter.Dispose();                
+            //}
+
+            //playbackState = StreamingPlaybackState.Stopped;
+        }
+
+        private void btnWifi_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnFileDestination_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "PCM (*.pcm) | *.pcm";
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                filePath = sfd.FileName;
+            }
         }
     }
 }

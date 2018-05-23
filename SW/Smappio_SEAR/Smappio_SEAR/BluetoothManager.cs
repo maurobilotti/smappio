@@ -25,7 +25,7 @@ namespace Smappio_SEAR
                                                .Where(d => d.DeviceName == name).FirstOrDefault();
                 if (btDevice != null)
                 {
-                    _bluetooth.SetPin("1234");
+                    //_bluetooth.SetPin("1234");
                     _bluetooth.Connect(btDevice.DeviceAddress, BluetoothService.SerialPort);                                       
                 }               
             }
@@ -36,7 +36,7 @@ namespace Smappio_SEAR
 
         public int GetBaudRate()
         {
-            int baudRate = 9600;
+            int baudRate = 115200;
             return baudRate;
         }
     }
