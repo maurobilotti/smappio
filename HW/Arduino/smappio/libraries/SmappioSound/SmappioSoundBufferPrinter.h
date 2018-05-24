@@ -19,14 +19,13 @@ class SmappioSoundBufferPrinter
 {
   public:
     SmappioSoundBufferPrinter();
-    void print(int *p, int len, int signalBalancer, print_mode_t printMode, bool printBothChannels, bool isTransmitted);
+    void print(int *p, int len, int signalBalancer, print_mode_t printMode, bool printBothChannels, BluetoothSerial& serialBT);
     void debug(char* msg);
     
   private:
     void printBits(size_t const size, void const *const p);
     void printBytes(size_t len, void *ptr);
-    void printInteger(int frame);
-    BluetoothSerial SerialBT;                     //Instancia del objeto que permite realizar la transferencia de datos via bluetooth
+    void printInteger(int frame);    
 };
 
 

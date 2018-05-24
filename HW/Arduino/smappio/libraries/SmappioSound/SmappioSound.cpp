@@ -9,6 +9,7 @@
 #include "driver/i2s.h"
 #include "freertos/queue.h"
 #include "SmappioSound.h"
+#include "BluetoothSerial.h"
 
 #pragma region // Métodos básicos
 
@@ -47,7 +48,7 @@ int SmappioSound::read()
     return bytesReaded;
 }
 
-void SmappioSound::print(int len)
+void SmappioSound::print(int len, BluetoothSerial& serialBT)
 {
-    bufferPrinter.print(_buffer, len, _signalBalancer, PRINT_MODE, PRINT_BOTH_CHANNELS);
+    bufferPrinter.print(_buffer, len, _signalBalancer, PRINT_MODE, PRINT_BOTH_CHANNELS, serialBT);
 }

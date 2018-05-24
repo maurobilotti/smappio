@@ -12,6 +12,7 @@
 #include "SmappioSoundBufferPrinter.h"
 #include "SmappioSoundBufferPrinter.cpp"
 #include "Helper.h"
+#include "BluetoothSerial.h"
 
 #pragma region // Sección de Configuración
   static const print_mode_t PRINT_MODE = INTEGER;                                   // Tipo de impresión: BITS | BYTES | INTEGER | FULL_DETEAILED
@@ -69,7 +70,7 @@ class SmappioSound
      * @brief Imprime la cantidad indicada de Frames en el puerto Serie
      *
      */    
-    void print(int len);
+    void print(int len, BluetoothSerial& serialBT);
 
   private:
     SmappioSoundBufferPrinter bufferPrinter;      // Instancia requerida para hacer impresiones

@@ -3,12 +3,13 @@
 
 #include "Arduino.h"
 #include "SmappioSoundBufferPrinter.h"
+#include "BluetoothSerial.h"
 
 SmappioSoundBufferPrinter::SmappioSoundBufferPrinter()
-{
+{	
 }
 
-void SmappioSoundBufferPrinter::print(int *p, int len, int signalBalancer, print_mode_t printMode, bool printBothChannels, bool isTransmitted = true)
+void SmappioSoundBufferPrinter::print(int *p, int len, int signalBalancer, print_mode_t printMode, bool printBothChannels, BluetoothSerial& serialBT)
 {
     log("Print lenght", len);
 
@@ -42,8 +43,7 @@ void SmappioSoundBufferPrinter::print(int *p, int len, int signalBalancer, print
                         break;
                     case INTEGER:
                         this->printInteger(frame);
-                        if(isTransmitted)
-                            SerialBT.print(frame);
+                        serialBT.print(frame);
                         break;
                     case FULL_DETEAILED:
                         if (i%2 == 0) 
