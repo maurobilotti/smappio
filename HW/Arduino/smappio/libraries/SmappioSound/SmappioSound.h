@@ -77,6 +77,11 @@ class SmappioSound
     */
     int getSampleValue(int index);
 
+    /*
+      Obtiene el valor promedio de los N bytes leidos.
+    */
+    int getSampleAverage();
+
   private:
     SmappioSoundBufferPrinter bufferPrinter;      // Instancia requerida para hacer impresiones
     int _signalBalancer;                          // Número que nivela los valores de la señal (gráficamente lleva aproxima la señal a 0)

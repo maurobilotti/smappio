@@ -57,3 +57,21 @@ int SmappioSound::getSampleValue(int index)
 {
     return bufferPrinter.getSampleValue(_buffer, index, _signalBalancer, PRINT_BOTH_CHANNELS);
 }
+
+int SmappioSound::getSampleAverage()
+{
+    int framesRead = this->read() / 32;
+    int accumulator = 0;
+    int avg = 0;
+    for(int index = 0; index <= framesRead; index++)
+    {
+        int value = this->getSampleValue(index);
+        if(index % 2 == 0)
+        {
+            accumulator += value;                              
+        }
+    }
+
+    avg = accumulator / framesRead; 
+    return avg;
+}
