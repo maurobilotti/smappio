@@ -9,7 +9,19 @@ SmappioSoundBufferPrinter::SmappioSoundBufferPrinter()
 {	
 }
 
-void SmappioSoundBufferPrinter::print(int *p, int len, int signalBalancer, print_mode_t printMode, bool printBothChannels, BluetoothSerial& serialBT)
+int SmappioSoundBufferPrinter::getSampleValue(int *buffer, int index, int signalBalancer, bool printBothChannels)
+{
+    int sample = 0;
+    sample = buffer[index] >> 14; 
+
+    // frame -= 0b00000000000000101110000000000000; // signalBanalncer no funciona, balanceo la señal a mano acá
+
+    sample += signalBalancer;    
+    
+    return sample;
+}
+
+void SmappioSoundBufferPrinter::print(int *buffer, int len, int signalBalancer, print_mode_t printMode, bool printBothChannels, BluetoothSerial& serialBT)
 {
     log("Print lenght", len);
 
@@ -19,7 +31,7 @@ void SmappioSoundBufferPrinter::print(int *p, int len, int signalBalancer, print
     for (i = 0; i < len; i++)
     {
         // Se hace un corrimiento de bits a la derecha 18 posiciones, dejando a la izq un padding de ceros
-        frame = (p[i] >> 14) & 0b00000000000000111111111111111111; 
+        frame = (buffer[i] >> 14) & 0b00000000000000111111111111111111; 
 
         // frame -= 0b00000000000000101110000000000000; // signalBanalncer no funciona, balanceo la señal a mano acá
 

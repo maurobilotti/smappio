@@ -19,13 +19,14 @@ class SmappioSoundBufferPrinter
 {
   public:
     SmappioSoundBufferPrinter();
-    void print(int *p, int len, int signalBalancer, print_mode_t printMode, bool printBothChannels, BluetoothSerial& serialBT);
+    void print(int *buffer, int len, int signalBalancer, print_mode_t printMode, bool printBothChannels, BluetoothSerial& serialBT);
     void debug(char* msg);
+    int getSampleValue(int *buffer, int index, int signalBalancer, bool printBothChannels);
     
   private:
     void printBits(size_t const size, void const *const p);
     void printBytes(size_t len, void *ptr);
-    void printInteger(int frame);    
+    void printInteger(int frame);        
 };
 
 

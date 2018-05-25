@@ -52,3 +52,8 @@ void SmappioSound::print(int len, BluetoothSerial& serialBT)
 {
     bufferPrinter.print(_buffer, len, _signalBalancer, PRINT_MODE, PRINT_BOTH_CHANNELS, serialBT);
 }
+
+int SmappioSound::getSampleValue(int index)
+{
+    return bufferPrinter.getSampleValue(_buffer, index, _signalBalancer, PRINT_BOTH_CHANNELS);
+}

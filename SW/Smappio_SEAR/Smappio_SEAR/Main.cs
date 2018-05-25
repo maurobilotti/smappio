@@ -29,7 +29,7 @@ namespace Smappio_SEAR
         }
 
         BluetoothManager bluetoothManager;
-        string deviceName = "HC-05";
+        string deviceName = "smappio_PCM";
         private BufferedWaveProvider bufferedWaveProvider;
         private IWavePlayer waveOut;
         private volatile StreamingPlaybackState playbackState;
@@ -240,6 +240,16 @@ namespace Smappio_SEAR
             lblSamplesReceived.Text = samplesReceived.ToString();
             byte[] fileBytes = fileBinary.GetBytesFromBinaryString();
             File.WriteAllBytes(filePath, fileBytes);
+
+            using (WaveFileWriter writer = new WaveFileWriter(filePath, new WaveFormat(AssignWaveFormatYouWant /*wavReader.WaveFormat.SampleRate, 16, 2/*how many channel*/))
+    )
+            {
+                //int bytesRead;
+                //while ((bytesRead = wavReader.Read(buffer, 0, buffer.Length)) > 0)
+                //{
+                writer.Write(fileBytes, 0, fileBytes.Length/*bytesRead*/);
+                //}
+            }
 
             if (serialPort.IsOpen)
             {

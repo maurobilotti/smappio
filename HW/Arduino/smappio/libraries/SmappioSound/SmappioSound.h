@@ -26,7 +26,7 @@
     .sample_rate = 64000,                                                                           // Entre 32KHz y 64KHz (Datasheet)
     .bits_per_sample = BITS_PER_SAMPLE,                                                             
     .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,                                                   // El formato que usa el micrófono. No se encontró el Datasheet
-    .communication_format = (i2s_comm_format_t)(I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB),     // Investigar
+    .communication_format = (i2s_comm_format_t)I2S_COMM_FORMAT_PCM, //(I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB),     // Investigar
     .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,                                                       // High interrupt priority (investigar)
     .dma_buf_count = 2,                                                                            // Cantidad de buffers, 128 max.
     .dma_buf_len = 32 * 2                                                                           // Tamaño de cada buffer
@@ -71,6 +71,11 @@ class SmappioSound
      *
      */    
     void print(int len, BluetoothSerial& serialBT);
+
+    /*
+       Obtiene el valor del sample 'index' del buffer
+    */
+    int getSampleValue(int index);
 
   private:
     SmappioSoundBufferPrinter bufferPrinter;      // Instancia requerida para hacer impresiones
