@@ -11,10 +11,11 @@ SmappioSoundBufferPrinter::SmappioSoundBufferPrinter()
 int SmappioSoundBufferPrinter::getSampleValue(int *buffer, int index, int signalBalancer, bool printBothChannels)
 {
     int sample = 0;
-    sample = buffer[index] >> 14;// & 0b00000000000000111111111111111111; 
+    sample = buffer[index] >> 14 & 0b00000000000000111111111111111111; // En el sketch, el ultimo byte en 0 no se transmite
     sample += signalBalancer;    
+    sample = sample << 8 & 0b00000011111111111111111100000000;
 
-    // // Entero
+    // // // Entero
     // printf("Entero:    ", sample);
     // this->printInteger(sample);
     

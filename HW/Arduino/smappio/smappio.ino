@@ -5,8 +5,11 @@ int *buffer;
 BluetoothSerial serialBT; 
 int value = 0;
 int framesRead = 0;
+int plotterBauds = 115200;
+int serialBauds = 960000;
+int media = -248400;
 
-SmappioSound smappioSound(6835); // valor al azar harcodeado para nivelar a 0 la señal media
+SmappioSound smappioSound(media); // valor al azar harcodeado para nivelar a 0 la señal media
 
 
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
@@ -19,7 +22,7 @@ void setup() {
 
   pinMode(DATA_PIN, INPUT); // Supuestamente necesario para que no haya ruido
   serialBT.begin("smappio_PCM");
-  Serial.begin(115200);
+  Serial.begin(serialBauds);  
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
@@ -27,11 +30,17 @@ void setup() {
   smappioSound.begin(buffer);
 }
 
+void loop() {
+  
+  //gets the amount of bytes readed from the buffer. 
 
-void loop() {  
-  smappioSound.read();
-  value = smappioSound.getSampleValue(1);    
-  Serial.write((byte*)&value, sizeof(int32_t));    
+    smappioSound.read();
+    value = smappioSound.getSampleValue(1);  
+    //Serial.println(value);
+    
+    Serial.write((byte*)&value, 3); 
+  
+  
 }
 
 

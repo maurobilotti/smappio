@@ -33,6 +33,17 @@ namespace Smappio_SEAR
         private string filePath;
         private List<Int32> _fileInts = new List<int>();
         List<byte> _bytes = new List<byte>();
+        Stopwatch sw = new Stopwatch();
+        long elapsedMilliseconds = 0;
+        #region SoundParameters
+        int _bytesDepth = 3;
+        int _sampleRate = 32000;
+        int _seconds = 5;
+        
+        private bool _notified;
+
+        #endregion
+
         //Stopwatch sp = new Stopwatch();
 
 
@@ -63,7 +74,7 @@ namespace Smappio_SEAR
 
                 if (!serialPort.IsOpen)
                     serialPort.Open();
-
+                lblNotification.Text = "Started";
                 serialPort.DataReceived += SerialPort_DataReceived;
             }
             catch (Exception ex)
@@ -87,6 +98,7 @@ namespace Smappio_SEAR
                 if (!serialPort.IsOpen)
                     serialPort.Open();
 
+                lblNotification.Text = "Started";
                 serialPort.DataReceived += SerialPort_DataReceived;
             }
             catch (Exception ex)
@@ -98,33 +110,48 @@ namespace Smappio_SEAR
 
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            var bufferSize = serialPort.BytesToRead;
+            if(_bytes.Count <= (_sampleRate * _bytesDepth * _seconds))
+            {
+                                
+                var bufferSize = serialPort.BytesToRead;
 
-            if (bufferSize <= 4)
-                return;
+                //USED FOR PRINTING INT32 IN TEXTBOX
+                //if (bufferSize <= 4)
+                //    return;
 
-            byte[] data = new byte[bufferSize];
-            serialPort.Read(data, 0, bufferSize);
+                byte[] data = new byte[bufferSize];
+                serialPort.Read(data, 0, bufferSize);
 
-            //LOGIC FOR PRINTING THE VALUES IN THE TEXTBOX.
-            //int i = 0;
-            //Int32 temp = 0;
-            //while (i <= (bufferSize - 4))
-            //{
-            //    temp = (Int32)BitConverter.ToInt32(data, i);
+                if (!sw.IsRunning)
+                    sw.Start();
 
-            //    SetText(temp.ToString());  
+                //LOGIC FOR PRINTING THE VALUES IN THE TEXTBOX.
+                //int i = 0;
+                //Int32 temp = 0;
+                //while (i <= (bufferSize - 4))
+                //{
+                //    temp = (Int32)BitConverter.ToInt32(data, i);
 
-            //    i += 4;
-            //}
+                //    SetText(temp.ToString());  
 
-            this._bytes.AddRange(data);
+                //    i += 4;
+                //}
+
+                this._bytes.AddRange(data);
+            }
+            else if(!_notified)
+            {
+                //lblNotification.Text = "Finish";
+                sw.Stop();
+                elapsedMilliseconds = sw.ElapsedMilliseconds;
+                _notified = true;
+            }            
         } 
         #endregion
 
         #region TextBox_Methods
         delegate void SetTextCallback(string text);
-        private void SetText(string text)
+        private void SetTextBox(string text)
         {
             // InvokeRequired required compares the thread ID of the
             // calling thread to the thread ID of the creating thread.
@@ -132,7 +159,7 @@ namespace Smappio_SEAR
 
             if (this.txtSerialData.InvokeRequired)
             {
-                SetTextCallback d = new SetTextCallback(SetText);
+                SetTextCallback d = new SetTextCallback(SetTextBox);
                 this.Invoke(d, new object[] { text });
             }
             else
@@ -146,9 +173,18 @@ namespace Smappio_SEAR
         #region Save file methods
         private void btnStop_Click(object sender, EventArgs e)
         {
+
+            lblTime.Text = elapsedMilliseconds.ToString();
+            int samplesReceived = _bytes.Count / _bytesDepth;
+            lblSamplesReceived.Text = samplesReceived.ToString();
+            long bitRate = samplesReceived / (elapsedMilliseconds / 1000);
+            lblBitRate.Text = bitRate.ToString();
+
+            lblNotification.Text = "Finished";
+
             //little endian!               
             File.WriteAllBytes(filePath, _bytes.ToArray());
-            lblSamplesReceived.Text = _bytes.Count.ToString();
+            
 
             if (serialPort.IsOpen)
             {
