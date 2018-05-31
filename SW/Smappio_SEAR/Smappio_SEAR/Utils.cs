@@ -33,7 +33,7 @@ namespace Smappio_SEAR
         public static string To16bitBinary(this Int16 num)
         {
             return Convert.ToString(num, 2).PadLeft(16, '0');
-        }
+        }        
 
         public static byte[] GetBytesFromBinaryString(this string binary)
         {

@@ -3,7 +3,6 @@
 
 #include "Arduino.h"
 #include "SmappioSoundBufferPrinter.h"
-#include "BluetoothSerial.h"
 
 SmappioSoundBufferPrinter::SmappioSoundBufferPrinter()
 {	
@@ -12,16 +11,27 @@ SmappioSoundBufferPrinter::SmappioSoundBufferPrinter()
 int SmappioSoundBufferPrinter::getSampleValue(int *buffer, int index, int signalBalancer, bool printBothChannels)
 {
     int sample = 0;
-    sample = buffer[index] >> 14; 
-
-    // frame -= 0b00000000000000101110000000000000; // signalBanalncer no funciona, balanceo la señal a mano acá
-
+    sample = buffer[index] >> 14;// & 0b00000000000000111111111111111111; 
     sample += signalBalancer;    
+
+    // // Entero
+    // printf("Entero:    ", sample);
+    // this->printInteger(sample);
+    
+    // // Bits
+    // printf("Bits:      ");
+    // this->printBits(sizeof(sample), &sample); //revisar el sizeof
+    // printf("\n");
+    
+    // // Bytes
+    // printf("Bytes:     ");
+    // this->printBytes(sizeof(sample), &sample); //revisar el sizeof
+    // printf("\n\n");
     
     return sample;
 }
 
-void SmappioSoundBufferPrinter::print(int *buffer, int len, int signalBalancer, print_mode_t printMode, bool printBothChannels, BluetoothSerial& serialBT)
+void SmappioSoundBufferPrinter::print(int *buffer, int len, int signalBalancer, print_mode_t printMode, bool printBothChannels)
 {
     log("Print lenght", len);
 
@@ -54,8 +64,7 @@ void SmappioSoundBufferPrinter::print(int *buffer, int len, int signalBalancer, 
                         this->printBytes(sizeof(frame), &frame); //revisar el sizeof
                         break;
                     case INTEGER:
-                        this->printInteger(frame);
-                        serialBT.print(frame);
+                        this->printInteger(frame);                        
                         break;
                     case FULL_DETEAILED:
                         if (i%2 == 0) 

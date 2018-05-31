@@ -30,16 +30,10 @@ namespace Smappio_SEAR
 
         BluetoothManager bluetoothManager;
         string deviceName = "smappio_PCM";
-        private BufferedWaveProvider bufferedWaveProvider;
-        private IWavePlayer waveOut;
-        private volatile StreamingPlaybackState playbackState;
-        private volatile bool fullyDownloaded;
-        private VolumeWaveProvider16 volumeProvider;
-        private IMp3FrameDecompressor decompressor = null;
         private string filePath;
-        private string fileBinary;
-        Stopwatch sw = new Stopwatch();
-        int samplesReceived = 0;
+        private List<Int32> _fileInts = new List<int>();
+        List<byte> _bytes = new List<byte>();
+        //Stopwatch sp = new Stopwatch();
 
 
         private static IMp3FrameDecompressor CreateFrameDecompressor(Mp3Frame frame)
@@ -49,48 +43,28 @@ namespace Smappio_SEAR
             return new AcmMp3FrameDecompressor(waveFormat);
         }
 
-        private bool IsBufferNearlyFull
-        {
-            get
-            {
-                return bufferedWaveProvider != null &&
-                       bufferedWaveProvider.BufferLength - bufferedWaveProvider.BufferedBytes
-                       < bufferedWaveProvider.WaveFormat.AverageBytesPerSecond / 4;
-            }
-        }
         #endregion
 
-
-        private void btnBluetooth_Click(object sender, EventArgs e)
+        #region Transfering methods
+        private void btnWifi_Click(object sender, EventArgs e)
         {
+            //logica para Wi-fi
+        }
+
+        private void btnUSB_Click(object sender, EventArgs e)
+        {
+            //Silicon Labs CP210x USB to UART Bridge
             try
             {
-                bluetoothManager = new BluetoothManager();
-
-                serialPort.PortName = BluetoothHelper.GetBluetoothPort(deviceName);
-                serialPort.BaudRate = 9600;
+                serialPort.PortName = "COM4";//BluetoothHelper.GetBluetoothPort("Silicon Labs CP210x USB to UART Bridge");
+                serialPort.BaudRate = 960000;
                 serialPort.DtrEnable = true;
                 serialPort.RtsEnable = true;
 
                 if (!serialPort.IsOpen)
                     serialPort.Open();
 
-                sw.Start();
-                playbackState = StreamingPlaybackState.Playing;
                 serialPort.DataReceived += SerialPort_DataReceived;
-
-                if (playbackState == StreamingPlaybackState.Stopped)
-                {
-                    playbackState = StreamingPlaybackState.Buffering;
-                    bufferedWaveProvider = null;
-                    //ThreadPool.QueueUserWorkItem(StreamAudioFromSmappio);
-                    //waveOut = new WaveOut();
-                    //timer.Enabled = true;
-                }
-                else if (playbackState == StreamingPlaybackState.Paused)
-                {
-                    playbackState = StreamingPlaybackState.Buffering;
-                }
             }
             catch (Exception ex)
             {
@@ -99,117 +73,54 @@ namespace Smappio_SEAR
             }
         }
 
+        private void btnBluetooth_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                bluetoothManager = new BluetoothManager();
 
-        /// <summary>
-        /// Invoked every time the bluetooth module sents data.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+                serialPort.PortName = BluetoothHelper.GetBluetoothPort(deviceName);
+                serialPort.BaudRate = 115200;
+                serialPort.DtrEnable = true;
+                serialPort.RtsEnable = true;
+
+                if (!serialPort.IsOpen)
+                    serialPort.Open();
+
+                serialPort.DataReceived += SerialPort_DataReceived;
+            }
+            catch (Exception ex)
+            {
+                serialPort.Dispose();
+                return;
+            }
+        }
+
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            if (playbackState == StreamingPlaybackState.Playing)
-            {
-                SerialPort sp = (SerialPort)sender;
+            var bufferSize = serialPort.BytesToRead;
 
-                //var buffer = new byte[sp.BytesToRead];
-                string raw = sp.ReadExisting();
-                var responseValues = raw.Split(' ');
-                samplesReceived += responseValues.Length;
-                foreach (var item in responseValues)
-                {
-                    if (string.IsNullOrWhiteSpace(item))
-                        continue;
-                    var byteVal = Convert.ToInt16(item);
-                    var value = Convert.ToString(byteVal, 2).PadLeft(16, '0');
-                    fileBinary += value;
+            if (bufferSize <= 4)
+                return;
 
-                    SetText(item);
-                }
-            }
-        }
+            byte[] data = new byte[bufferSize];
+            serialPort.Read(data, 0, bufferSize);
 
-        public byte[] ConvertWavToMp3(byte[] wavFile)
-        {
+            //LOGIC FOR PRINTING THE VALUES IN THE TEXTBOX.
+            //int i = 0;
+            //Int32 temp = 0;
+            //while (i <= (bufferSize - 4))
+            //{
+            //    temp = (Int32)BitConverter.ToInt32(data, i);
 
-            using (var retMs = new MemoryStream())
-            using (var ms = new MemoryStream(wavFile))
-            using (var rdr = new WaveFileReader(ms))
-            using (var wtr = new LameMP3FileWriter(retMs, rdr.WaveFormat, 128))
-            {
-                rdr.CopyTo(wtr);
-                return retMs.ToArray();
-            }
-        }
+            //    SetText(temp.ToString());  
 
-        private void timer_Tick(object sender, EventArgs e)
-        {
-            if (playbackState != StreamingPlaybackState.Stopped)
-            {
-                if (waveOut == null && bufferedWaveProvider != null)
-                {
-                    waveOut = new WaveOut();
-                    waveOut.PlaybackStopped += OnPlaybackStopped;
-                    volumeProvider = new VolumeWaveProvider16(bufferedWaveProvider);
-                    volumeProvider.Volume = 1.0f; //maximum volume
-                    waveOut.Init(volumeProvider);
-                }
-                else if (bufferedWaveProvider != null)
-                {
-                    var bufferedSeconds = bufferedWaveProvider.BufferedDuration.TotalSeconds;
-                    // make it stutter less if we buffer up a decent amount before playing
-                    if (bufferedSeconds < 0.5 && playbackState == StreamingPlaybackState.Playing && !fullyDownloaded)
-                    {
-                        Pause();
-                    }
-                    else if (bufferedSeconds > 4 && playbackState == StreamingPlaybackState.Buffering)
-                    {
-                        Play();
-                    }
-                    else if (fullyDownloaded && bufferedSeconds == 0)
-                    {
-                        StopPlayback();
-                    }
-                }
-            }
+            //    i += 4;
+            //}
 
-        }
-
-        private void OnPlaybackStopped(object sender, StoppedEventArgs e)
-        {
-            if (e.Exception != null)
-            {
-                MessageBox.Show(String.Format("Playback Error {0}", e.Exception.Message));
-            }
-        }
-
-        private void Play()
-        {
-            waveOut.Play();
-            playbackState = StreamingPlaybackState.Playing;
-        }
-
-        private void Pause()
-        {
-            playbackState = StreamingPlaybackState.Buffering;
-            waveOut.Pause();
-        }
-
-        private void StopPlayback()
-        {
-            if (playbackState != StreamingPlaybackState.Stopped)
-            {
-                playbackState = StreamingPlaybackState.Stopped;
-                if (waveOut != null)
-                {
-                    waveOut.Stop();
-                    waveOut.Dispose();
-                    waveOut = null;
-                }
-                timer.Enabled = false;
-                // n.b. streaming thread may not yet have exited
-                Thread.Sleep(500);
-            }
-        }
+            this._bytes.AddRange(data);
+        } 
+        #endregion
 
         #region TextBox_Methods
         delegate void SetTextCallback(string text);
@@ -226,63 +137,35 @@ namespace Smappio_SEAR
             }
             else
             {
-                txtSerialData.AppendText(text);
+                txtSerialData.AppendText(text + " ");
             }
         }
 
         #endregion
 
+        #region Save file methods
         private void btnStop_Click(object sender, EventArgs e)
         {
-            sw.Stop();
-            playbackState = StreamingPlaybackState.Stopped;
-            lblElapsedTime.Text = sw.Elapsed.ToString();
-            lblSamplesReceived.Text = samplesReceived.ToString();
-            byte[] fileBytes = fileBinary.GetBytesFromBinaryString();
-            File.WriteAllBytes(filePath, fileBytes);
-
-            using (WaveFileWriter writer = new WaveFileWriter(filePath, new WaveFormat(AssignWaveFormatYouWant /*wavReader.WaveFormat.SampleRate, 16, 2/*how many channel*/))
-    )
-            {
-                //int bytesRead;
-                //while ((bytesRead = wavReader.Read(buffer, 0, buffer.Length)) > 0)
-                //{
-                writer.Write(fileBytes, 0, fileBytes.Length/*bytesRead*/);
-                //}
-            }
+            //little endian!               
+            File.WriteAllBytes(filePath, _bytes.ToArray());
+            lblSamplesReceived.Text = _bytes.Count.ToString();
 
             if (serialPort.IsOpen)
             {
                 serialPort.DiscardInBuffer();
                 serialPort.Close();
             }
-
-
-            //this.Close();
-
-            //if(waveWriter != null)
-            //{
-            //    waveWriter.Flush();
-            //    waveWriter.Close();                
-            //    waveWriter.Dispose();                
-            //}
-
-            //playbackState = StreamingPlaybackState.Stopped;
-        }
-
-        private void btnWifi_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void btnFileDestination_Click(object sender, EventArgs e)
         {
             SaveFileDialog sfd = new SaveFileDialog();
-            sfd.Filter = "PCM (*.pcm) | *.pcm";
+            sfd.Filter = "WAV (*.wav) | *.wav";
             if (sfd.ShowDialog() == DialogResult.OK)
             {
                 filePath = sfd.FileName;
             }
         }
+        #endregion
     }
 }

@@ -6,7 +6,6 @@
 
 #include "Arduino.h"
 #include "Helper.h"
-#include "BluetoothSerial.h"
 
 typedef enum {
     BITS            = 0,       // Solo bits
@@ -19,7 +18,7 @@ class SmappioSoundBufferPrinter
 {
   public:
     SmappioSoundBufferPrinter();
-    void print(int *buffer, int len, int signalBalancer, print_mode_t printMode, bool printBothChannels, BluetoothSerial& serialBT);
+    void print(int *buffer, int len, int signalBalancer, print_mode_t printMode, bool printBothChannels);
     void debug(char* msg);
     int getSampleValue(int *buffer, int index, int signalBalancer, bool printBothChannels);
     

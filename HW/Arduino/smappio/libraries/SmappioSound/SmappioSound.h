@@ -12,24 +12,25 @@
 #include "SmappioSoundBufferPrinter.h"
 #include "SmappioSoundBufferPrinter.cpp"
 #include "Helper.h"
-#include "BluetoothSerial.h"
+
 
 #pragma region // Sección de Configuración
   static const print_mode_t PRINT_MODE = INTEGER;                                   // Tipo de impresión: BITS | BYTES | INTEGER | FULL_DETEAILED
   static const bool PRINT_BOTH_CHANNELS = false;                                    // Indica si imprime solo el "Canal 0" ó el "Canal 0" y el "Canal 1"
   static const int FRAMES_REQUESTED = 1;                                           // Parece relacionarse con la cantidad de buffers
-  static const int TICKS_TO_WAIT = 800;                                            // Investigar
+  static const int TICKS_TO_WAIT = 0;                                            // Investigar
   static const i2s_bits_per_sample_t BITS_PER_SAMPLE = I2S_BITS_PER_SAMPLE_32BIT;   // Datasheet: 24. Ejemplo: 32.
 
   static const i2s_config_t SPH_CONFIG = {
     .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),                                            // El controlador es el Maestro y Recibe, el microfono es Esclavo y Transmite
     .sample_rate = 64000,                                                                           // Entre 32KHz y 64KHz (Datasheet)
     .bits_per_sample = BITS_PER_SAMPLE,                                                             
-    .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,                                                   // El formato que usa el micrófono. No se encontró el Datasheet
-    .communication_format = (i2s_comm_format_t)I2S_COMM_FORMAT_PCM, //(I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB),     // Investigar
+    .channel_format = I2S_CHANNEL_FMT_ONLY_RIGHT,                                                   // El formato que usa el micrófono. No se encontró el Datasheet
+    .communication_format = (i2s_comm_format_t) I2S_COMM_FORMAT_PCM,    //(I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB) // Investigar
+    //MSB: most significant byte -> BIG ENDIAN
     .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,                                                       // High interrupt priority (investigar)
     .dma_buf_count = 2,                                                                            // Cantidad de buffers, 128 max.
-    .dma_buf_len = 32 * 2                                                                           // Tamaño de cada buffer
+    .dma_buf_len = 32                                                                           // Tamaño de cada buffer
   };
 
 #pragma endregion Sección de Configuración
@@ -70,7 +71,7 @@ class SmappioSound
      * @brief Imprime la cantidad indicada de Frames en el puerto Serie
      *
      */    
-    void print(int len, BluetoothSerial& serialBT);
+    void print(int len);
 
     /*
        Obtiene el valor del sample 'index' del buffer

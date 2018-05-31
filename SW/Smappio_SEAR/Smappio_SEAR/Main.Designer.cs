@@ -30,16 +30,73 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
-            this.btnWifi = new System.Windows.Forms.Button();
-            this.btnBluetooth = new System.Windows.Forms.Button();
             this.btnStop = new System.Windows.Forms.Button();
-            this.timer = new System.Windows.Forms.Timer(this.components);
             this.serialPort = new System.IO.Ports.SerialPort(this.components);
             this.lblElapsedTime = new System.Windows.Forms.Label();
             this.txtSerialData = new System.Windows.Forms.TextBox();
             this.btnFileDestination = new System.Windows.Forms.Button();
             this.lblSamplesReceived = new System.Windows.Forms.Label();
+            this.btnUSB = new System.Windows.Forms.Button();
+            this.btnWifi = new System.Windows.Forms.Button();
+            this.btnBluetooth = new System.Windows.Forms.Button();
             this.SuspendLayout();
+            // 
+            // btnStop
+            // 
+            this.btnStop.Location = new System.Drawing.Point(309, 36);
+            this.btnStop.Name = "btnStop";
+            this.btnStop.Size = new System.Drawing.Size(75, 23);
+            this.btnStop.TabIndex = 2;
+            this.btnStop.Text = "Stop";
+            this.btnStop.UseVisualStyleBackColor = true;
+            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
+            // 
+            // lblElapsedTime
+            // 
+            this.lblElapsedTime.AutoSize = true;
+            this.lblElapsedTime.Location = new System.Drawing.Point(13, 537);
+            this.lblElapsedTime.Name = "lblElapsedTime";
+            this.lblElapsedTime.Size = new System.Drawing.Size(35, 13);
+            this.lblElapsedTime.TabIndex = 3;
+            this.lblElapsedTime.Text = "label1";
+            // 
+            // txtSerialData
+            // 
+            this.txtSerialData.Location = new System.Drawing.Point(12, 80);
+            this.txtSerialData.Multiline = true;
+            this.txtSerialData.Name = "txtSerialData";
+            this.txtSerialData.Size = new System.Drawing.Size(924, 454);
+            this.txtSerialData.TabIndex = 4;
+            // 
+            // btnFileDestination
+            // 
+            this.btnFileDestination.Location = new System.Drawing.Point(390, 36);
+            this.btnFileDestination.Name = "btnFileDestination";
+            this.btnFileDestination.Size = new System.Drawing.Size(124, 23);
+            this.btnFileDestination.TabIndex = 5;
+            this.btnFileDestination.Text = "File Destination";
+            this.btnFileDestination.UseVisualStyleBackColor = true;
+            this.btnFileDestination.Click += new System.EventHandler(this.btnFileDestination_Click);
+            // 
+            // lblSamplesReceived
+            // 
+            this.lblSamplesReceived.AutoSize = true;
+            this.lblSamplesReceived.Location = new System.Drawing.Point(666, 537);
+            this.lblSamplesReceived.Name = "lblSamplesReceived";
+            this.lblSamplesReceived.Size = new System.Drawing.Size(35, 13);
+            this.lblSamplesReceived.TabIndex = 6;
+            this.lblSamplesReceived.Text = "label1";
+            // 
+            // btnUSB
+            // 
+            this.btnUSB.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnUSB.Image = global::Smappio_SEAR.Properties.Resources.if_usb_925801;
+            this.btnUSB.Location = new System.Drawing.Point(141, 11);
+            this.btnUSB.Name = "btnUSB";
+            this.btnUSB.Size = new System.Drawing.Size(48, 48);
+            this.btnUSB.TabIndex = 7;
+            this.btnUSB.UseVisualStyleBackColor = true;
+            this.btnUSB.Click += new System.EventHandler(this.btnUSB_Click);
             // 
             // btnWifi
             // 
@@ -63,56 +120,6 @@
             this.btnBluetooth.UseVisualStyleBackColor = true;
             this.btnBluetooth.Click += new System.EventHandler(this.btnBluetooth_Click);
             // 
-            // btnStop
-            // 
-            this.btnStop.Location = new System.Drawing.Point(151, 36);
-            this.btnStop.Name = "btnStop";
-            this.btnStop.Size = new System.Drawing.Size(75, 23);
-            this.btnStop.TabIndex = 2;
-            this.btnStop.Text = "Stop";
-            this.btnStop.UseVisualStyleBackColor = true;
-            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
-            // 
-            // timer
-            // 
-            this.timer.Tick += new System.EventHandler(this.timer_Tick);
-            // 
-            // lblElapsedTime
-            // 
-            this.lblElapsedTime.AutoSize = true;
-            this.lblElapsedTime.Location = new System.Drawing.Point(13, 537);
-            this.lblElapsedTime.Name = "lblElapsedTime";
-            this.lblElapsedTime.Size = new System.Drawing.Size(35, 13);
-            this.lblElapsedTime.TabIndex = 3;
-            this.lblElapsedTime.Text = "label1";
-            // 
-            // txtSerialData
-            // 
-            this.txtSerialData.Location = new System.Drawing.Point(12, 80);
-            this.txtSerialData.Multiline = true;
-            this.txtSerialData.Name = "txtSerialData";
-            this.txtSerialData.Size = new System.Drawing.Size(924, 454);
-            this.txtSerialData.TabIndex = 4;
-            // 
-            // btnFileDestination
-            // 
-            this.btnFileDestination.Location = new System.Drawing.Point(269, 36);
-            this.btnFileDestination.Name = "btnFileDestination";
-            this.btnFileDestination.Size = new System.Drawing.Size(124, 23);
-            this.btnFileDestination.TabIndex = 5;
-            this.btnFileDestination.Text = "File Destination";
-            this.btnFileDestination.UseVisualStyleBackColor = true;
-            this.btnFileDestination.Click += new System.EventHandler(this.btnFileDestination_Click);
-            // 
-            // lblSamplesReceived
-            // 
-            this.lblSamplesReceived.AutoSize = true;
-            this.lblSamplesReceived.Location = new System.Drawing.Point(666, 537);
-            this.lblSamplesReceived.Name = "lblSamplesReceived";
-            this.lblSamplesReceived.Size = new System.Drawing.Size(35, 13);
-            this.lblSamplesReceived.TabIndex = 6;
-            this.lblSamplesReceived.Text = "label1";
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -120,6 +127,7 @@
             this.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.ClientSize = new System.Drawing.Size(997, 562);
+            this.Controls.Add(this.btnUSB);
             this.Controls.Add(this.lblSamplesReceived);
             this.Controls.Add(this.btnFileDestination);
             this.Controls.Add(this.txtSerialData);
@@ -140,12 +148,12 @@
         private System.Windows.Forms.Button btnBluetooth;
         private System.Windows.Forms.Button btnWifi;
         private System.Windows.Forms.Button btnStop;
-        private System.Windows.Forms.Timer timer;
         private System.Windows.Forms.Label lblElapsedTime;
         private System.Windows.Forms.TextBox txtSerialData;
         public System.IO.Ports.SerialPort serialPort;
         private System.Windows.Forms.Button btnFileDestination;
         private System.Windows.Forms.Label lblSamplesReceived;
+        private System.Windows.Forms.Button btnUSB;
     }
 }
 

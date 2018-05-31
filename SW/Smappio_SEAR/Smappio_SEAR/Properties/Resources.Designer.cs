@@ -93,6 +93,16 @@ namespace Smappio_SEAR.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap if_usb_925801 {
+            get {
+                object obj = ResourceManager.GetObject("if_usb_925801", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap if_wifi_Logo_925806 {
             get {
                 object obj = ResourceManager.GetObject("if_wifi_Logo_925806", resourceCulture);

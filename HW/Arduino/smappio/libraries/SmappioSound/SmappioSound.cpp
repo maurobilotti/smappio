@@ -9,7 +9,6 @@
 #include "driver/i2s.h"
 #include "freertos/queue.h"
 #include "SmappioSound.h"
-#include "BluetoothSerial.h"
 
 #pragma region // Métodos básicos
 
@@ -20,8 +19,8 @@ SmappioSound::SmappioSound(int signalBalancer)
 
 void SmappioSound::begin(int *readBuffer)
 {
-    int startingTime = 3000;
-    int bufferSize = FRAMES_REQUESTED * BITS_PER_SAMPLE * 2;  // bufferSize esta medido en cantidad de bytes
+    //int startingTime = 3000;
+    int bufferSize = FRAMES_REQUESTED * BITS_PER_SAMPLE;  // bufferSize esta medido en cantidad de bytes
 
     log("Frames requested", FRAMES_REQUESTED);
     log("Bits per sample", BITS_PER_SAMPLE);
@@ -32,25 +31,26 @@ void SmappioSound::begin(int *readBuffer)
 
     i2s_driver_install(CHANNEL_NUMBER, &SPH_CONFIG, 0, NULL);            // Instalar el driver tambien inicializa la escucha
     i2s_set_pin(CHANNEL_NUMBER, &SPH_PINS);                              // Setea la conexión física del micrófono al controlador
+    //i2s_set_sample_rates(CHANNEL_NUMBER, 16000); //set sample rates
     
-    log("Waiting seconds for initialization", startingTime / 1000);
-    delay(startingTime);
+    // log("Waiting seconds for initialization", startingTime / 1000);
+    // delay(startingTime);
 }
 
 #pragma endregion Métodos básicos
 
 int SmappioSound::read()
 {
-    int bytesReaded = i2s_read_bytes(CHANNEL_NUMBER, (char *)_buffer, 64, TICKS_TO_WAIT);
+    int bytesReaded = i2s_read_bytes(CHANNEL_NUMBER, (char *)_buffer, (FRAMES_REQUESTED * BITS_PER_SAMPLE), TICKS_TO_WAIT);
 
-    log("\nBytes pushed to DMA buffer", bytesReaded);
+    //log("\nBytes pushed to DMA buffer", bytesReaded);
 
     return bytesReaded;
 }
 
-void SmappioSound::print(int len, BluetoothSerial& serialBT)
+void SmappioSound::print(int len)
 {
-    bufferPrinter.print(_buffer, len, _signalBalancer, PRINT_MODE, PRINT_BOTH_CHANNELS, serialBT);
+    bufferPrinter.print(_buffer, len, _signalBalancer, PRINT_MODE, PRINT_BOTH_CHANNELS);
 }
 
 int SmappioSound::getSampleValue(int index)
