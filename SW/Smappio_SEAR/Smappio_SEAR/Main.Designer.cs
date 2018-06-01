@@ -44,7 +44,12 @@
             this.label3 = new System.Windows.Forms.Label();
             this.lblTime = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.lblSampleRate = new System.Windows.Forms.Label();
             this.lblBitRate = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btnStop
@@ -60,7 +65,7 @@
             // lblNotification
             // 
             this.lblNotification.AutoSize = true;
-            this.lblNotification.Location = new System.Drawing.Point(91, 503);
+            this.lblNotification.Location = new System.Drawing.Point(733, 429);
             this.lblNotification.Name = "lblNotification";
             this.lblNotification.Size = new System.Drawing.Size(13, 13);
             this.lblNotification.TabIndex = 3;
@@ -71,7 +76,7 @@
             this.txtSerialData.Location = new System.Drawing.Point(12, 80);
             this.txtSerialData.Multiline = true;
             this.txtSerialData.Name = "txtSerialData";
-            this.txtSerialData.Size = new System.Drawing.Size(924, 341);
+            this.txtSerialData.Size = new System.Drawing.Size(924, 303);
             this.txtSerialData.TabIndex = 4;
             // 
             // btnFileDestination
@@ -87,7 +92,7 @@
             // lblSamplesReceived
             // 
             this.lblSamplesReceived.AutoSize = true;
-            this.lblSamplesReceived.Location = new System.Drawing.Point(774, 521);
+            this.lblSamplesReceived.Location = new System.Drawing.Point(773, 470);
             this.lblSamplesReceived.Name = "lblSamplesReceived";
             this.lblSamplesReceived.Size = new System.Drawing.Size(13, 13);
             this.lblSamplesReceived.TabIndex = 6;
@@ -129,7 +134,8 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(669, 521);
+            this.label1.ForeColor = System.Drawing.Color.Red;
+            this.label1.Location = new System.Drawing.Point(668, 470);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(99, 13);
             this.label1.TabIndex = 8;
@@ -138,7 +144,8 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(27, 503);
+            this.label2.ForeColor = System.Drawing.Color.Red;
+            this.label2.Location = new System.Drawing.Point(669, 429);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(63, 13);
             this.label2.TabIndex = 9;
@@ -147,7 +154,8 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(27, 521);
+            this.label3.ForeColor = System.Drawing.Color.Red;
+            this.label3.Location = new System.Drawing.Point(669, 448);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(33, 13);
             this.label3.TabIndex = 10;
@@ -156,7 +164,7 @@
             // lblTime
             // 
             this.lblTime.AutoSize = true;
-            this.lblTime.Location = new System.Drawing.Point(91, 521);
+            this.lblTime.Location = new System.Drawing.Point(733, 448);
             this.lblTime.Name = "lblTime";
             this.lblTime.Size = new System.Drawing.Size(13, 13);
             this.lblTime.TabIndex = 11;
@@ -165,20 +173,67 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(669, 540);
+            this.label4.ForeColor = System.Drawing.Color.Red;
+            this.label4.Location = new System.Drawing.Point(668, 492);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(43, 13);
+            this.label4.Size = new System.Drawing.Size(66, 13);
             this.label4.TabIndex = 12;
-            this.label4.Text = "Bit rate:";
+            this.label4.Text = "Sample rate:";
+            // 
+            // lblSampleRate
+            // 
+            this.lblSampleRate.AutoSize = true;
+            this.lblSampleRate.Location = new System.Drawing.Point(773, 492);
+            this.lblSampleRate.Name = "lblSampleRate";
+            this.lblSampleRate.Size = new System.Drawing.Size(13, 13);
+            this.lblSampleRate.TabIndex = 13;
+            this.lblSampleRate.Text = "_";
             // 
             // lblBitRate
             // 
             this.lblBitRate.AutoSize = true;
-            this.lblBitRate.Location = new System.Drawing.Point(774, 540);
+            this.lblBitRate.Location = new System.Drawing.Point(774, 518);
             this.lblBitRate.Name = "lblBitRate";
             this.lblBitRate.Size = new System.Drawing.Size(13, 13);
-            this.lblBitRate.TabIndex = 13;
+            this.lblBitRate.TabIndex = 15;
             this.lblBitRate.Text = "_";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.ForeColor = System.Drawing.Color.Red;
+            this.label6.Location = new System.Drawing.Point(669, 518);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(43, 13);
+            this.label6.TabIndex = 14;
+            this.label6.Text = "Bit rate:";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(831, 518);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(30, 13);
+            this.label7.TabIndex = 16;
+            this.label7.Text = "kbps";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(831, 492);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(20, 13);
+            this.label5.TabIndex = 17;
+            this.label5.Text = "Hz";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(831, 448);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(20, 13);
+            this.label8.TabIndex = 18;
+            this.label8.Text = "ms";
             // 
             // Main
             // 
@@ -187,7 +242,12 @@
             this.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.ClientSize = new System.Drawing.Size(997, 562);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label7);
             this.Controls.Add(this.lblBitRate);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.lblSampleRate);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.lblTime);
             this.Controls.Add(this.label3);
@@ -225,7 +285,12 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label lblTime;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lblSampleRate;
         private System.Windows.Forms.Label lblBitRate;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label8;
     }
 }
 

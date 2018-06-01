@@ -22,16 +22,16 @@ void SmappioSound::begin(int *readBuffer)
     //int startingTime = 3000;
     int bufferSize = FRAMES_REQUESTED * BITS_PER_SAMPLE;  // bufferSize esta medido en cantidad de bytes
 
-    log("Frames requested", FRAMES_REQUESTED);
-    log("Bits per sample", BITS_PER_SAMPLE);
-    log("Buffer size", bufferSize);
+    // log("Frames requested", FRAMES_REQUESTED);
+    // log("Bits per sample", BITS_PER_SAMPLE);
+    // log("Buffer size", bufferSize);
 
     _buffer = readBuffer;
     _buffer = (int *)malloc(bufferSize);
 
     i2s_driver_install(CHANNEL_NUMBER, &SPH_CONFIG, 0, NULL);            // Instalar el driver tambien inicializa la escucha
     i2s_set_pin(CHANNEL_NUMBER, &SPH_PINS);                              // Setea la conexión física del micrófono al controlador
-    i2s_set_sample_rates(CHANNEL_NUMBER, 32000); //set sample rates
+    //i2s_set_sample_rates(CHANNEL_NUMBER, 32000); //set sample rates
     
     // log("Waiting seconds for initialization", startingTime / 1000);
     // delay(startingTime);
@@ -53,25 +53,7 @@ void SmappioSound::print(int len)
     bufferPrinter.print(_buffer, len, _signalBalancer, PRINT_MODE, PRINT_BOTH_CHANNELS);
 }
 
-int SmappioSound::getSampleValue(int index)
+int32_t SmappioSound::getSampleValue()
 {
-    return bufferPrinter.getSampleValue(_buffer, index, _signalBalancer, PRINT_BOTH_CHANNELS);
-}
-
-int SmappioSound::getSampleAverage()
-{
-    int framesRead = this->read() / 32;
-    int accumulator = 0;
-    int avg = 0;
-    for(int index = 0; index <= framesRead; index++)
-    {
-        int value = this->getSampleValue(index);
-        if(index % 2 == 0)
-        {
-            accumulator += value;                              
-        }
-    }
-
-    avg = accumulator / (framesRead != 0 ? framesRead : 1); 
-    return avg;
+    return bufferPrinter.getSampleValue(_buffer, _signalBalancer, PRINT_BOTH_CHANNELS);
 }

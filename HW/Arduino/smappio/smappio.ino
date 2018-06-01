@@ -3,11 +3,11 @@
 
 int *buffer;
 BluetoothSerial serialBT; 
-int value = 0;
+int32_t value = 0;
 int framesRead = 0;
 int plotterBauds = 115200;
 int serialBauds = 960000;
-int media = -248400;
+int media = 6880;
 
 SmappioSound smappioSound(media); // valor al azar harcodeado para nivelar a 0 la señal media
 
@@ -30,17 +30,21 @@ void setup() {
   smappioSound.begin(buffer);
 }
 
+
 void loop() {
   
   //gets the amount of bytes readed from the buffer. 
-
     smappioSound.read();
-    value = smappioSound.getSampleValue(1);  
+    value = smappioSound.getSampleValue();  
     //Serial.println(value);
+
+    byte buf[4];
+    buf[0] = value & 255;
+    buf[1] = (value >> 8)  & 255;
+    buf[2] = (value >> 16) & 255;
+    buf[3] = (value >> 24) & 255;
     
-    Serial.write((byte*)&value, 3); 
-  
-  
+    Serial.write(buf, sizeof(int32_t));            
 }
 
 

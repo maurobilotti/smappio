@@ -20,7 +20,7 @@ class SmappioSoundBufferPrinter
     SmappioSoundBufferPrinter();
     void print(int *buffer, int len, int signalBalancer, print_mode_t printMode, bool printBothChannels);
     void debug(char* msg);
-    int getSampleValue(int *buffer, int index, int signalBalancer, bool printBothChannels);
+    int32_t getSampleValue(int *buffer, int signalBalancer, bool printBothChannels);
     
   private:
     void printBits(size_t const size, void const *const p);

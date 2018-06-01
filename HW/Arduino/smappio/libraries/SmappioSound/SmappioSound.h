@@ -23,10 +23,10 @@
 
   static const i2s_config_t SPH_CONFIG = {
     .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),                                            // El controlador es el Maestro y Recibe, el microfono es Esclavo y Transmite
-    .sample_rate = 32000,                                                                           // Entre 32KHz y 64KHz (Datasheet)
+    .sample_rate = 30000,                                                                           // Entre 32KHz y 64KHz (Datasheet)
     .bits_per_sample = BITS_PER_SAMPLE,                                                             
     .channel_format = I2S_CHANNEL_FMT_ONLY_RIGHT,                                                   // El formato que usa el micrófono. No se encontró el Datasheet
-    .communication_format = (i2s_comm_format_t)(I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB), // Investigar
+    .communication_format = (i2s_comm_format_t)(I2S_COMM_FORMAT_PCM), // Investigar
     //MSB: most significant byte -> BIG ENDIAN
     .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,                                                       // High interrupt priority (investigar)
     .dma_buf_count = 2,                                                                            // Cantidad de buffers, 128 max.
@@ -76,12 +76,7 @@ class SmappioSound
     /*
        Obtiene el valor del sample 'index' del buffer
     */
-    int getSampleValue(int index);
-
-    /*
-      Obtiene el valor promedio de los N bytes leidos.
-    */
-    int getSampleAverage();
+    int32_t getSampleValue();
 
   private:
     SmappioSoundBufferPrinter bufferPrinter;      // Instancia requerida para hacer impresiones
