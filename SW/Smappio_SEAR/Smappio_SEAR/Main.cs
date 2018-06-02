@@ -36,11 +36,15 @@ namespace Smappio_SEAR
         Stopwatch sw = new Stopwatch();
         long elapsedMilliseconds = 0;
         #region SoundParameters
-        int _bytesDepth = 4;
-        int _sampleRate = 30000;
-        int _seconds = 2;
+
+        static int _sampleRate = 15000;
+        static int _seconds = 7;
+        static int _bytesDepth = 4;
+        static int _bitDepth = _bytesDepth * 8;        
+        
         
         private bool _notified;
+        private float _baudRate = (_sampleRate * _bitDepth) * 1.2f;
 
         #endregion
 
@@ -64,11 +68,12 @@ namespace Smappio_SEAR
 
         private void btnUSB_Click(object sender, EventArgs e)
         {
+            ClearContents();
             //Silicon Labs CP210x USB to UART Bridge
             try
             {
                 serialPort.PortName = "COM4";//BluetoothHelper.GetBluetoothPort("Silicon Labs CP210x USB to UART Bridge");
-                serialPort.BaudRate = 960000;
+                serialPort.BaudRate = Convert.ToInt32(_baudRate);
                 serialPort.DtrEnable = true;
                 serialPort.RtsEnable = true;
 
@@ -84,14 +89,27 @@ namespace Smappio_SEAR
             }
         }
 
+        private void ClearContents()
+        {
+            lblBitRate.Text = lblBitRate.Text = lblSampleRate.Text = lblSamplesReceived.Text = lblTime.Text = "";
+            if(sw.IsRunning)
+            {
+                sw.Stop();
+                sw.Restart();
+                _bytes.Clear();
+            }
+            
+        }
+
         private void btnBluetooth_Click(object sender, EventArgs e)
         {
+            ClearContents();
             try
             {
                 bluetoothManager = new BluetoothManager();
 
                 serialPort.PortName = BluetoothHelper.GetBluetoothPort(deviceName);
-                serialPort.BaudRate = 1411200;
+                serialPort.BaudRate = Convert.ToInt32(_baudRate);
                 serialPort.DtrEnable = true;
                 serialPort.RtsEnable = true;
 
@@ -110,7 +128,7 @@ namespace Smappio_SEAR
 
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            if(_bytes.Count <= (_sampleRate * _bytesDepth * _seconds))
+            if(sw.ElapsedMilliseconds < (_seconds * 1000)) //_bytes.Count <= (_sampleRate * _bytesDepth * _seconds)
             {                                
                 var bufferSize = serialPort.BytesToRead;
 
@@ -205,7 +223,21 @@ namespace Smappio_SEAR
 
             //little endian!               
             File.WriteAllBytes(filePath, _bytes.ToArray());
-            
+
+            // LOGIC FOR PRINTING THE VALUES IN THE TEXTBOX.
+
+            //var data = new byte[4];
+            //for (int i = 0; i <= 200; i++)
+            //{
+            //    data[i % 4] = _bytes[i];
+            //    if (i % 4 == 3)
+            //    {
+            //        var temp = (Int32)BitConverter.ToInt32(data, 0);
+
+            //        SetTextBox(temp.ToString());
+            //    }
+            //}
+
 
             if (serialPort.IsOpen)
             {

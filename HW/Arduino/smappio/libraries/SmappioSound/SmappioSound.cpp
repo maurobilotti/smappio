@@ -31,7 +31,7 @@ void SmappioSound::begin(int *readBuffer)
 
     i2s_driver_install(CHANNEL_NUMBER, &SPH_CONFIG, 0, NULL);            // Instalar el driver tambien inicializa la escucha
     i2s_set_pin(CHANNEL_NUMBER, &SPH_PINS);                              // Setea la conexión física del micrófono al controlador
-    //i2s_set_sample_rates(CHANNEL_NUMBER, 32000); //set sample rates
+    //i2s_set_sample_rates(CHANNEL_NUMBER, 30000); //set sample rates
     
     // log("Waiting seconds for initialization", startingTime / 1000);
     // delay(startingTime);

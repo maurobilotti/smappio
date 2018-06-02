@@ -10,12 +10,12 @@ SmappioSoundBufferPrinter::SmappioSoundBufferPrinter()
 
 int32_t SmappioSoundBufferPrinter::getSampleValue(int *buffer, int signalBalancer, bool printBothChannels)
 {
-    int sample = 0;
-    sample = buffer[0] >> 14; //& 0b00000000000000111111111111111111; //and operator
+    int32_t sample = buffer[0];
+    sample >>= 14;  //2^15  
     sample += signalBalancer;    
     // sample = sample << 8 & 0b00000011111111111111111100000000; // En el sketch, el ultimo byte en 0 no se transmite
 
-    // // // Entero
+    // Entero
     // printf("Entero:    ", sample);
     // this->printInteger(sample);
     
@@ -27,9 +27,9 @@ int32_t SmappioSoundBufferPrinter::getSampleValue(int *buffer, int signalBalance
     // // Bytes
     // printf("Bytes:     ");
     // this->printBytes(sizeof(sample), &sample); //revisar el sizeof
-    // printf("\n\n");
+    // printf("\n\n");    
     
-    return (int32_t)sample;
+    return sample;
 }
 
 void SmappioSoundBufferPrinter::print(int *buffer, int len, int signalBalancer, print_mode_t printMode, bool printBothChannels)
@@ -143,5 +143,5 @@ void SmappioSoundBufferPrinter::printBytes(size_t len, void *p)
 
 void SmappioSoundBufferPrinter::printInteger(int frame)
 {
-    printf("%u\n", frame); // printf("%14d:", frame);
+    printf("%i\n", frame); // printf("%14d:", frame);
 }
