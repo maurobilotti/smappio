@@ -17,6 +17,9 @@ namespace Smappio_SEAR
         public Main()
         {
             InitializeComponent();
+            txtPath.Text = filePath;
+            if (!Directory.Exists(filePath))
+                Directory.CreateDirectory(filePath);
         }
 
         #region Members
@@ -30,21 +33,21 @@ namespace Smappio_SEAR
 
         BluetoothManager bluetoothManager;
         string deviceName = "smappio_PCM";
-        private string filePath;
+        private string filePath = "../../AudioSamples/";
         private List<Int32> _fileInts = new List<int>();
         List<byte> _bytes = new List<byte>();
         Stopwatch sw = new Stopwatch();
         long elapsedMilliseconds = 0;
         #region SoundParameters
 
-        static int _sampleRate = 15000;
-        static int _seconds = 7;
-        static int _bytesDepth = 4;
+        static int _sampleRate = 16000;
+        static int _seconds = 5;
+        static int _bytesDepth = 3;
         static int _bitDepth = _bytesDepth * 8;        
         
         
         private bool _notified;
-        private float _baudRate = (_sampleRate * _bitDepth) * 1.2f;
+        private float _baudRate = 900000; //(_sampleRate * _bitDepth) * 1.2f;
 
         #endregion
 
@@ -68,7 +71,7 @@ namespace Smappio_SEAR
 
         private void btnUSB_Click(object sender, EventArgs e)
         {
-            ClearContents();
+            EnableFeatures();
             //Silicon Labs CP210x USB to UART Bridge
             try
             {
@@ -87,23 +90,11 @@ namespace Smappio_SEAR
                 serialPort.Dispose();
                 return;
             }
-        }
-
-        private void ClearContents()
-        {
-            lblBitRate.Text = lblBitRate.Text = lblSampleRate.Text = lblSamplesReceived.Text = lblTime.Text = "";
-            if(sw.IsRunning)
-            {
-                sw.Stop();
-                sw.Restart();
-                _bytes.Clear();
-            }
-            
-        }
+        }        
 
         private void btnBluetooth_Click(object sender, EventArgs e)
         {
-            ClearContents();
+            EnableFeatures();
             try
             {
                 bluetoothManager = new BluetoothManager();
@@ -207,10 +198,10 @@ namespace Smappio_SEAR
         #endregion
 
         #region Save file methods
-        private void btnStop_Click(object sender, EventArgs e)
-        {            
+        private void btnSave_Click(object sender, EventArgs e)
+        {
             int samplesReceived = _bytes.Count / _bytesDepth;
-            
+
             long sampleRate = samplesReceived / (elapsedMilliseconds / 1000);
             lblSampleRate.Text = sampleRate.ToString();
 
@@ -219,10 +210,13 @@ namespace Smappio_SEAR
 
             lblTime.Text = elapsedMilliseconds.ToString();
             lblSamplesReceived.Text = samplesReceived.ToString();
-            lblBitRate.Text = bitRate.ToString();            
+            lblBitRate.Text = bitRate.ToString();
 
-            //little endian!               
-            File.WriteAllBytes(filePath, _bytes.ToArray());
+            //little endian!   
+            string absolutePath = Path.GetFullPath(filePath);
+            string fileName = $"{DateTime.Now.ToString("ddhhmmss")}.wav";
+            string fullPath = Path.Combine(absolutePath, fileName);
+            File.WriteAllBytes(fullPath, _bytes.ToArray());
 
             // LOGIC FOR PRINTING THE VALUES IN THE TEXTBOX.
 
@@ -246,15 +240,29 @@ namespace Smappio_SEAR
             }
         }
 
-        private void btnFileDestination_Click(object sender, EventArgs e)
+        private void btnClear_Click(object sender, EventArgs e)
         {
-            SaveFileDialog sfd = new SaveFileDialog();
-            sfd.Filter = "WAV (*.wav) | *.wav";
-            if (sfd.ShowDialog() == DialogResult.OK)
-            {
-                filePath = sfd.FileName;
-            }
+            ClearContents();
         }
+
+        #endregion
+
+        #region private methods
+        private void EnableFeatures()
+        {
+            btnSave.Enabled = true;
+        }
+
+        private void ClearContents()
+        {
+            lblBitRate.Text = lblBitRate.Text = lblSampleRate.Text = lblSamplesReceived.Text = lblTime.Text = "";
+            sw = new Stopwatch();
+
+            this._bytes.Clear();
+
+            if (serialPort.IsOpen)
+                serialPort.Close();
+        } 
         #endregion
     }
 }
