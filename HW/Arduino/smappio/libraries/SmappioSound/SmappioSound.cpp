@@ -41,7 +41,7 @@ void SmappioSound::begin(int *readBuffer)
 
 int SmappioSound::read()
 {
-    int bytesReaded = i2s_read_bytes(CHANNEL_NUMBER, (char *)_buffer, (FRAMES_REQUESTED * BITS_PER_SAMPLE), TICKS_TO_WAIT);
+    int bytesReaded = i2s_read_bytes(CHANNEL_NUMBER, (char *)_buffer, 4, TICKS_TO_WAIT);
 
     //log("\nBytes pushed to DMA buffer", bytesReaded);
 

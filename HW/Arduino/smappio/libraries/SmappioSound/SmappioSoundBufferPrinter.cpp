@@ -32,69 +32,61 @@ int32_t SmappioSoundBufferPrinter::getSampleValue(int *buffer, int signalBalance
     return sample;
 }
 
-void SmappioSoundBufferPrinter::print(int *buffer, int len, int signalBalancer, print_mode_t printMode, bool printBothChannels)
+void SmappioSoundBufferPrinter::print(int *buffer, int bytesLen, int signalBalancer, print_mode_t printMode, bool printBothChannels)
 {
-    log("Print lenght", len);
+    log("\nBytes lenght", bytesLen);
 
     int i;
-    int frame = 0;
-
-    for (i = 0; i < len; i++)
+    int sample = 0;
+    
+    for (i = 0; i < bytesLen / 4; i++)
     {
-        // Se hace un corrimiento de bits a la derecha 18 posiciones, dejando a la izq un padding de ceros
-        frame = (buffer[i] >> 14) & 0b00000000000000111111111111111111; 
+        if (i%2 == 0) 
+            log("\n--- CANAL 0 ---");
+        else
+            log("\n--- CANAL 1 ---");
 
-        // frame -= 0b00000000000000101110000000000000; // signalBanalncer no funciona, balanceo la señal a mano acá
+        // Se hace un corrimiento de bits a la derecha 18 posiciones
+        sample = buffer[i] >> 14; 
 
-        frame += signalBalancer;
+        sample += signalBalancer;
 
-        // substraction se puede utilizar para analizar solo datos fuera de la señal estable
-        int substraction = frame - 4000000000;
-
-        if(substraction < 0 || true)
+        if(printBothChannels || i%2 == 0)
         {
-            if(printBothChannels || i%2 == 0)
+            switch(printMode)
             {
-                switch(printMode)
-                {
-                    case BITS:
-                        this->printBits(sizeof(frame), &frame); //revisar el sizeof
-                        if (i%2 == 0) printf("|");
-                        break;
-                    case BYTES:
-                        this->printBytes(sizeof(frame), &frame); //revisar el sizeof
-                        break;
-                    case INTEGER:
-                        this->printInteger(frame);                        
-                        break;
-                    case FULL_DETEAILED:
-                        if (i%2 == 0) 
-                            printf("--- CANAL 0 ---\n");
-                        else
-                            printf("--- CANAL 1 ---\n");
+                case BITS:
+                    if (i%2 == 0) printf("                                        ");
+                    this->printBits(sizeof(sample), &sample); //revisar el sizeof
+                    break;
+                case BYTES:
+                    this->printBytes(sizeof(sample), &sample); //revisar el sizeof
+                    break;
+                case INTEGER:
+                    this->printInteger(sample);                        
+                    break;
+                case FULL_DETEAILED:
+                    // Iteration
+                    printf("Iteración: %d\n", i);
 
-                        // Iteration
-                        printf("Iteración: %d\n", i);
-
-                        // Entero
-                        printf("Entero:    ", frame);
-                        this->printInteger(frame);
-                        
-                        // Bits
-                        printf("Bits:      ");
-                        this->printBits(sizeof(frame), &frame); //revisar el sizeof
-                        printf("\n");
-                        
-                        // Bytes
-                        printf("Bytes:     ");
-                        this->printBytes(sizeof(frame), &frame); //revisar el sizeof
-                        printf("\n\n");
-                        break;
-                    default:
-                        printf("Tipo de impresión no definido");
-                        break;
+                    // Entero
+                    printf("Entero:    ", sample);
+                    this->printInteger(sample);
+                    
+                    // Bits
+                    printf("Bits:      ");
+                    this->printBits(sizeof(sample), &sample); //revisar el sizeof
                     printf("\n");
-                }
+                    
+                    // Bytes
+                    printf("Bytes:     ");
+                    this->printBytes(sizeof(sample), &sample); //revisar el sizeof
+                    printf("\n\n");
+                    break;
+                default:
+                    printf("Tipo de impresión no definido");
+                    break;
+                printf("\n");
             }
         }
     }
@@ -141,7 +133,11 @@ void SmappioSoundBufferPrinter::printBytes(size_t len, void *p)
     }
 }
 
-void SmappioSoundBufferPrinter::printInteger(int frame)
+void SmappioSoundBufferPrinter::printInteger(int sample)
 {
-    printf("%i\n", frame); // printf("%14d:", frame);
+    printf("%d ",131072);
+    printf("%i ", sample);
+    printf("%d ",-131072);
+
+    printf("\n");
 }
