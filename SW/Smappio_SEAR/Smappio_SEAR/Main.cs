@@ -32,7 +32,7 @@ namespace Smappio_SEAR
         }
 
         BluetoothManager bluetoothManager;
-        string deviceName = "smappio_PCM";
+        string deviceName = "smappio";
         private string filePath = "../../AudioSamples/";
         private List<Int32> _fileInts = new List<int>();
         List<byte> _bytes = new List<byte>();
@@ -40,14 +40,14 @@ namespace Smappio_SEAR
         long elapsedMilliseconds = 0;
         #region SoundParameters
 
-        static int _sampleRate = 16000;
-        static int _seconds = 5;
+        //static int _sampleRate = 16000;   // No se esta usando por hacer los calculos en base al tiempo
+        static int _seconds = 15;
         static int _bytesDepth = 3;
         static int _bitDepth = _bytesDepth * 8;        
         
         
         private bool _notified;
-        private float _baudRate = 900000; //(_sampleRate * _bitDepth) * 1.2f;
+        private float _baudRate = 2000000; //(_sampleRate * _bitDepth) * 1.2f;
 
         #endregion
 
@@ -75,7 +75,7 @@ namespace Smappio_SEAR
             //Silicon Labs CP210x USB to UART Bridge
             try
             {
-                serialPort.PortName = "COM4";//BluetoothHelper.GetBluetoothPort("Silicon Labs CP210x USB to UART Bridge");
+                serialPort.PortName = "COM7";//BluetoothHelper.GetBluetoothPort("Silicon Labs CP210x USB to UART Bridge");
                 serialPort.BaudRate = Convert.ToInt32(_baudRate);
                 serialPort.DtrEnable = true;
                 serialPort.RtsEnable = true;

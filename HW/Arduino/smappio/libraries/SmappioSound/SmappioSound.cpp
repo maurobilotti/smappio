@@ -20,7 +20,7 @@ SmappioSound::SmappioSound(int signalBalancer)
 void SmappioSound::begin(int *readBuffer)
 {
     //int startingTime = 3000;
-    int bufferSize = FRAMES_REQUESTED * BITS_PER_SAMPLE;  // bufferSize esta medido en cantidad de bytes
+    int bufferSize = FRAMES_REQUESTED * (BITS_PER_SAMPLE / 8);  // bufferSize esta medido en cantidad de bytes
 
     // log("Frames requested", FRAMES_REQUESTED);
     // log("Bits per sample", BITS_PER_SAMPLE);

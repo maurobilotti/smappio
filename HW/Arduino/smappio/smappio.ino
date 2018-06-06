@@ -1,19 +1,22 @@
 #include "libraries/SmappioSound/SmappioSound.cpp"
 #include "BluetoothSerial.h"
 
-int *buffer;
-BluetoothSerial serialBT; 
+#define SAMPLES_TO_SEND 4
+
+int32_t *buffer;
+BluetoothSerial SerialBT; 
 int32_t value = 0;
 int bytesReaded = 0;
-int plotterBauds = 115200;
-int serialBauds = 576000;
-int media = 6835;  // 13700  |  6835
-int samplesCounter = 0;
-int samplesLimit = 32000 * 30;
-long time1 = 0;
-long time2 = 0;
+int media = 13700;  // I2S:  13700  | PCM:  6835   // valor para nivelar a 0 la señal media
+int32_t samplesToSend[SAMPLES_TO_SEND];
 
-SmappioSound smappioSound(media); // valor al azar harcodeado para nivelar a 0 la señal media
+// Vriables utilizadas para el conteo y estadisticas
+long time1;
+long time2;
+long samplesCounter = 0;
+long samplesLimit = 32000 * 15;
+
+SmappioSound smappioSound(media); 
 
 
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
@@ -27,37 +30,44 @@ void setup() {
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
+  SerialBT.begin("smappio"); //Bluetooth device name
 
   smappioSound.begin(buffer);
   time1 = millis();
 }
 
-//int32_t i = -10000000;
 void loop() {
-  
-  //gets the amount of bytes readed from the buffer. 
-  
-
-    //Little-endian ->  buf[0] menos significativo -> buf[3] más significativo
-    
-    /*byte buf[4];
-    /*buf[0] = i & 255;
-    buf[1] = (i >> 8)  & 255;
-    buf[2] = (i >> 16) & 255;
-    buf[3] = (i >> 24) & 255;*/
     if(samplesCounter < samplesLimit)
     {
-      bytesReaded = smappioSound.read();
-      value = smappioSound.getSampleValue();  
-      // samplesCounter += bytesReaded / 4;
-      Serial.write((byte *)&value, sizeof(int32_t));
-      Serial.flush();
-      //smappioSound.print(bytesReaded);    
-      //printf("%d\n", samplesCounter);
+      for (int i=0; i < SAMPLES_TO_SEND ; i++) {
+        bytesReaded = smappioSound.read();
+        while(bytesReaded == 0){ //Este bucle es necesario para no reenviar una muestra mas de una vez
+          bytesReaded = smappioSound.read();
+        }
+
+
+        value = smappioSound.getSampleValue();  
+
+        byte bufferToSend[3];
+        // memcpy(&value, bufferToSend, sizeof(bufferToSend));
+        bufferToSend[0] = value & 255;
+        bufferToSend[1] = (value >> 8)  & 255;
+        bufferToSend[2] = (value >> 16) & 255;
+
+
+        // samplesCounter += (bytesReaded / 4);
+        // smappioSound.print(bytesReaded);    
+        // samplesToSend[i] = value;
+        // Serial.println(value);
+
+        Serial.write(bufferToSend, 3);
+
+      }
+      // Serial.write((byte *)&samplesToSend, sizeof(int32_t) * SAMPLES_TO_SEND);
     }
     else {
       time2 = millis();
-      Serial.print("Tiempo transcurrido: ");
+      Serial.print("\nTiempo transcurrido: ");
       Serial.println((time2 - time1));
       while(1);
     }
