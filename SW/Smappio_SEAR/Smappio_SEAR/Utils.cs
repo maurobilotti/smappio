@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Linq;
 
 namespace Smappio_SEAR
 {
@@ -33,7 +34,7 @@ namespace Smappio_SEAR
         public static string To16bitBinary(this Int16 num)
         {
             return Convert.ToString(num, 2).PadLeft(16, '0');
-        }        
+        }
 
         public static byte[] GetBytesFromBinaryString(this string binary)
         {
@@ -49,10 +50,36 @@ namespace Smappio_SEAR
             return list.ToArray();
         }
 
-        public static float ConvertRange(Int16 originalStart, Int16 originalEnd, float newStart, float newEnd, Int16 value) 
+        public static float ConvertRange(Int16 originalStart, Int16 originalEnd, float newStart, float newEnd, Int16 value)
         {
             double scale = (double)(newEnd - newStart) / (originalEnd - originalStart);
             return (float)(newStart + ((value - originalStart) * scale));
+        }
+
+        public static bool SmappioHandshake(this System.IO.Ports.SerialPort serialPort)
+        {
+            bool handshakeOk = false;
+
+            serialPort.Write("hello\n");
+
+            handshakeOk = true;
+
+            //var bufferSize = serialPort.BytesToRead;            
+
+            //byte[] data = new byte[bufferSize];
+            //serialPort.Read(data, 0, bufferSize);
+            //byte byteVal = 83;
+            //if (data.ToList().Any(z => byteVal.Equals(z)))
+            //{
+            //    serialPort.RtsEnable = true;
+            //    if (serialPort.CtsHolding)
+            //    {
+            //        serialPort.Write("S");
+            //        handshakeOk = true;
+            //    }                
+            //}
+            
+            return handshakeOk;
         }
     }
 }

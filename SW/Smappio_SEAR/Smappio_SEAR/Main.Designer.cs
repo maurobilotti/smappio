@@ -51,11 +51,11 @@
             this.label8 = new System.Windows.Forms.Label();
             this.txtPath = new System.Windows.Forms.TextBox();
             this.btnClear = new System.Windows.Forms.Button();
+            this.btnStop = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnSave
             // 
-            this.btnSave.Enabled = false;
             this.btnSave.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSave.Location = new System.Drawing.Point(398, 35);
             this.btnSave.Name = "btnSave";
@@ -76,10 +76,10 @@
             // 
             // txtSerialData
             // 
-            this.txtSerialData.Location = new System.Drawing.Point(12, 80);
+            this.txtSerialData.Location = new System.Drawing.Point(12, 89);
             this.txtSerialData.Multiline = true;
             this.txtSerialData.Name = "txtSerialData";
-            this.txtSerialData.Size = new System.Drawing.Size(924, 303);
+            this.txtSerialData.Size = new System.Drawing.Size(924, 324);
             this.txtSerialData.TabIndex = 4;
             // 
             // lblSamplesReceived
@@ -246,6 +246,17 @@
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
+            // btnStop
+            // 
+            this.btnStop.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnStop.Location = new System.Drawing.Point(861, 37);
+            this.btnStop.Name = "btnStop";
+            this.btnStop.Size = new System.Drawing.Size(75, 23);
+            this.btnStop.TabIndex = 21;
+            this.btnStop.Text = "Stop";
+            this.btnStop.UseVisualStyleBackColor = true;
+            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -253,6 +264,7 @@
             this.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.ClientSize = new System.Drawing.Size(997, 562);
+            this.Controls.Add(this.btnStop);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.txtPath);
             this.Controls.Add(this.label8);
@@ -276,6 +288,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Main";
             this.Text = "Smappio SEAR";
+            this.Load += new System.EventHandler(this.Main_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -304,6 +317,7 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox txtPath;
         private System.Windows.Forms.Button btnClear;
+        private System.Windows.Forms.Button btnStop;
     }
 }
 
