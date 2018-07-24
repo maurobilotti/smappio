@@ -14,11 +14,11 @@ int32_t *buffer;
 int32_t value = 0;
 int bytesReaded = 0;
 int media = 13700;  // I2S:  13700  | PCM:  6835   // valor para nivelar a 0 la señal media
-int32_t samplesToSend[SAMPLES_TO_SEND];
+uint32_t samplesToSend[SAMPLES_TO_SEND];
 
 long samplesCounter = 0;
 long samplesLimit = 32000 * 15;
-int32_t dataToSend[32];
+char dataToSend[150];
 int pos = 0;
 
 SmappioSound smappioSound(media); 
@@ -46,22 +46,22 @@ void loop() {
       
       value = smappioSound.getSampleValue();      
 
-      dataToSend[pos] = value;
-      pos++;
-
-      if(pos == 32)
+      char bufferTemp[3];
+      bufferTemp[0] = value & 255;
+      bufferTemp[1] = (value >> 8)  & 255;
+      bufferTemp[2] = (value >> 16) & 255;
+      
+      if(pos <= 150)
       {
-        pos = 0;
+        strcat(dataToSend, bufferTemp);
+        pos += 3;
+      }
+      else 
+      {
+        pos=0;  
         const char *p = reinterpret_cast<const char*>(dataToSend);
         webSocketServer.sendData(p);
       }
-      /*byte bufferToSend[3];
-      bufferToSend[0] = value & 255;
-      bufferToSend[1] = (value >> 8)  & 255;
-      bufferToSend[2] = (value >> 16) & 255;*/
-      //const char *p = reinterpret_cast<const char*>(bufferToSend);
-      
-      
       //webSocketServer.sendData(p);
       
    } 
