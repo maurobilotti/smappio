@@ -41,12 +41,12 @@ namespace Smappio_SEAR
         Stopwatch sw = new Stopwatch();
         long elapsedMilliseconds = 0;
         Socket _socket;
-
+        private TransmissionMethod _transmissionMethod = TransmissionMethod.Wifi;
         #endregion
         #region SoundParameters
 
         //static int _sampleRate = 16000;   // No se esta usando por hacer los calculos en base al tiempo
-        static int _seconds = 55;
+        static int _seconds = 5;
         static int _bytesDepth = 3;
         static int _bitDepth = _bytesDepth * 8;
         private bool _notified;
@@ -106,10 +106,11 @@ namespace Smappio_SEAR
         private void btnUSB_Click(object sender, EventArgs e)
         {
             EnableFeatures();
+            this._transmissionMethod = TransmissionMethod.Serial;
             //Silicon Labs CP210x USB to UART Bridge
             try
             {
-                serialPort.PortName = "COM4";//BluetoothHelper.GetBluetoothPort("Silicon Labs CP210x USB to UART Bridge");
+                serialPort.PortName = "COM7";//BluetoothHelper.GetBluetoothPort("Silicon Labs CP210x USB to UART Bridge");
                 serialPort.BaudRate = Convert.ToInt32(_baudRate);
                 serialPort.Handshake = Handshake.None;
 
@@ -220,15 +221,18 @@ namespace Smappio_SEAR
         #region Save file methods
         private void btnSave_Click(object sender, EventArgs e)
         {
-            _thread.Abort();
-            _socket.Disconnect(false);
-            _socket.Close();
-            if (!_notified)
+            if (this._transmissionMethod == TransmissionMethod.Wifi)
             {
-                sw.Stop();
-                elapsedMilliseconds = sw.ElapsedMilliseconds;
-                SetNotificationLabel("Finished");
-                _notified = true;
+                //_thread.Abort();
+                //_socket.Disconnect(false);
+                //_socket.Close();
+                if (!_notified)
+                {
+                    sw.Stop();
+                    elapsedMilliseconds = sw.ElapsedMilliseconds;
+                    SetNotificationLabel("Finished");
+                    _notified = true;
+                } 
             }
 
 
@@ -243,7 +247,7 @@ namespace Smappio_SEAR
 
             //little endian!   
             string absolutePath = Path.GetFullPath(filePath);
-            string fileName = $"{DateTime.Now.ToString("ddhhmmss")}.wav";
+            string fileName = $"{DateTime.Now.ToString("yyyy-MM-dd_hhmmss")}.pcm";
             string fullPath = Path.Combine(absolutePath, fileName);
             File.WriteAllBytes(fullPath, _bytes.ToArray());
 
@@ -295,31 +299,59 @@ namespace Smappio_SEAR
         {
             try
             {
-                _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                _socket.Connect("192.168.1.1", 80);
+                _tcp = new TcpClient("192.168.1.1", 80);
+
+                //_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                //_socket.Connect("192.168.1.1", 80);
                 SetNotificationLabel("Started");
                 _thread = new Thread(this.ReceiveData);
                 if (!sw.IsRunning)
                     sw.Start();
                 _thread.Start();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
                 throw;
             }
         }
 
-        private byte[] _buffer = new byte[3];
+        //private byte[] _buffer = new byte[3];
         private Thread _thread;
-
+        private TcpClient _tcp;
+        bool firstData = true;
         private void ReceiveData()
-        {            
-            while (_socket.Connected)
+        {
+            NetworkStream netStream = _tcp.GetStream();
+            byte[] buffer = new byte[_tcp.ReceiveBufferSize];
+            while (_tcp.Connected)
             {
-                _socket.Receive(_buffer, 0, 3, 0);
-                _bytes.AddRange(_buffer.ToList());
+                if (netStream.CanRead)
+                {
+                    // Read can return anything from 0 to numBytesToRead. 
+                    // This method blocks until at least one byte is read.
+                    int readed = netStream.Read(buffer, 0, _tcp.ReceiveBufferSize);
+                    var subBuffer = buffer.Take(readed);
+                    _bytes.AddRange(subBuffer);
+                    if (firstData)
+                    {
+                        _bytes.RemoveAt(0);
+                        _bytes.RemoveAt(1);
+                        firstData = false;
+                    }
+                }
             }
+
+            //while (_socket.Connected)
+            //{
+            //    _socket.Receive(_buffer);
+            //    _bytes.AddRange(_buffer.ToList());
+            //    //if (_socket.Available > 0)
+            //    //{
+            //    //    _socket.Receive(_buffer, 0, _buffer.Length, 0);
+            //    //    _bytes.AddRange(_buffer.ToList());
+            //    //}                
+            //}
         }
     }
 }

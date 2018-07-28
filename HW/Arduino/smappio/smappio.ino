@@ -9,7 +9,7 @@ int32_t value = 0;
 int bytesReaded = 0;
 int media = 13700;  // I2S:  13700  | PCM:  6835   // valor para nivelar a 0 la señal media
 int32_t samplesToSend[SAMPLES_TO_SEND];
-
+uint8_t dataToSend[3 * 10];
 // Vriables utilizadas para el conteo y estadisticas
 long time1;
 long time2;
@@ -39,30 +39,24 @@ void setup() {
 void loop() {
     if(samplesCounter < samplesLimit)
     {
-      for (int i=0; i < SAMPLES_TO_SEND ; i++) {
-        bytesReaded = smappioSound.read();
-        while(bytesReaded == 0){ //Este bucle es necesario para no reenviar una muestra mas de una vez
+      for(int i = 0; i < (int)sizeof(dataToSend); i += 3)
+      {
+          // Se hace la lectura de los samples del microfono
           bytesReaded = smappioSound.read();
-        }
-
-
-        value = smappioSound.getSampleValue();  
-
-        byte bufferToSend[3];
-        // memcpy(&value, bufferToSend, sizeof(bufferToSend));
-        bufferToSend[0] = value & 255;
-        bufferToSend[1] = (value >> 8)  & 255;
-        bufferToSend[2] = (value >> 16) & 255;
-
-
-        // samplesCounter += (bytesReaded / 4);
-        // smappioSound.print(bytesReaded);    
-        // samplesToSend[i] = value;
-        // Serial.println(value);
-
-        Serial.write(bufferToSend, 3);
-
+          while(bytesReaded == 0)
+          {     
+              //Este bucle es necesario para no reenviar una muestra mas de una vez
+              bytesReaded = smappioSound.read();
+          }   
+          // Se lee un sample
+          value = smappioSound.getSampleValue();
+          dataToSend[i] = value & 255;
+          dataToSend[i + 1] = (value >> 8)  & 255;
+          dataToSend[i + 2] = (value >> 16) & 255;     
       }
+
+      Serial.write(dataToSend, sizeof(dataToSend));     
+      
       // Serial.write((byte *)&samplesToSend, sizeof(int32_t) * SAMPLES_TO_SEND);
     }
     else {
