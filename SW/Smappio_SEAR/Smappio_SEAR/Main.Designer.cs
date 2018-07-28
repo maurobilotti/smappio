@@ -52,6 +52,7 @@
             this.txtPath = new System.Windows.Forms.TextBox();
             this.btnClear = new System.Windows.Forms.Button();
             this.btnStop = new System.Windows.Forms.Button();
+            this.btnWifiHTTP = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnSave
@@ -257,6 +258,17 @@
             this.btnStop.UseVisualStyleBackColor = true;
             this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
             // 
+            // btnWifiHTTP
+            // 
+            this.btnWifiHTTP.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnWifiHTTP.Image = global::Smappio_SEAR.Properties.Resources.if_wifi_Logo_925806;
+            this.btnWifiHTTP.Location = new System.Drawing.Point(205, 10);
+            this.btnWifiHTTP.Name = "btnWifiHTTP";
+            this.btnWifiHTTP.Size = new System.Drawing.Size(48, 48);
+            this.btnWifiHTTP.TabIndex = 22;
+            this.btnWifiHTTP.UseVisualStyleBackColor = true;
+            this.btnWifiHTTP.Click += new System.EventHandler(this.btnWifiHTTP_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -264,6 +276,7 @@
             this.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.ClientSize = new System.Drawing.Size(997, 562);
+            this.Controls.Add(this.btnWifiHTTP);
             this.Controls.Add(this.btnStop);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.txtPath);
@@ -318,6 +331,7 @@
         private System.Windows.Forms.TextBox txtPath;
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.Button btnStop;
+        private System.Windows.Forms.Button btnWifiHTTP;
     }
 }
 

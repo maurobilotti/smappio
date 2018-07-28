@@ -1,12 +1,10 @@
 #include "libraries/SmappioSound/SmappioSound.cpp"
 #include <WiFi.h>
-#include <WebSocketServer.h>
 
 WiFiServer server(80);
-WebSocketServer webSocketServer;
  
-const char *ssid = "Smappio";
-const char *password = "123456789";
+const char* ssid     = "smappio";
+const char* password = "123456789"; // El pass tiene que tener mas de 8 caracteres
 
 #define SAMPLES_TO_SEND 4
 
@@ -24,18 +22,29 @@ int pos = 0;
 SmappioSound smappioSound(media); 
 
 void setup() { 
+  // Se crea un Access Point, para poder conectarse al dispositivo
+  Serial.println(WiFi.softAP(ssid, password)); 
+
+  // Se setea la ip del dispositivo para poder comunicarse con el
+  IPAddress Ip(192, 168, 1, 1);
+  IPAddress NMask(255, 255, 255, 0);
+  WiFi.softAPConfig(Ip, Ip, NMask);
   
-  WiFi.softAP(ssid, password); 
+  
   server.begin();
   smappioSound.begin(buffer);  
 }
 
 void loop() {
-  WiFiClient client = server.available();
+  // Se escucha a las conexiones a ver si algun cliente se quiere comunicar (iniciar el handshake)
+  WiFiClient client = server.available(); 
  
-  if (client.connected() && webSocketServer.handshake(client)) {         
-    while (client.connected()) {
-      //mover logica del microfono acá.
+  // Si el cliente inicio el handshake
+  if (client) 
+  {       
+    while (client.connected()) 
+    {
+      // Se hace la lectura de los samples del microfono
       bytesReaded = smappioSound.read();
       while(bytesReaded == 0)
       {     
@@ -43,15 +52,17 @@ void loop() {
           bytesReaded = smappioSound.read();
       }   
 
-      
+      // Se lee un sample
       value = smappioSound.getSampleValue();      
-
-      char bufferTemp[3];
+      
+      uint8_t bufferTemp[3];
       bufferTemp[0] = value & 255;
       bufferTemp[1] = (value >> 8)  & 255;
       bufferTemp[2] = (value >> 16) & 255;
+
+      client.write(bufferTemp, sizeof(bufferTemp));
       
-      if(pos <= 150)
+      /*if(pos <= 150)
       {
         strcat(dataToSend, bufferTemp);
         pos += 3;
@@ -61,9 +72,7 @@ void loop() {
         pos=0;  
         const char *p = reinterpret_cast<const char*>(dataToSend);
         webSocketServer.sendData(p);
-      }
-      //webSocketServer.sendData(p);
-      
+      }*/
    } 
   } 
 }

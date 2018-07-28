@@ -6,6 +6,10 @@ using System.IO;
 using System.IO.Ports;
 using WebSocketSharp;
 using System.Windows.Forms;
+using System.Net.Sockets;
+using System.Text;
+using System.Linq;
+using System.Threading;
 
 namespace Smappio_SEAR
 {
@@ -30,19 +34,20 @@ namespace Smappio_SEAR
 
         string deviceName = "smappio";
         private string filePath = "../../AudioSamples/";
-        private string host = "ws://192.168.4.1:80";
+        private string host = "http://192.168.1.1:80";
         private WebSocket client;
         private List<Int32> _fileInts = new List<int>();
         List<byte> _bytes = new List<byte>();
         Stopwatch sw = new Stopwatch();
         long elapsedMilliseconds = 0;
+        Socket _socket;
 
         #endregion
         #region SoundParameters
 
         //static int _sampleRate = 16000;   // No se esta usando por hacer los calculos en base al tiempo
-        static int _seconds = 5;
-        static int _bytesDepth = 4;
+        static int _seconds = 55;
+        static int _bytesDepth = 3;
         static int _bitDepth = _bytesDepth * 8;
         private bool _notified;
         private float _baudRate = 2000000; //(_sampleRate * _bitDepth) * 1.2f;
@@ -50,6 +55,8 @@ namespace Smappio_SEAR
         #endregion
 
         #region Transfering methods
+
+
 
         private void btnWifi_Click(object sender, EventArgs e)
         {
@@ -82,7 +89,7 @@ namespace Smappio_SEAR
                         elapsedMilliseconds = sw.ElapsedMilliseconds;
                         SetNotificationLabel("Finished");
                         _notified = true;
-                    }                    
+                    }
                 };
 
                 client.OnClose += (ss, ee) =>
@@ -124,28 +131,26 @@ namespace Smappio_SEAR
 
         private void btnBluetooth_Click(object sender, EventArgs e)
         {
-            //EnableFeatures();
-            //try
-            //{
-            //    bluetoothManager = new BluetoothManager();
+            EnableFeatures();
+            try
+            {
+                serialPort.PortName = BluetoothHelper.GetBluetoothPort(deviceName);
+                serialPort.BaudRate = Convert.ToInt32(_baudRate);
+                serialPort.DtrEnable = true;
+                serialPort.RtsEnable = true;
 
-            //    serialPort.PortName = BluetoothHelper.GetBluetoothPort(deviceName);
-            //    serialPort.BaudRate = Convert.ToInt32(_baudRate);
-            //    serialPort.DtrEnable = true;
-            //    serialPort.RtsEnable = true;
-
-            //    if (!serialPort.IsOpen)
-            //        serialPort.Open();
+                if (!serialPort.IsOpen)
+                    serialPort.Open();
 
 
-            //    lblNotification.Text = "Started";
-            //    serialPort.DataReceived += SerialPort_DataReceived;
-            //}
-            //catch (Exception ex)
-            //{
-            //    serialPort.Dispose();
-            //    return;
-            //}
+                lblNotification.Text = "Started";
+                serialPort.DataReceived += SerialPort_DataReceived;
+            }
+            catch (Exception ex)
+            {
+                serialPort.Dispose();
+                return;
+            }
         }
 
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -215,11 +220,22 @@ namespace Smappio_SEAR
         #region Save file methods
         private void btnSave_Click(object sender, EventArgs e)
         {
+            _thread.Abort();
+            _socket.Disconnect(false);
+            _socket.Close();
+            if (!_notified)
+            {
+                sw.Stop();
+                elapsedMilliseconds = sw.ElapsedMilliseconds;
+                SetNotificationLabel("Finished");
+                _notified = true;
+            }
+
+
             long sampleRate = _bytes.Count / _bytesDepth / (elapsedMilliseconds / 1000);
             lblSampleRate.Text = sampleRate.ToString();
 
             long bitRate = (sampleRate * _bytesDepth * 8) / 1000;
-
 
             lblTime.Text = elapsedMilliseconds.ToString();
             lblSamplesReceived.Text = (_bytes.Count / _bytesDepth).ToString();
@@ -232,19 +248,6 @@ namespace Smappio_SEAR
             File.WriteAllBytes(fullPath, _bytes.ToArray());
 
             // LOGIC FOR PRINTING THE VALUES IN THE TEXTBOX.
-
-            //var data = new byte[4];
-            //for (int i = 0; i <= 200; i++)
-            //{
-            //    data[i % 4] = _bytes[i];
-            //    if (i % 4 == 3)
-            //    {
-            //        var temp = (Int32)BitConverter.ToInt32(data, 0);
-
-            //        SetTextBox(temp.ToString());
-            //    }
-            //}
-
 
             if (serialPort.IsOpen)
             {
@@ -286,6 +289,37 @@ namespace Smappio_SEAR
         private void Main_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void btnWifiHTTP_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                _socket.Connect("192.168.1.1", 80);
+                SetNotificationLabel("Started");
+                _thread = new Thread(this.ReceiveData);
+                if (!sw.IsRunning)
+                    sw.Start();
+                _thread.Start();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        private byte[] _buffer = new byte[3];
+        private Thread _thread;
+
+        private void ReceiveData()
+        {            
+            while (_socket.Connected)
+            {
+                _socket.Receive(_buffer, 0, 3, 0);
+                _bytes.AddRange(_buffer.ToList());
+            }
         }
     }
 }
