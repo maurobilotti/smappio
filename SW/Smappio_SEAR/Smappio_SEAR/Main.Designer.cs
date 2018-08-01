@@ -36,7 +36,6 @@
             this.txtSerialData = new System.Windows.Forms.TextBox();
             this.lblSamplesReceived = new System.Windows.Forms.Label();
             this.btnUSB = new System.Windows.Forms.Button();
-            this.btnWifi = new System.Windows.Forms.Button();
             this.btnBluetooth = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -58,7 +57,7 @@
             // btnSave
             // 
             this.btnSave.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSave.Location = new System.Drawing.Point(398, 35);
+            this.btnSave.Location = new System.Drawing.Point(297, 35);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(75, 23);
             this.btnSave.TabIndex = 2;
@@ -69,7 +68,7 @@
             // lblNotification
             // 
             this.lblNotification.AutoSize = true;
-            this.lblNotification.Location = new System.Drawing.Point(733, 429);
+            this.lblNotification.Location = new System.Drawing.Point(693, 131);
             this.lblNotification.Name = "lblNotification";
             this.lblNotification.Size = new System.Drawing.Size(13, 13);
             this.lblNotification.TabIndex = 3;
@@ -80,13 +79,13 @@
             this.txtSerialData.Location = new System.Drawing.Point(12, 89);
             this.txtSerialData.Multiline = true;
             this.txtSerialData.Name = "txtSerialData";
-            this.txtSerialData.Size = new System.Drawing.Size(924, 324);
+            this.txtSerialData.Size = new System.Drawing.Size(557, 172);
             this.txtSerialData.TabIndex = 4;
             // 
             // lblSamplesReceived
             // 
             this.lblSamplesReceived.AutoSize = true;
-            this.lblSamplesReceived.Location = new System.Drawing.Point(773, 470);
+            this.lblSamplesReceived.Location = new System.Drawing.Point(733, 172);
             this.lblSamplesReceived.Name = "lblSamplesReceived";
             this.lblSamplesReceived.Size = new System.Drawing.Size(13, 13);
             this.lblSamplesReceived.TabIndex = 6;
@@ -103,17 +102,6 @@
             this.btnUSB.UseVisualStyleBackColor = true;
             this.btnUSB.Click += new System.EventHandler(this.btnUSB_Click);
             // 
-            // btnWifi
-            // 
-            this.btnWifi.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnWifi.Image = global::Smappio_SEAR.Properties.Resources.if_wifi_Logo_925806;
-            this.btnWifi.Location = new System.Drawing.Point(78, 12);
-            this.btnWifi.Name = "btnWifi";
-            this.btnWifi.Size = new System.Drawing.Size(48, 48);
-            this.btnWifi.TabIndex = 1;
-            this.btnWifi.UseVisualStyleBackColor = true;
-            this.btnWifi.Click += new System.EventHandler(this.btnWifi_Click);
-            // 
             // btnBluetooth
             // 
             this.btnBluetooth.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -129,7 +117,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.Color.Red;
-            this.label1.Location = new System.Drawing.Point(668, 470);
+            this.label1.Location = new System.Drawing.Point(628, 172);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(99, 13);
             this.label1.TabIndex = 8;
@@ -139,7 +127,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.ForeColor = System.Drawing.Color.Red;
-            this.label2.Location = new System.Drawing.Point(669, 429);
+            this.label2.Location = new System.Drawing.Point(629, 131);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(63, 13);
             this.label2.TabIndex = 9;
@@ -149,7 +137,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.ForeColor = System.Drawing.Color.Red;
-            this.label3.Location = new System.Drawing.Point(669, 448);
+            this.label3.Location = new System.Drawing.Point(629, 150);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(33, 13);
             this.label3.TabIndex = 10;
@@ -158,7 +146,7 @@
             // lblTime
             // 
             this.lblTime.AutoSize = true;
-            this.lblTime.Location = new System.Drawing.Point(733, 448);
+            this.lblTime.Location = new System.Drawing.Point(693, 150);
             this.lblTime.Name = "lblTime";
             this.lblTime.Size = new System.Drawing.Size(13, 13);
             this.lblTime.TabIndex = 11;
@@ -168,7 +156,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.ForeColor = System.Drawing.Color.Red;
-            this.label4.Location = new System.Drawing.Point(668, 492);
+            this.label4.Location = new System.Drawing.Point(628, 194);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(66, 13);
             this.label4.TabIndex = 12;
@@ -177,7 +165,7 @@
             // lblSampleRate
             // 
             this.lblSampleRate.AutoSize = true;
-            this.lblSampleRate.Location = new System.Drawing.Point(773, 492);
+            this.lblSampleRate.Location = new System.Drawing.Point(733, 194);
             this.lblSampleRate.Name = "lblSampleRate";
             this.lblSampleRate.Size = new System.Drawing.Size(13, 13);
             this.lblSampleRate.TabIndex = 13;
@@ -186,7 +174,7 @@
             // lblBitRate
             // 
             this.lblBitRate.AutoSize = true;
-            this.lblBitRate.Location = new System.Drawing.Point(774, 518);
+            this.lblBitRate.Location = new System.Drawing.Point(734, 220);
             this.lblBitRate.Name = "lblBitRate";
             this.lblBitRate.Size = new System.Drawing.Size(13, 13);
             this.lblBitRate.TabIndex = 15;
@@ -196,7 +184,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.ForeColor = System.Drawing.Color.Red;
-            this.label6.Location = new System.Drawing.Point(669, 518);
+            this.label6.Location = new System.Drawing.Point(629, 220);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(43, 13);
             this.label6.TabIndex = 14;
@@ -205,7 +193,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(831, 518);
+            this.label7.Location = new System.Drawing.Point(791, 220);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(30, 13);
             this.label7.TabIndex = 16;
@@ -214,7 +202,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(831, 492);
+            this.label5.Location = new System.Drawing.Point(791, 194);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(20, 13);
             this.label5.TabIndex = 17;
@@ -223,7 +211,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(831, 448);
+            this.label8.Location = new System.Drawing.Point(791, 150);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(20, 13);
             this.label8.TabIndex = 18;
@@ -231,7 +219,7 @@
             // 
             // txtPath
             // 
-            this.txtPath.Location = new System.Drawing.Point(508, 38);
+            this.txtPath.Location = new System.Drawing.Point(407, 38);
             this.txtPath.Name = "txtPath";
             this.txtPath.Size = new System.Drawing.Size(320, 20);
             this.txtPath.TabIndex = 19;
@@ -239,7 +227,7 @@
             // btnClear
             // 
             this.btnClear.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnClear.Location = new System.Drawing.Point(303, 35);
+            this.btnClear.Location = new System.Drawing.Point(202, 35);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(75, 23);
             this.btnClear.TabIndex = 20;
@@ -250,7 +238,7 @@
             // btnStop
             // 
             this.btnStop.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnStop.Location = new System.Drawing.Point(861, 37);
+            this.btnStop.Location = new System.Drawing.Point(760, 37);
             this.btnStop.Name = "btnStop";
             this.btnStop.Size = new System.Drawing.Size(75, 23);
             this.btnStop.TabIndex = 21;
@@ -262,7 +250,7 @@
             // 
             this.btnWifiHTTP.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnWifiHTTP.Image = global::Smappio_SEAR.Properties.Resources.if_wifi_Logo_925806;
-            this.btnWifiHTTP.Location = new System.Drawing.Point(205, 10);
+            this.btnWifiHTTP.Location = new System.Drawing.Point(79, 11);
             this.btnWifiHTTP.Name = "btnWifiHTTP";
             this.btnWifiHTTP.Size = new System.Drawing.Size(48, 48);
             this.btnWifiHTTP.TabIndex = 22;
@@ -275,7 +263,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.ClientSize = new System.Drawing.Size(997, 562);
+            this.ClientSize = new System.Drawing.Size(851, 284);
             this.Controls.Add(this.btnWifiHTTP);
             this.Controls.Add(this.btnStop);
             this.Controls.Add(this.btnClear);
@@ -296,7 +284,6 @@
             this.Controls.Add(this.txtSerialData);
             this.Controls.Add(this.lblNotification);
             this.Controls.Add(this.btnSave);
-            this.Controls.Add(this.btnWifi);
             this.Controls.Add(this.btnBluetooth);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Main";
@@ -310,7 +297,6 @@
         #endregion
 
         private System.Windows.Forms.Button btnBluetooth;
-        private System.Windows.Forms.Button btnWifi;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Label lblNotification;
         private System.Windows.Forms.TextBox txtSerialData;

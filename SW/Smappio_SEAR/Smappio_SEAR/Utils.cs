@@ -26,6 +26,16 @@ namespace Smappio_SEAR
             return new MemoryStream(byteArray);
         }
 
+        public static string ByteListToString(this List<byte> bytes)
+        {
+            string text = "";
+            foreach (byte item in bytes)
+            {
+                text += Convert.ToInt32(item).ToString() + " ";
+            }
+            return text;
+        }
+
         public static string To8bitBinary(this Int16 num)
         {
             return Convert.ToString(num, 2).PadLeft(8, '0');
