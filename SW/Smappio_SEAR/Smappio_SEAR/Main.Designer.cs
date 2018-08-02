@@ -31,7 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.btnSave = new System.Windows.Forms.Button();
-            this.serialPort = new System.IO.Ports.SerialPort(this.components);
+            this._serialPort = new System.IO.Ports.SerialPort(this.components);
             this.lblNotification = new System.Windows.Forms.Label();
             this.txtSerialData = new System.Windows.Forms.TextBox();
             this.lblSamplesReceived = new System.Windows.Forms.Label();
@@ -300,7 +300,7 @@
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Label lblNotification;
         private System.Windows.Forms.TextBox txtSerialData;
-        public System.IO.Ports.SerialPort serialPort;
+        public System.IO.Ports.SerialPort _serialPort;
         private System.Windows.Forms.Label lblSamplesReceived;
         private System.Windows.Forms.Button btnUSB;
         private System.Windows.Forms.Label label1;

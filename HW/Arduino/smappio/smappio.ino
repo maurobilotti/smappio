@@ -9,7 +9,7 @@ int32_t value = 0;
 int bytesReaded = 0;
 int media = 13700;  // I2S:  13700  | PCM:  6835   // valor para nivelar a 0 la señal media
 int32_t samplesToSend[SAMPLES_TO_SEND];
-uint8_t dataToSend[3 * 10];
+uint8_t dataToSend[3];
 // Vriables utilizadas para el conteo y estadisticas
 long time1;
 long time2;
@@ -34,6 +34,7 @@ void setup() {
 
   smappioSound.begin(buffer);
   time1 = millis();
+  delay(5000);
 }
 
 void loop() {

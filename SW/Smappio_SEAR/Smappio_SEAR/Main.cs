@@ -43,10 +43,11 @@ namespace Smappio_SEAR
         Socket _socket;
         private TransmissionMethod _transmissionMethod = TransmissionMethod.Wifi;
         #endregion
+
         #region SoundParameters
 
         //static int _sampleRate = 16000;   // No se esta usando por hacer los calculos en base al tiempo
-        static int _seconds = 10;
+        static int _seconds = 1000;
         static int _bytesDepth = 3;
         static int _sampleRate = 64000;
         static int _bitDepth = _bytesDepth * 8;
@@ -64,22 +65,25 @@ namespace Smappio_SEAR
             //Silicon Labs CP210x USB to UART Bridge
             try
             {
-                serialPort.PortName = "COM7";//BluetoothHelper.GetBluetoothPort("Silicon Labs CP210x USB to UART Bridge");
-                serialPort.BaudRate = Convert.ToInt32(_baudRate);
-                serialPort.Handshake = Handshake.None;
+                _serialPort.PortName = "COM7";//BluetoothHelper.GetBluetoothPort("Silicon Labs CP210x USB to UART Bridge");
+                _serialPort.BaudRate = Convert.ToInt32(_baudRate);
+                _serialPort.Handshake = Handshake.None;
 
                 //ojo con estos flags! sin esto, no recibe!!
-                serialPort.DtrEnable = true;
-                serialPort.RtsEnable = true;
-                if (!serialPort.IsOpen)
-                    serialPort.Open();
+                _serialPort.DtrEnable = true;
+                _serialPort.RtsEnable = true;
+                if (!_serialPort.IsOpen)
+                    _serialPort.Open();
 
                 lblNotification.Text = "Started";
-                serialPort.DataReceived += SerialPort_DataReceived;
+                _serialPort.DataReceived += SerialPort_DataReceived;
+                _threadCopyAndPlay = new Thread(this.CopyAndPlay);
+                _threadCopyAndPlay.Start();
+                this.Play();
             }
             catch (Exception ex)
             {
-                serialPort.Dispose();
+                _serialPort.Dispose();
                 return;
             }
         }
@@ -89,21 +93,21 @@ namespace Smappio_SEAR
             EnableFeatures();
             try
             {
-                serialPort.PortName = BluetoothHelper.GetBluetoothPort(deviceName);
-                serialPort.BaudRate = Convert.ToInt32(_baudRate);
-                serialPort.DtrEnable = true;
-                serialPort.RtsEnable = true;
+                _serialPort.PortName = BluetoothHelper.GetBluetoothPort(deviceName);
+                _serialPort.BaudRate = Convert.ToInt32(_baudRate);
+                _serialPort.DtrEnable = true;
+                _serialPort.RtsEnable = true;
 
-                if (!serialPort.IsOpen)
-                    serialPort.Open();
+                if (!_serialPort.IsOpen)
+                    _serialPort.Open();
 
 
                 lblNotification.Text = "Started";
-                serialPort.DataReceived += SerialPort_DataReceived;
+                _serialPort.DataReceived += SerialPort_DataReceived;
             }
             catch (Exception ex)
             {
-                serialPort.Dispose();
+                _serialPort.Dispose();
                 return;
             }
         }
@@ -112,15 +116,32 @@ namespace Smappio_SEAR
         {
             if (sw.ElapsedMilliseconds < (_seconds * 1000)) //_bytes.Count <= (_sampleRate * _bytesDepth * _seconds)
             {
-                var bufferSize = serialPort.BytesToRead;
+                var bufferSize = _serialPort.BytesToRead;
 
                 byte[] data = new byte[bufferSize];
-                serialPort.Read(data, 0, bufferSize);
+                _serialPort.Read(data, 0, bufferSize);
 
                 if (!sw.IsRunning)
                     sw.Start();
 
                 this._receivedBytes.AddRange(data);
+
+                if (_cache != 0)
+                    _cache--;
+                else
+                    _release = true;
+
+                bool releaseCondition = _receivedBytes.Count >= _offset + _playingLength;
+
+                if (releaseCondition)
+                    _bufferingSemaphore.Release();
+
+                if (firstData)
+                {
+                    _receivedBytes.RemoveAt(0);
+                    _receivedBytes.RemoveAt(1);
+                    firstData = false;
+                }
             }
             else if (!_notified)
             {
@@ -189,6 +210,8 @@ namespace Smappio_SEAR
                 }
             }
 
+            if (elapsedMilliseconds == 0)
+                elapsedMilliseconds = 1000; // Para que no estalle
 
             long sampleRate = _receivedBytes.Count / _bytesDepth / (elapsedMilliseconds / 1000);
             lblSampleRate.Text = sampleRate.ToString();
@@ -208,10 +231,10 @@ namespace Smappio_SEAR
 
             // LOGIC FOR PRINTING THE VALUES IN THE TEXTBOX.
 
-            if (serialPort.IsOpen)
+            if (_serialPort.IsOpen)
             {
-                serialPort.DiscardInBuffer();
-                serialPort.Close();
+                _serialPort.DiscardInBuffer();
+                _serialPort.Close();
             }
         }
 
@@ -235,8 +258,8 @@ namespace Smappio_SEAR
 
             this._receivedBytes.Clear();
 
-            if (serialPort.IsOpen)
-                serialPort.Close();
+            if (_serialPort.IsOpen)
+                _serialPort.Close();
         }
         #endregion
 
@@ -252,41 +275,46 @@ namespace Smappio_SEAR
 
         #region Wifi Logic
         private Thread _threadReceive;
-        private Thread _threadCopy;
-        private Thread _threadPlay;
-        private TcpClient _tcp;
+        private Thread _threadCopyAndPlay;
+        private TcpClient _tcp = new TcpClient();
         bool firstData = true;
-        int offset = 0;
+        int _offset = 0;
         private WaveOut _waveOut = new WaveOut();
-        private List<byte> _bufferedBytes = new List<byte>();
         private Mutex _mutex = new Mutex();
-        private int _playingLength = 64000;
+        private int _playingLength = 3 * 32000;
         private Semaphore _playingSemaphore = new Semaphore(0, 5000);
         private Semaphore _bufferingSemaphore = new Semaphore(0, 5000);
+        private MemoryStream _memoryStream = new MemoryStream();
+        BufferedWaveProvider _provider = new BufferedWaveProvider(new WaveFormat(_sampleRate, 24, 1));
+        /// <summary>
+        /// Variable utilizada para generar un colchon de datos para reproducir
+        /// </summary>
+        private int _cache = 10;
+        private bool _release = false;
 
         private void btnWifiHTTP_Click(object sender, EventArgs e)
         {
-            try
-            {
-                _tcp = new TcpClient("192.168.1.1", 80);
+            _tcp = new TcpClient("192.168.1.1", 80);
 
-                //_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                //_socket.Connect("192.168.1.1", 80);
-                SetNotificationLabel("Started");
-                _threadReceive = new Thread(this.ReceiveData);
-                _threadCopy = new Thread(this.CopyData);
-                _threadPlay = new Thread(this.PlayAudio);
-                if (!sw.IsRunning)
-                    sw.Start();
-                _threadReceive.Start();
-                _threadCopy.Start();
-                _threadPlay.Start();
-                SetNotificationLabel("Threads Running");
-            }
-            catch (Exception ex)
-            {
+            SetNotificationLabel("Started");
+            _threadReceive = new Thread(this.ReceiveData);
+            _threadCopyAndPlay = new Thread(this.CopyAndPlay);
 
-                throw;
+            if (!sw.IsRunning)
+                sw.Start();
+            _threadReceive.Start();
+            _threadCopyAndPlay.Start();
+
+            SetNotificationLabel("Threads Running");
+            Play();
+        }
+
+        private void Play()
+        {
+            if (_waveOut.PlaybackState != PlaybackState.Playing)
+            {
+                _waveOut.Init(_provider);
+                _waveOut.Play();
             }
         }
 
@@ -305,59 +333,48 @@ namespace Smappio_SEAR
                     var subBuffer = buffer.Take(readed);
 
                     _receivedBytes.AddRange(subBuffer);
-                    if (_receivedBytes.Count >= offset + _playingLength)
+
+                    if (_cache != 0)
+                        _cache--;
+                    else
+                        _release = true;
+
+                    bool releaseCondition = _receivedBytes.Count >= _offset + _playingLength;
+
+                    if (releaseCondition)
                         _bufferingSemaphore.Release();
 
-                    //if (firstData)
-                    //{
-                    //    _receivedBytes.RemoveAt(0);
-                    //    _receivedBytes.RemoveAt(1);
-                    //    firstData = false;
-                    //}
+                    if (firstData)
+                    {
+                        _receivedBytes.RemoveAt(0);
+                        _receivedBytes.RemoveAt(1);
+                        firstData = false;
+                    }
                 }
             }
         }
 
-        /// <summary>
-        /// Order 2
-        /// </summary>
-        private void CopyData()
+        public void CopyAndPlay()
         {
-            while (_tcp.Connected)
+            while (_tcp.Connected || _serialPort.IsOpen)
             {
-                //if (_receivedBytes.Count >= offset + arrayLength)
-                //{
-                    _bufferingSemaphore.WaitOne();
-                    _mutex.WaitOne();
-                    _bufferedBytes = _receivedBytes.GetRange(offset, _playingLength);
-                    _mutex.ReleaseMutex();
-                    offset += _playingLength;
-                    _playingSemaphore.Release();
-                //}
+                //Liberado por hilo productor
+                if (!_release)
+                    continue;
+
+                if (_receivedBytes.Count < _offset + _playingLength)
+                    continue;
+
+                _bufferingSemaphore.WaitOne();
+
+                var bufferForPlaying = _receivedBytes.GetRange(_offset, _playingLength).ToArray();
+
+                _offset += _playingLength;                
+
+                _provider.AddSamples(bufferForPlaying, 0, bufferForPlaying.Length);
             }
         }
 
-        /// <summary>
-        /// Order 3
-        /// </summary>
-        private void PlayAudio()
-        {
-            while (_tcp.Connected)
-            {
-                _playingSemaphore.WaitOne();
-                _mutex.WaitOne();
-                var bufferedBytesArray = _bufferedBytes.ToArray();
-                _bufferedBytes.Clear();
-                _mutex.ReleaseMutex();
-
-                IWaveProvider provider = new RawSourceWaveStream(new MemoryStream(bufferedBytesArray), new WaveFormat(_sampleRate, 24, 1));
-
-                _waveOut.Init(provider);
-                _waveOut.Play();
-
-            }
-        }
-        
         #endregion
     }
 }
