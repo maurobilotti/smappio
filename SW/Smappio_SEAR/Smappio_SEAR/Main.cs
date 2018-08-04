@@ -76,6 +76,7 @@ namespace Smappio_SEAR
                     _serialPort.Open();
 
                 lblNotification.Text = "Started";
+                _serialPort.Write("s");
                 _serialPort.DataReceived += SerialPort_DataReceived;
                 _threadCopyAndPlay = new Thread(this.CopyAndPlay);
                 _threadCopyAndPlay.Start();
