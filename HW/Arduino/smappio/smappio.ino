@@ -29,7 +29,7 @@ void loop()
       while(1) 
       { // Se queda transmitiendo por siempre, hasta que se aprete el boton
         bufferSamplesToSend();
-        Serial.write(_dataToSend, sizeof(_dataToSend));
+        Serial.write(_dataToSend, SAMPLES_TO_SEND);
       }
     }
   }

@@ -49,7 +49,7 @@ namespace Smappio_SEAR
         //static int _sampleRate = 16000;   // No se esta usando por hacer los calculos en base al tiempo
         static int _seconds = 1000;
         static int _bytesDepth = 3;
-        static int _sampleRate = 64000;
+        static int _sampleRate = 32000;
         static int _bitDepth = _bytesDepth * 8;
         private bool _notified;
         private float _baudRate = 2000000; //(_sampleRate * _bitDepth) * 1.2f;

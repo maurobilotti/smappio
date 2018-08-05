@@ -6,19 +6,19 @@ WiFiServer server(80);
 const char* ssid     = "smappio";
 const char* password = "123456789"; // El pass tiene que tener mas de 8 caracteres
 
-int32_t *buffer;
-int32_t value = 0;
-int bytesReaded = 0;
-int media = 13700;  // I2S:  13700  | PCM:  6835   // valor para nivelar a 0 la señal media
+// CONSTANTES
+#define SAMPLES_TO_SEND 42000
+#define MEDIA 13700   // I2S:  13700  | PCM:  6835   // valor para nivelar a 0 la señal media
 
-long samplesCounter = 0;
-long samplesLimit = 32000 * 15;
-uint8_t dataToSend[42000];
-int pos = 0;
-
-SmappioSound smappioSound(media); 
+// VARIABLES
+int32_t *_buffer;
+uint8_t _dataToSend[SAMPLES_TO_SEND];
+SmappioSound smappioSound(MEDIA); 
 
 void setup() { 
+  pinMode(DATA_PIN, INPUT); // Supuestamente necesario para que no haya ruido
+  smappioSound.begin(_buffer);
+
   // Se crea un Access Point, para poder conectarse al dispositivo
   WiFi.softAP(ssid, password);
   // Se setea la ip del dispositivo para poder comunicarse con el
@@ -26,10 +26,7 @@ void setup() {
   IPAddress NMask(255, 255, 255, 0);
   WiFi.softAPConfig(Ip, Ip, NMask);
   
-  
   server.begin();
-  Serial.begin(9600);
-  smappioSound.begin(buffer);  
 }
 
 void loop() {
@@ -41,43 +38,31 @@ void loop() {
   {       
     while (client.connected()) 
     {      
-      for(int i = 0; i < (int)sizeof(dataToSend); i += 3)
-      {          
-          // Se hace la lectura de los samples del microfono
-          bytesReaded = smappioSound.read();
-          while(bytesReaded == 0)
-          {     
-              //Este bucle es necesario para no reenviar una muestra mas de una vez
-              bytesReaded = smappioSound.read();
-          }   
-          // Se lee un sample
-          value = smappioSound.getSampleValue();
-          //value = 30;
-          dataToSend[i] = value & 255;
-          dataToSend[i + 1] = (value >> 8)  & 255;
-          dataToSend[i + 2] = (value >> 16) & 255;     
-      }
-      
-      /*for(int i = 0; i < (int)sizeof(dataToSend); i++)
-      {
-        printf("%d", dataToSend[i]);
-        //Serial.print(dataToSend[i]);
-        Serial.print("/");
-      }*/
-      
-      client.write(dataToSend, sizeof(dataToSend));
-      
-      /*if(pos <= 150)
-      {
-        strcat(dataToSend, bufferTemp);
-        pos += 3;
-      }
-      else 
-      {
-        pos=0;  
-        const char *p = reinterpret_cast<const char*>(dataToSend);
-        webSocketServer.sendData(p);
-      }*/
+      bufferSamplesToSend();
+    
+      client.write(_dataToSend, SAMPLES_TO_SEND);
    } 
   } 
+}
+
+void bufferSamplesToSend() 
+{
+  int32_t value = 0;
+  int bytesReaded = 0;
+
+  for(int i = 0; i < SAMPLES_TO_SEND; i += 3)
+  {
+    // Se hace la lectura de los samples del microfono
+    bytesReaded = smappioSound.read();
+    while(bytesReaded == 0)
+    {     
+        //Este bucle es necesario para no reenviar una muestra mas de una vez
+        bytesReaded = smappioSound.read();
+    }   
+    // Se lee un sample
+    value = smappioSound.getSampleValue();
+    _dataToSend[i] = value & 255;
+    _dataToSend[i + 1] = (value >> 8)  & 255;
+    _dataToSend[i + 2] = (value >> 16) & 255; 
+  }  
 }
