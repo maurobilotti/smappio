@@ -1,12 +1,12 @@
 #include "libraries/SmappioSound/SmappioSound.cpp"
 
 // CONSTANTES
-#define SAMPLES_TO_SEND 3
+#define BYTES_TO_SEND 210
 #define MEDIA 13700   // I2S:  13700  | PCM:  6835   // valor para nivelar a 0 la señal media
 
 // VARIABLES
 int32_t *_buffer;
-uint8_t _dataToSend[SAMPLES_TO_SEND];
+uint8_t _dataToSend[BYTES_TO_SEND];
 SmappioSound smappioSound(MEDIA); 
 
 void setup() {
@@ -29,7 +29,7 @@ void loop()
       while(1) 
       { // Se queda transmitiendo por siempre, hasta que se aprete el boton
         bufferSamplesToSend();
-        Serial.write(_dataToSend, SAMPLES_TO_SEND);
+        Serial.write(_dataToSend, BYTES_TO_SEND);
       }
     }
   }
@@ -41,7 +41,7 @@ void bufferSamplesToSend()
   int32_t value = 0;
   int bytesReaded = 0;
 
-  for(int i = 0; i < SAMPLES_TO_SEND; i += 3)
+  for(int i = 0; i < BYTES_TO_SEND; i += 3)
   {
     // Se hace la lectura de los samples del microfono
     bytesReaded = smappioSound.read();
