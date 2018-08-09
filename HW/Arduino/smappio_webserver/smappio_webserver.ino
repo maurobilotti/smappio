@@ -3,11 +3,11 @@
 
 WiFiServer server(80);
  
-const char* ssid     = "smappio";
+const char* ssid     = "smappio_server";
 const char* password = "123456789"; // El pass tiene que tener mas de 8 caracteres
 
 // CONSTANTES
-#define BYTES_TO_SEND 42000    // Tiene que ser multiplo de 3  
+#define BYTES_TO_SEND   42000   //57438 es aparentemente el max   // Tiene que ser multiplo de 3  
 #define MEDIA 13700   // I2S:  13700  | PCM:  6835   // valor para nivelar a 0 la señal media
 
 // VARIABLES
@@ -29,8 +29,7 @@ void setup() {
   delay(300);
   server.begin();
   delay(300);
-
-  //server.setNoDelay(true);
+  server.setNoDelay(false);
 }
 
 void loop() {
@@ -40,7 +39,7 @@ void loop() {
   // Si el cliente inicio el handshake
   if (client) 
   {
-    //client.setNoDelay(true);  
+    client.setNoDelay(false);  
     while (client.connected()) 
     {      
       bufferSamplesToSend();

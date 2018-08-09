@@ -45,7 +45,6 @@ namespace Smappio_SEAR
 
         #region SoundParameters
 
-        //static int _sampleRate = 16000;   // No se esta usando por hacer los calculos en base al tiempo
         static int _bytesDepth = 3;
         static int _sampleRate = 32000;// No modificar, pues modifica el audio escuchado.
         static int _bitDepth = _bytesDepth * 8;
@@ -62,7 +61,7 @@ namespace Smappio_SEAR
             //Silicon Labs CP210x USB to UART Bridge
             try
             {
-                _serialPort.PortName = "COM7";//BluetoothHelper.GetBluetoothPort("Silicon Labs CP210x USB to UART Bridge");
+                _serialPort.PortName = "COM13";//BluetoothHelper.GetBluetoothPort("Silicon Labs CP210x USB to UART Bridge");
                 _serialPort.BaudRate = Convert.ToInt32(_baudRate);
                 _serialPort.Handshake = Handshake.None;
 
@@ -269,7 +268,7 @@ namespace Smappio_SEAR
         bool firstData = true;
         int _offset = 0;
         private WaveOut _waveOut = new WaveOut();
-        private int _playingLength = 8000 * 3;// 3 * 20400;
+        private int _playingLength = 3000;// 3 * 20400;
         private MemoryStream _memoryStream = new MemoryStream();
         BufferedWaveProvider _provider = new BufferedWaveProvider(new WaveFormat(_sampleRate, 24, 1));
         /// <summary>
@@ -280,17 +279,8 @@ namespace Smappio_SEAR
 
         private void btnWifiHTTP_Click(object sender, EventArgs e)
         {
-            try
-            {
-                _tcp = new TcpClient("192.168.1.1", 80);
-
-            }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
-            //_tcp.NoDelay = false;
+            _tcp = new TcpClient("192.168.1.1", 80);
+            
             _threadReceive = new Thread(this.ReceiveData);
 
             _threadReceive.Start();
@@ -307,21 +297,22 @@ namespace Smappio_SEAR
                 _waveOut.Play();
             }
         }
-        string cantidades = "";
+        string bytePacketsReceived = "";
+        int readed = 0;
         private void ReceiveData()
         {
             NetworkStream netStream = _tcp.GetStream();
-            byte[] buffer = new byte[_tcp.ReceiveBufferSize];
+            byte[] buffer = new byte[_playingLength];
             while (_tcp.Connected)
             {
                 if (netStream.CanRead)
                 {
-                    int readed = netStream.Read(buffer, 0, _tcp.ReceiveBufferSize);
-                    List<byte> subBuffer = buffer.Take(readed).ToList();
+                    if (_tcp.Client.Available < _playingLength)
+                        continue;
 
-                    cantidades += readed.ToString() + " ";
+                    readed = netStream.Read(buffer, 0, _playingLength);
 
-                    _receivedBytes.AddRange(subBuffer);
+                    _receivedBytes.AddRange(buffer.Take(_playingLength).ToList());
 
                     if (firstData)
                     {
@@ -332,26 +323,20 @@ namespace Smappio_SEAR
                         firstData = false;
                         readed -= 2;
                     }
-                    
 
-                    if (_receivedBytes.Count < _offset + _playingLength)
+                    if (_receivedBytes.Count < _playingLength * 4)
                         continue;
 
                     AddSamples();
                 }
             }
         }
-
+        
         public void AddSamples()
         {
-            //var newBytesSize = _receivedBytes.Count - _offset;
-            //var bufferForPlaying = _receivedBytes.GetRange(_offset, newBytesSize).ToArray();
+            var bufferForPlaying = _receivedBytes.GetRange(_offset, readed).ToArray();
 
-            //_offset += newBytesSize;
-
-            var bufferForPlaying = _receivedBytes.GetRange(_offset, _playingLength).ToArray();
-
-            _offset += _playingLength;
+            _offset += readed;
 
             _provider.AddSamples(bufferForPlaying, 0, bufferForPlaying.Length);
         }
