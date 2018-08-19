@@ -320,7 +320,8 @@ namespace Smappio_SEAR
                     #region Algoritmo de control de datos
                     //Verificar que lo que se lee cumpla con la secuencia 01, 10, 11
                     int i = 0;
-                    while (i < readedAux)
+                    readed = 0;
+                    while (i < readedAux - 3)
                     {
                         int bitsControlPrimerByte = buffertmp[i] >> 6;
                         int bitsControlSegundoByte = buffertmp[i + 1] >> 6;
@@ -391,7 +392,7 @@ namespace Smappio_SEAR
                     if (_receivedBytes.Count < _playingLength * 4)
                         continue;
 
-                    AddSamples();
+                    //AddSamples();
                 }
             }
         }
