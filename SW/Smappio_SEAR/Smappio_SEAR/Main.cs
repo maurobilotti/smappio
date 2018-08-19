@@ -317,44 +317,49 @@ namespace Smappio_SEAR
                     acumDiscardedBytes = 0;
                     readedAux = netStream.Read(buffertmp, 0, _playingLength);
 
+                    #region Algoritmo de control de datos
                     //Verificar que lo que se lee cumpla con la secuencia 01, 10, 11
                     int i = 0;
                     while (i < readedAux)
                     {
-                        int dosBits1 = buffertmp[i] >> 6;
-                        int dosBits2 = buffertmp[i + 1] >> 6;
-                        int dosBits3 = buffertmp[i + 2] >> 6;
+                        int bitsControlPrimerByte = buffertmp[i] >> 6;
+                        int bitsControlSegundoByte = buffertmp[i + 1] >> 6;
+                        int bitsControlTercerByte = buffertmp[i + 2] >> 6;
                         int discartedBytes = 0;
 
-                        if (dosBits1 != 1)
+                        if (bitsControlPrimerByte != 1)
                         {
-                            if (dosBits1 == 2)
+                            if (bitsControlPrimerByte == 2)
                                 discartedBytes += 2;
-                            else if (dosBits1 == 3)
+                            else if (bitsControlPrimerByte == 3)
                                 discartedBytes += 1;
                         }
-                        else if (dosBits2 != 2)
+                        else if (bitsControlSegundoByte != 2)
                         {
-                            if (dosBits2 == 1)
+                            if (bitsControlSegundoByte == 1)
                                 discartedBytes += 1;
-                            else if (dosBits2 == 3)
+                            else if (bitsControlSegundoByte == 3)
                                 discartedBytes += 2;
                         }
-                        else if (dosBits3 != 3)
+                        else if (bitsControlTercerByte != 3)
                         {
-                            if (dosBits3 == 1)
+                            if (bitsControlTercerByte == 1)
                                 discartedBytes += 2;
-                            else if (dosBits3 == 2)
+                            else if (bitsControlTercerByte == 2)
                                 discartedBytes += 3;
                         }
                         else
                         {
+                            //Vuelvo a armar las muetras originales
+                            //Byte 1 => ultimos 6 bits del primer byte + 2 últimos bits del segundo byte
                             buffer[i - acumDiscardedBytes] = (byte)((buffertmp[i + 1] & 3) << 6);
                             buffer[i - acumDiscardedBytes] = (byte)(buffer[i] | (buffertmp[i] & 63));
 
+                            //Byte 2 => 4 bits del medio del segundo byte + 4 úlitmos bits del último byte
                             buffer[i + 1 - acumDiscardedBytes] = (byte)((buffertmp[i + 2] & 15) << 4);
                             buffer[i + 1 - acumDiscardedBytes] = (byte)(buffer[i + 1] | ((buffertmp[i + 1] >> 2) & 15));
 
+                            //Byte 3 => 2 bits (el 3ro y 4to de izq a derecha)
                             buffer[i + 2 - acumDiscardedBytes] = (byte)(buffer[i + 2] | ((buffertmp[i + 2] >> 4) & 3));
 
                             readed += 3;
@@ -368,7 +373,9 @@ namespace Smappio_SEAR
                             acumDiscardedBytes += discartedBytes;
                         }
                     }
-                    
+
+                    #endregion
+
                     _receivedBytes.AddRange(buffer.Take(readed).ToList());
 
                     if (firstData)
