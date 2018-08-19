@@ -298,11 +298,15 @@ namespace Smappio_SEAR
             }
         }
         string bytePacketsReceived = "";
+        int readedAux = 0;
         int readed = 0;
         private void ReceiveData()
         {
             NetworkStream netStream = _tcp.GetStream();
             byte[] buffer = new byte[_playingLength];
+            byte[] buffertmp = new byte[_playingLength];
+            int acumDiscardedBytes = 0;
+
             while (_tcp.Connected)
             {
                 if (netStream.CanRead)
@@ -310,9 +314,62 @@ namespace Smappio_SEAR
                     if (_tcp.Client.Available < _playingLength)
                         continue;
 
-                    readed = netStream.Read(buffer, 0, _playingLength);
+                    acumDiscardedBytes = 0;
+                    readedAux = netStream.Read(buffertmp, 0, _playingLength);
 
-                    _receivedBytes.AddRange(buffer.Take(_playingLength).ToList());
+                    //Verificar que lo que se lee cumpla con la secuencia 01, 10, 11
+                    int i = 0;
+                    while (i < readedAux)
+                    {
+                        int dosBits1 = buffertmp[i] >> 6;
+                        int dosBits2 = buffertmp[i + 1] >> 6;
+                        int dosBits3 = buffertmp[i + 2] >> 6;
+                        int discartedBytes = 0;
+
+                        if (dosBits1 != 1)
+                        {
+                            if (dosBits1 == 2)
+                                discartedBytes += 2;
+                            else if (dosBits1 == 3)
+                                discartedBytes += 1;
+                        }
+                        else if (dosBits2 != 2)
+                        {
+                            if (dosBits2 == 1)
+                                discartedBytes += 1;
+                            else if (dosBits2 == 3)
+                                discartedBytes += 2;
+                        }
+                        else if (dosBits3 != 3)
+                        {
+                            if (dosBits3 == 1)
+                                discartedBytes += 2;
+                            else if (dosBits3 == 2)
+                                discartedBytes += 3;
+                        }
+                        else
+                        {
+                            buffer[i - acumDiscardedBytes] = (byte)((buffertmp[i + 1] & 3) << 6);
+                            buffer[i - acumDiscardedBytes] = (byte)(buffer[i] | (buffertmp[i] & 63));
+
+                            buffer[i + 1 - acumDiscardedBytes] = (byte)((buffertmp[i + 2] & 15) << 4);
+                            buffer[i + 1 - acumDiscardedBytes] = (byte)(buffer[i + 1] | ((buffertmp[i + 1] >> 2) & 15));
+
+                            buffer[i + 2 - acumDiscardedBytes] = (byte)(buffer[i + 2] | ((buffertmp[i + 2] >> 4) & 3));
+
+                            readed += 3;
+                        }
+
+                        if (discartedBytes == 0)
+                            i += 3;
+                        else
+                        {
+                            i += discartedBytes;
+                            acumDiscardedBytes += discartedBytes;
+                        }
+                    }
+                    
+                    _receivedBytes.AddRange(buffer.Take(readed).ToList());
 
                     if (firstData)
                     {
