@@ -64,8 +64,42 @@ void bufferSamplesToSend()
     }   
     // Se lee un sample
     value = smappioSound.getSampleValue();
-    _dataToSend[i] = value & 255;
-    _dataToSend[i + 1] = (value >> 8)  & 255;
-    _dataToSend[i + 2] = (value >> 16) & 255; 
+
+    // Se bufferean los 3 bytes del sample, con un desplazamiento y una numeracion
+    _dataToSend[i] = (value & 63) | 64;               // '64'   =  01|111111
+    _dataToSend[i + 1] = ((value >> 6)  & 63) | 128;  // '128'  =  10|111111
+    _dataToSend[i + 2] = ((value >> 12) & 63) | 192;  // '192'  =  11|111111
+  }  
+}
+
+// Metodo para enviar la siguiente secuencia invalida:
+// Bits de contol: [{1,2,3}, {1,2,2}, {3,1,2}, ..., {3,1,2}]
+// Bytes de datos: [{1,2,3}, {2,2,3}, {2,2,3}, {3,2,3}, ...{1+n, 2,3}]
+void bufferInvalidSecuenceTest() 
+{
+  int32_t value = 0;
+  int bytesReaded = 0;
+
+  for(int i = 0; i < BYTES_TO_SEND; i += 3)
+  {
+    value = 197121 + (i / 3);
+    if(i == 3)
+    {
+      _dataToSend[i] = (value & 63) | 64;
+      _dataToSend[i + 1] = ((value >> 6)  & 63) | 128;
+      i-=1;
+    }
+    else if (i == 5) 
+    {
+      _dataToSend[i] = (value & 63) | 128;
+      _dataToSend[i + 1] = ((value >> 6)  & 63) | 192;
+      i-=1;
+    }
+    else
+    {
+      _dataToSend[i] = (value & 63) | 64;
+      _dataToSend[i + 1] = ((value >> 6)  & 63) | 128;
+      _dataToSend[i + 2] = ((value >> 12) & 63) | 192;
+    }
   }  
 }
