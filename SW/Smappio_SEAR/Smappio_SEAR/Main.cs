@@ -131,13 +131,6 @@ namespace Smappio_SEAR
 
             bool releaseCondition = _receivedBytes.Count >= _offset + _playingLength;
 
-            if (firstData)
-            {
-                _receivedBytes.RemoveAt(0);
-                _receivedBytes.RemoveAt(1);
-                firstData = false;
-            }
-
             if (_receivedBytes.Count < _offset + _playingLength)
                 return;
 
@@ -265,7 +258,6 @@ namespace Smappio_SEAR
         #region Wifi Logic
         private Thread _threadReceive;
         private TcpClient _tcp = new TcpClient();
-        bool firstData = true;
         int _offset = 0;
         private WaveOut _waveOut = new WaveOut();
         private int _playingLength = 3000;// 3 * 20400;
@@ -279,7 +271,7 @@ namespace Smappio_SEAR
 
         private void btnWifiHTTP_Click(object sender, EventArgs e)
         {
-            _tcp = new TcpClient("192.168.1.1", 80);
+            _tcp = new TcpClient("192.168.1.2", 80);
             
             _threadReceive = new Thread(this.ReceiveData);
 
@@ -360,8 +352,15 @@ namespace Smappio_SEAR
                             buffer[i + 1 - acumDiscardedBytes] = (byte)((buffertmp[i + 2] & 15) << 4);
                             buffer[i + 1 - acumDiscardedBytes] = (byte)(buffer[i + 1] | ((buffertmp[i + 1] >> 2) & 15));
 
-                            //Byte 3 => 2 bits (el 3ro y 4to de izq a derecha)
-                            buffer[i + 2 - acumDiscardedBytes] = (byte)(buffer[i + 2] | ((buffertmp[i + 2] >> 4) & 3));
+                            //Byte 3 => 1 bit (el 4to de izq a derecha)
+                            buffer[i + 2 - acumDiscardedBytes] = (byte)((buffertmp[i + 2] >> 4) & 1);
+
+                            //Byte 3 => 5 bits para el signo(depende del 3ero de izq a derecha)
+                            // Si el bit mas significativo del samlpe es '1' quiere decir que el numero es negativo, entonces se
+                            // agrega un padding a la izquierda de '7' unos, caso contrario, se deja el padding 0 que ya habia
+                            byte signBit = (byte)((buffertmp[i + 2] >> 5) & 1);
+                            if (signBit == 1)
+                                buffer[i + 2 - acumDiscardedBytes] = (byte)(buffer[i + 2 - acumDiscardedBytes] | 254);
 
                             readed += 3;
                         }
@@ -379,20 +378,13 @@ namespace Smappio_SEAR
 
                     _receivedBytes.AddRange(buffer.Take(readed).ToList());
 
-                    if (firstData)
-                    {
-                        if (!sw.IsRunning)
-                            sw.Start();
-                        _receivedBytes.RemoveAt(0);
-                        _receivedBytes.RemoveAt(1);
-                        firstData = false;
-                        readed -= 2;
-                    }
+                    if (!sw.IsRunning)
+                        sw.Start();
 
                     if (_receivedBytes.Count < _playingLength * 4)
                         continue;
 
-                    //AddSamples();
+                    AddSamples();
                 }
             }
         }

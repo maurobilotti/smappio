@@ -9,6 +9,8 @@ const char* password = "123456789"; // El pass tiene que tener mas de 8 caracter
 // CONSTANTES
 #define BYTES_TO_SEND   42000   //57438 es aparentemente el max   // Tiene que ser multiplo de 3  
 #define MEDIA 13700   // I2S:  13700  | PCM:  6835   // valor para nivelar a 0 la señal media
+#define AMPLITUDE_MULTIPLIER 50 // Multiplicador de la amplitud de cada sample
+#define WIFI_CHANNEL 1  //  1  |  6  |  11
 
 // VARIABLES
 int32_t *_buffer;
@@ -20,15 +22,14 @@ void setup() {
   smappioSound.begin(_buffer);
 
   // Se crea un Access Point, para poder conectarse al dispositivo
-  WiFi.softAP(ssid, password);
+  WiFi.softAP(ssid, password, WIFI_CHANNEL);
+  delay(300); // DEJAR ESTE DELAY, sino softAP se puede colgar.
   // Se setea la ip del dispositivo para poder comunicarse con el
-  IPAddress Ip(192, 168, 1, 1);
+  IPAddress gateway(192,168,1,1);
+  IPAddress Ip(192, 168, 1, 2);
   IPAddress NMask(255, 255, 255, 0);
-  delay(300);
-  WiFi.softAPConfig(Ip, Ip, NMask);
-  delay(300);
+  WiFi.softAPConfig(Ip, gateway, NMask);
   server.begin();
-  delay(300);
   server.setNoDelay(false);
 }
 
@@ -63,7 +64,7 @@ void bufferSamplesToSend()
         bytesReaded = smappioSound.read();
     }   
     // Se lee un sample
-    value = smappioSound.getSampleValue();
+    value = smappioSound.getSampleValue() * AMPLITUDE_MULTIPLIER;
 
     // Se bufferean los 3 bytes del sample, con un desplazamiento y una numeracion
     _dataToSend[i] = (value & 63) | 64;               // '64'   =  01|111111
@@ -78,7 +79,6 @@ void bufferSamplesToSend()
 void bufferInvalidSecuenceTest() 
 {
   int32_t value = 0;
-  int bytesReaded = 0;
 
   for(int i = 0; i < BYTES_TO_SEND; i += 3)
   {
@@ -101,5 +101,21 @@ void bufferInvalidSecuenceTest()
       _dataToSend[i + 1] = ((value >> 6)  & 63) | 128;
       _dataToSend[i + 2] = ((value >> 12) & 63) | 192;
     }
+  }  
+}
+
+void bufferAlternateSignTest()
+{
+  int32_t value = 0;
+
+  for(int i = 0; i < BYTES_TO_SEND; i += 3)
+  {
+    value = i;
+    if(i % 6 == 0)
+      value = value * (-1);
+
+    _dataToSend[i] = (value & 63) | 64;
+    _dataToSend[i + 1] = ((value >> 6)  & 63) | 128;
+    _dataToSend[i + 2] = ((value >> 12) & 63) | 192;
   }  
 }

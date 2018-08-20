@@ -3,6 +3,7 @@
 // CONSTANTES
 #define BYTES_TO_SEND 3
 #define MEDIA 13700   // I2S:  13700  | PCM:  6835   // valor para nivelar a 0 la señal media
+#define AMPLITUDE_MULTIPLIER 50 // Multiplicador de la amplitud de cada sample
 
 // VARIABLES
 int32_t *_buffer;
@@ -51,7 +52,7 @@ void bufferSamplesToSend()
         bytesReaded = smappioSound.read();
     }   
     // Se lee un sample
-    value = smappioSound.getSampleValue();
+    value = smappioSound.getSampleValue() * AMPLITUDE_MULTIPLIER;
     _dataToSend[i] = value & 255;
     _dataToSend[i + 1] = (value >> 8)  & 255;
     _dataToSend[i + 2] = (value >> 16) & 255; 
