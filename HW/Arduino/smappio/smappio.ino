@@ -3,7 +3,7 @@
 // CONSTANTES
 #define BYTES_TO_SEND 3
 #define MEDIA 13700   // I2S:  13700  | PCM:  6835   // valor para nivelar a 0 la señal media
-#define AMPLITUDE_MULTIPLIER 50 // Multiplicador de la amplitud de cada sample
+#define AMPLITUDE_MULTIPLIER 63 // Multiplicador de la amplitud de cada sample
 
 // VARIABLES
 int32_t *_buffer;

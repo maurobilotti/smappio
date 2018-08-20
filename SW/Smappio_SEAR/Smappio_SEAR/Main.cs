@@ -46,6 +46,7 @@ namespace Smappio_SEAR
         #region SoundParameters
 
         static int _bytesDepth = 3;
+        static int _amplitudeMultiplier = 63; // 2^24 / 2^18 = 64  -> uso 63 por las dudas (implica un poquito menos de volumen)
         static int _sampleRate = 32000;// No modificar, pues modifica el audio escuchado.
         static int _bitDepth = _bytesDepth * 8;
         private bool _notified;
@@ -318,71 +319,83 @@ namespace Smappio_SEAR
                         int firstByteSeqNumber  = bufferAux[i] >> 6;
                         int secondByteSeqNumber = bufferAux[i + 1] >> 6;
                         int thirdByteSeqNumber  = bufferAux[i + 2] >> 6;
-                        int discartedBytes = 0;
+                        int discardedBytes = 0;
 
+                        // Si algun numero no no sigue la secuencia, se descartan bytes para atras, nunca para delante
                         if (firstByteSeqNumber != 1)
                         {
-                            if (firstByteSeqNumber == 2)
-                                discartedBytes += 2;
-                            else if (firstByteSeqNumber == 3)
-                                discartedBytes += 1;
+                            discardedBytes += 1;
                         }
                         else if (secondByteSeqNumber != 2)
                         {
                             if (secondByteSeqNumber == 1)
-                                discartedBytes += 1;
+                                discardedBytes += 1;
                             else if (secondByteSeqNumber == 3)
-                                discartedBytes += 2;
+                                discardedBytes += 2;
                         }
                         else if (thirdByteSeqNumber != 3)
                         {
                             if (thirdByteSeqNumber == 1)
-                                discartedBytes += 2;
+                                discardedBytes += 2;
                             else if (thirdByteSeqNumber == 2)
-                                discartedBytes += 3;
+                                discardedBytes += 3;
                         }
                         else
                         {
                             //Vuelvo a armar las muetras originales
-                            int errorFreeIndex = i - acumDiscardedBytes;
+                            int sample = 0;
+                            byte[] sampleAsByteArray = new byte[sizeof(int)];
+                            int errorFreeBaseIndex = i - acumDiscardedBytes;
                             byte auxByteMSB = 0;    // Most Significant Bits
 
                             //Byte 1 => ultimos 6 bits del primer byte + 2 últimos bits del segundo byte
-                            auxByteMSB = (byte)((bufferAux[i + 1] & 3) << 6);  // 'XX|000000'
-                            errorFreeBuffer[errorFreeIndex] = (byte)(auxByteMSB | (bufferAux[i] & 63)); // 'XX|YYYYYY'
+                            auxByteMSB = (byte)((bufferAux[i + 1] & 3) << 6);                           // 'XX|000000'
+                            sampleAsByteArray[0] = (byte)(auxByteMSB | (bufferAux[i] & 63));            // 'XX|YYYYYY'
 
                             //Byte 2 => 4 bits del medio del segundo byte + 4 úlitmos bits del último byte
-                            errorFreeIndex++;
-                            auxByteMSB = (byte)((bufferAux[i + 2] & 15) << 4); // 'XXXX|0000'
-                            errorFreeBuffer[errorFreeIndex] = (byte)(auxByteMSB | ((bufferAux[i + 1] >> 2) & 15)); // 'XXXX|YYYY'
+                            auxByteMSB = (byte)((bufferAux[i + 2] & 15) << 4);                          // 'XXXX|0000'
+                            sampleAsByteArray[1] = (byte)(auxByteMSB | ((bufferAux[i + 1] >> 2) & 15)); // 'XXXX|YYYY'
 
                             //Byte 3 => 1 bit (el 4to de izq a derecha)
-                            errorFreeIndex++;
-                            errorFreeBuffer[errorFreeIndex] = (byte)((bufferAux[i + 2] >> 4) & 1); // '0000000|X'
+                            sampleAsByteArray[2] = (byte)((bufferAux[i + 2] >> 4) & 1);                 // '0000000|X'
 
                             //Byte 3 => 5 bits para el signo(depende del 3ero de izq a derecha)
                             // Si el bit mas significativo del samlpe es '1' quiere decir que el numero es negativo, entonces se
-                            // agrega un padding a la izquierda de '7' unos, caso contrario, se deja el padding 0 que ya habia
+                            // agrega un padding a la izquierda de '7 + 8' unos, caso contrario, se deja el padding 0 que ya habia y se agregan '8' ceros mas
                             byte signBit = (byte)((bufferAux[i + 2] >> 5) & 1);
                             if (signBit == 1)
-                                errorFreeBuffer[errorFreeIndex] = (byte)(errorFreeBuffer[errorFreeIndex] | 254); // '1111111|X'
+                            {
+                                sampleAsByteArray[2] = (byte)(sampleAsByteArray[2] | 254);              // '1111111|X'
+                                sampleAsByteArray[3] = 255;                                             // '11111111'
+                            }
+                            else
+                            {
+                                sampleAsByteArray[3] = 0;                                               // '00000000'
+                            }
 
+                            // Se amplifica el sonido multiplicando por la constante '_amplitudeMultiplier'
+                            sample = BitConverter.ToInt32(sampleAsByteArray, 0) * _amplitudeMultiplier;
+                            sampleAsByteArray = BitConverter.GetBytes(sample);
+
+                            errorFreeBuffer[errorFreeBaseIndex]     = sampleAsByteArray[0];
+                            errorFreeBuffer[errorFreeBaseIndex + 1] = sampleAsByteArray[1];
+                            errorFreeBuffer[errorFreeBaseIndex + 2] = sampleAsByteArray[2];
                             errorFreeReaded += 3;
                         }
 
-                        if (discartedBytes == 0)
+                        if (discardedBytes == 0)
                             i += 3;
                         else
                         {
-                            i += discartedBytes;
-                            acumDiscardedBytes += discartedBytes;
+                            i += discardedBytes;
+                            acumDiscardedBytes += discardedBytes;
                         }
                     }
                     
                     #endregion
 
-                    _receivedBytes.AddRange(errorFreeBuffer.Take(errorFreeReaded).ToList());
-                    //_receivedBytes.AddRange(bufferAux.Take(readedAux).ToList()); // Sin checkeo de errores
+                    _receivedBytes.AddRange(errorFreeBuffer.Take(errorFreeReaded).ToList());    // Con checkeo de errores
+                    //_receivedBytes.AddRange(bufferAux.Take(readedAux).ToList());                // Sin checkeo de errores
 
                     if (!sw.IsRunning)
                         sw.Start();
