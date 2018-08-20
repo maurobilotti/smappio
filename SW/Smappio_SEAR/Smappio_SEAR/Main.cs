@@ -291,13 +291,13 @@ namespace Smappio_SEAR
         }
         string bytePacketsReceived = "";
         int readedAux = 0;
-        int readed = 0;
+        int errorFreeReaded = 0;
         private void ReceiveData()
         {
             NetworkStream netStream = _tcp.GetStream();
-            byte[] buffer = new byte[_playingLength];
-            byte[] buffertmp = new byte[_playingLength];
-            int acumDiscardedBytes = 0;
+            byte[] errorFreeBuffer = new byte[_playingLength];
+            byte[] bufferAux = new byte[_playingLength];
+            int acumDiscardedBytes;
 
             while (_tcp.Connected)
             {
@@ -307,62 +307,62 @@ namespace Smappio_SEAR
                         continue;
 
                     acumDiscardedBytes = 0;
-                    readedAux = netStream.Read(buffertmp, 0, _playingLength);
+                    readedAux = netStream.Read(bufferAux, 0, _playingLength);
 
                     #region Algoritmo de control de datos
                     //Verificar que lo que se lee cumpla con la secuencia 01, 10, 11
                     int i = 0;
-                    readed = 0;
+                    errorFreeReaded = 0;
                     while (i < readedAux - 3)
                     {
-                        int bitsControlPrimerByte = buffertmp[i] >> 6;
-                        int bitsControlSegundoByte = buffertmp[i + 1] >> 6;
-                        int bitsControlTercerByte = buffertmp[i + 2] >> 6;
+                        int firstByteSeqNumber  = bufferAux[i] >> 6;
+                        int secondByteSeqNumber = bufferAux[i + 1] >> 6;
+                        int thirdByteSeqNumber  = bufferAux[i + 2] >> 6;
                         int discartedBytes = 0;
 
-                        if (bitsControlPrimerByte != 1)
+                        if (firstByteSeqNumber != 1)
                         {
-                            if (bitsControlPrimerByte == 2)
+                            if (firstByteSeqNumber == 2)
                                 discartedBytes += 2;
-                            else if (bitsControlPrimerByte == 3)
+                            else if (firstByteSeqNumber == 3)
                                 discartedBytes += 1;
                         }
-                        else if (bitsControlSegundoByte != 2)
+                        else if (secondByteSeqNumber != 2)
                         {
-                            if (bitsControlSegundoByte == 1)
+                            if (secondByteSeqNumber == 1)
                                 discartedBytes += 1;
-                            else if (bitsControlSegundoByte == 3)
+                            else if (secondByteSeqNumber == 3)
                                 discartedBytes += 2;
                         }
-                        else if (bitsControlTercerByte != 3)
+                        else if (thirdByteSeqNumber != 3)
                         {
-                            if (bitsControlTercerByte == 1)
+                            if (thirdByteSeqNumber == 1)
                                 discartedBytes += 2;
-                            else if (bitsControlTercerByte == 2)
+                            else if (thirdByteSeqNumber == 2)
                                 discartedBytes += 3;
                         }
                         else
                         {
                             //Vuelvo a armar las muetras originales
                             //Byte 1 => ultimos 6 bits del primer byte + 2 últimos bits del segundo byte
-                            buffer[i - acumDiscardedBytes] = (byte)((buffertmp[i + 1] & 3) << 6);
-                            buffer[i - acumDiscardedBytes] = (byte)(buffer[i] | (buffertmp[i] & 63));
+                            errorFreeBuffer[i - acumDiscardedBytes] = (byte)((bufferAux[i + 1] & 3) << 6);
+                            errorFreeBuffer[i - acumDiscardedBytes] = (byte)(errorFreeBuffer[i] | (bufferAux[i] & 63));
 
                             //Byte 2 => 4 bits del medio del segundo byte + 4 úlitmos bits del último byte
-                            buffer[i + 1 - acumDiscardedBytes] = (byte)((buffertmp[i + 2] & 15) << 4);
-                            buffer[i + 1 - acumDiscardedBytes] = (byte)(buffer[i + 1] | ((buffertmp[i + 1] >> 2) & 15));
+                            errorFreeBuffer[i + 1 - acumDiscardedBytes] = (byte)((bufferAux[i + 2] & 15) << 4);
+                            errorFreeBuffer[i + 1 - acumDiscardedBytes] = (byte)(errorFreeBuffer[i + 1] | ((bufferAux[i + 1] >> 2) & 15));
 
                             //Byte 3 => 1 bit (el 4to de izq a derecha)
-                            buffer[i + 2 - acumDiscardedBytes] = (byte)((buffertmp[i + 2] >> 4) & 1);
+                            errorFreeBuffer[i + 2 - acumDiscardedBytes] = (byte)((bufferAux[i + 2] >> 4) & 1);
 
                             //Byte 3 => 5 bits para el signo(depende del 3ero de izq a derecha)
                             // Si el bit mas significativo del samlpe es '1' quiere decir que el numero es negativo, entonces se
                             // agrega un padding a la izquierda de '7' unos, caso contrario, se deja el padding 0 que ya habia
-                            byte signBit = (byte)((buffertmp[i + 2] >> 5) & 1);
+                            byte signBit = (byte)((bufferAux[i + 2] >> 5) & 1);
                             if (signBit == 1)
-                                buffer[i + 2 - acumDiscardedBytes] = (byte)(buffer[i + 2 - acumDiscardedBytes] | 254);
+                                errorFreeBuffer[i + 2 - acumDiscardedBytes] = (byte)(errorFreeBuffer[i + 2 - acumDiscardedBytes] | 254);
 
-                            readed += 3;
+                            errorFreeReaded += 3;
                         }
 
                         if (discartedBytes == 0)
@@ -376,7 +376,7 @@ namespace Smappio_SEAR
 
                     #endregion
 
-                    _receivedBytes.AddRange(buffer.Take(readed).ToList());
+                    _receivedBytes.AddRange(errorFreeBuffer.Take(errorFreeReaded).ToList());
 
                     if (!sw.IsRunning)
                         sw.Start();
@@ -391,9 +391,9 @@ namespace Smappio_SEAR
         
         public void AddSamples()
         {
-            var bufferForPlaying = _receivedBytes.GetRange(_offset, readed).ToArray();
+            var bufferForPlaying = _receivedBytes.GetRange(_offset, errorFreeReaded).ToArray();
 
-            _offset += readed;
+            _offset += errorFreeReaded;
 
             _provider.AddSamples(bufferForPlaying, 0, bufferForPlaying.Length);
         }
