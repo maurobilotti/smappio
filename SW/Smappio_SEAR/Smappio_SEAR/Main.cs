@@ -272,7 +272,7 @@ namespace Smappio_SEAR
         private void btnWifiHTTP_Click(object sender, EventArgs e)
         {
             _tcp = new TcpClient("192.168.1.2", 80);
-            
+            _tcp.Client.NoDelay = false;
             _threadReceive = new Thread(this.ReceiveData);
 
             _threadReceive.Start();
@@ -344,23 +344,28 @@ namespace Smappio_SEAR
                         else
                         {
                             //Vuelvo a armar las muetras originales
+                            int errorFreeIndex = i - acumDiscardedBytes;
+                            byte auxByteMSB = 0;    // Most Significant Bits
+
                             //Byte 1 => ultimos 6 bits del primer byte + 2 últimos bits del segundo byte
-                            errorFreeBuffer[i - acumDiscardedBytes] = (byte)((bufferAux[i + 1] & 3) << 6);
-                            errorFreeBuffer[i - acumDiscardedBytes] = (byte)(errorFreeBuffer[i] | (bufferAux[i] & 63));
+                            auxByteMSB = (byte)((bufferAux[i + 1] & 3) << 6);  // 'XX|000000'
+                            errorFreeBuffer[errorFreeIndex] = (byte)(auxByteMSB | (bufferAux[i] & 63)); // 'XX|YYYYYY'
 
                             //Byte 2 => 4 bits del medio del segundo byte + 4 úlitmos bits del último byte
-                            errorFreeBuffer[i + 1 - acumDiscardedBytes] = (byte)((bufferAux[i + 2] & 15) << 4);
-                            errorFreeBuffer[i + 1 - acumDiscardedBytes] = (byte)(errorFreeBuffer[i + 1] | ((bufferAux[i + 1] >> 2) & 15));
+                            errorFreeIndex++;
+                            auxByteMSB = (byte)((bufferAux[i + 2] & 15) << 4); // 'XXXX|0000'
+                            errorFreeBuffer[errorFreeIndex] = (byte)(auxByteMSB | ((bufferAux[i + 1] >> 2) & 15)); // 'XXXX|YYYY'
 
                             //Byte 3 => 1 bit (el 4to de izq a derecha)
-                            errorFreeBuffer[i + 2 - acumDiscardedBytes] = (byte)((bufferAux[i + 2] >> 4) & 1);
+                            errorFreeIndex++;
+                            errorFreeBuffer[errorFreeIndex] = (byte)((bufferAux[i + 2] >> 4) & 1); // '0000000|X'
 
                             //Byte 3 => 5 bits para el signo(depende del 3ero de izq a derecha)
                             // Si el bit mas significativo del samlpe es '1' quiere decir que el numero es negativo, entonces se
                             // agrega un padding a la izquierda de '7' unos, caso contrario, se deja el padding 0 que ya habia
                             byte signBit = (byte)((bufferAux[i + 2] >> 5) & 1);
                             if (signBit == 1)
-                                errorFreeBuffer[i + 2 - acumDiscardedBytes] = (byte)(errorFreeBuffer[i + 2 - acumDiscardedBytes] | 254);
+                                errorFreeBuffer[errorFreeIndex] = (byte)(errorFreeBuffer[errorFreeIndex] | 254); // '1111111|X'
 
                             errorFreeReaded += 3;
                         }
@@ -373,10 +378,11 @@ namespace Smappio_SEAR
                             acumDiscardedBytes += discartedBytes;
                         }
                     }
-
+                    
                     #endregion
 
                     _receivedBytes.AddRange(errorFreeBuffer.Take(errorFreeReaded).ToList());
+                    //_receivedBytes.AddRange(bufferAux.Take(readedAux).ToList()); // Sin checkeo de errores
 
                     if (!sw.IsRunning)
                         sw.Start();
