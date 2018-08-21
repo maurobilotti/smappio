@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Smappio</string>
+
+    <string name="navigation_drawer_open">Abrir barra de navegación</string>
+    <string name="navigation_drawer_close">Cerrar barra de navegación</string>
+    <string name="nav_header_title">Usuario</string>
+    <string name="nav_header_subtitle">Usuario@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Opciones</string>
+
+</resources>
