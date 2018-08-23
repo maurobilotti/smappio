@@ -1,6 +1,7 @@
 package ar.com.smappio;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     TextView remainingTimeLabel;
     MediaPlayer mp;
     int totalTime;
+    Uri currFileURI;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,81 +47,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        ///////////////Reproductor
-        playBtn = (Button) findViewById(R.id.playBtn);
-        elapsedTimeLabel = (TextView) findViewById(R.id.elapsedTimeLabel);
-        remainingTimeLabel = (TextView) findViewById(R.id.remainingTimeLabel);
-
-        // Media Player
-        mp = MediaPlayer.create(this, R.raw.mp3latidos);
-        mp.setLooping(true);
-        mp.seekTo(0);
-        mp.setVolume(0.5f, 0.5f);
-        totalTime = mp.getDuration();
-
-        // Position Bar
-        positionBar = (SeekBar) findViewById(R.id.positionBar);
-        positionBar.setMax(totalTime);
-        positionBar.setOnSeekBarChangeListener(
-                new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        if (fromUser) {
-                            mp.seekTo(progress);
-                            positionBar.setProgress(progress);
-                        }
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-
-                    }
-
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-
-                    }
-                }
-        );
-
-
-        // Volume Bar
-        volumeBar = (SeekBar) findViewById(R.id.volumeBar);
-        volumeBar.setOnSeekBarChangeListener(
-                new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        float volumeNum = progress / 100f;
-                        mp.setVolume(volumeNum, volumeNum);
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-
-                    }
-
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-
-                    }
-                }
-        );
-
-        // Thread (Update positionBar & timeLabel)
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (mp != null) {
-                    try {
-                        Message msg = new Message();
-                        msg.what = mp.getCurrentPosition();
-                        handler.sendMessage(msg);
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {}
-                }
-            }
-        }).start();
     }
 
     @Override
@@ -161,7 +88,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_slideshow) {
-            performFileSearch();
+            Intent intent = new Intent();
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            // Set your required file type
+            intent.setType("*/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(intent, "DEMO"),1001);
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
@@ -173,35 +105,87 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    //File chooser
-    private static final int READ_REQUEST_CODE = 42;
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1001) {
+            currFileURI = data.getData();
 
-    public void performFileSearch() {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("*/*");
-        startActivityForResult(intent, READ_REQUEST_CODE);
+            ///////////////Reproductor
+            playBtn = (Button) findViewById(R.id.playBtn);
+            elapsedTimeLabel = (TextView) findViewById(R.id.elapsedTimeLabel);
+            remainingTimeLabel = (TextView) findViewById(R.id.remainingTimeLabel);
+
+            // Media Player
+            mp = MediaPlayer.create(this, currFileURI);
+            mp.setLooping(true);
+            mp.seekTo(0);
+            mp.setVolume(0.5f, 0.5f);
+            totalTime = mp.getDuration();
+
+            // Position Bar
+            positionBar = (SeekBar) findViewById(R.id.positionBar);
+            positionBar.setMax(totalTime);
+            positionBar.setOnSeekBarChangeListener(
+                    new SeekBar.OnSeekBarChangeListener() {
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                            if (fromUser) {
+                                mp.seekTo(progress);
+                                positionBar.setProgress(progress);
+                            }
+                        }
+
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar) {
+
+                        }
+
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar) {
+
+                        }
+                    }
+            );
+
+
+            // Volume Bar
+            volumeBar = (SeekBar) findViewById(R.id.volumeBar);
+            volumeBar.setOnSeekBarChangeListener(
+                    new SeekBar.OnSeekBarChangeListener() {
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                            float volumeNum = progress / 100f;
+                            mp.setVolume(volumeNum, volumeNum);
+                        }
+
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar) {
+
+                        }
+
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar) {
+
+                        }
+                    }
+            );
+
+            // Thread (Update positionBar & timeLabel)
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (mp != null) {
+                        try {
+                            Message msg = new Message();
+                            msg.what = mp.getCurrentPosition();
+                            handler.sendMessage(msg);
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {}
+                    }
+                }
+            }).start();
+        }
     }
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
-//
-//        // The ACTION_OPEN_DOCUMENT isent with tntent was he request code
-//        // READ_REQUEST_CODE. If the request code seen here doesn't match, it's the
-//        // response to some other intent, and the code below shouldn't run at all.
-//
-//        if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-//            // The document selected by the user won't be returned in the intent.
-//            // Instead, a URI to that document will be contained in the return intent
-//            // provided to this method as a parameter.
-//            // Pull that URI using resultData.getData().
-//            Uri uri = null;
-//            if (resultData != null) {
-//                uri = resultData.getData();
-//                Log.i("Info", "Uri: " + uri.toString());
-//                //showImage(uri);
-//            }
-//        }
-//    }
 
     //Reproductor
     private Handler handler = new Handler() {
@@ -246,5 +230,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
     }
-
 }
