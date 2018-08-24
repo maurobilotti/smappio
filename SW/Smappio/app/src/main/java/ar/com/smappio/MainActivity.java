@@ -3,6 +3,7 @@ package ar.com.smappio;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -21,15 +22,15 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    public static final int CODE_FILE_SYSTEM = 1001;
 
     Button playBtn;
     SeekBar positionBar;
-    SeekBar volumeBar;
     TextView elapsedTimeLabel;
     TextView remainingTimeLabel;
-    MediaPlayer mp;
+    MediaPlayer mediaPlayer;
     int totalTime;
-    Uri currFileURI;
+    Uri currentFileURI;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +41,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -88,12 +88,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_slideshow) {
-            Intent intent = new Intent();
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            // Set your required file type
-            intent.setType("*/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(Intent.createChooser(intent, "DEMO"),1001);
+            openFileSystem();
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
@@ -105,22 +100,48 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1001) {
-            currFileURI = data.getData();
+    public void openFileSystem(){
+        Intent intent = new Intent();
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("audio/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Archivos"), CODE_FILE_SYSTEM);
+    }
 
-            ///////////////Reproductor
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == CODE_FILE_SYSTEM) {
+            stopAndResetAudioPlayer();
+            startAudioPlayer(data);
+        }
+    }
+
+    public void stopAndResetAudioPlayer(){
+        if(mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.reset();
+        }
+    }
+
+    public void startAudioPlayer(Intent data) {
+        if (data != null) {
+            //Mostrar reproductor al elegir el tema
+            ConstraintLayout contentMain = (ConstraintLayout) findViewById(R.id.content_main);
+            contentMain.setVisibility(ConstraintLayout.VISIBLE);
+
+            currentFileURI = data.getData();
+
             playBtn = (Button) findViewById(R.id.playBtn);
             elapsedTimeLabel = (TextView) findViewById(R.id.elapsedTimeLabel);
             remainingTimeLabel = (TextView) findViewById(R.id.remainingTimeLabel);
 
-            // Media Player
-            mp = MediaPlayer.create(this, currFileURI);
-            mp.setLooping(true);
-            mp.seekTo(0);
-            mp.setVolume(0.5f, 0.5f);
-            totalTime = mp.getDuration();
+            mediaPlayer = MediaPlayer.create(this, currentFileURI);
+            mediaPlayer.setLooping(true);
+            mediaPlayer.seekTo(0);
+            mediaPlayer.setVolume(0.5f, 0.5f);
+            totalTime = mediaPlayer.getDuration();
 
             // Position Bar
             positionBar = (SeekBar) findViewById(R.id.positionBar);
@@ -130,43 +151,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         @Override
                         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                             if (fromUser) {
-                                mp.seekTo(progress);
+                                mediaPlayer.seekTo(progress);
                                 positionBar.setProgress(progress);
                             }
                         }
-
                         @Override
-                        public void onStartTrackingTouch(SeekBar seekBar) {
-
-                        }
-
+                        public void onStartTrackingTouch(SeekBar seekBar) { }
                         @Override
-                        public void onStopTrackingTouch(SeekBar seekBar) {
-
-                        }
-                    }
-            );
-
-
-            // Volume Bar
-            volumeBar = (SeekBar) findViewById(R.id.volumeBar);
-            volumeBar.setOnSeekBarChangeListener(
-                    new SeekBar.OnSeekBarChangeListener() {
-                        @Override
-                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                            float volumeNum = progress / 100f;
-                            mp.setVolume(volumeNum, volumeNum);
-                        }
-
-                        @Override
-                        public void onStartTrackingTouch(SeekBar seekBar) {
-
-                        }
-
-                        @Override
-                        public void onStopTrackingTouch(SeekBar seekBar) {
-
-                        }
+                        public void onStopTrackingTouch(SeekBar seekBar) {  }
                     }
             );
 
@@ -174,31 +166,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    while (mp != null) {
+                    while (mediaPlayer != null) {
                         try {
                             Message msg = new Message();
-                            msg.what = mp.getCurrentPosition();
+                            msg.what = mediaPlayer.getCurrentPosition();
                             handler.sendMessage(msg);
                             Thread.sleep(1000);
-                        } catch (InterruptedException e) {}
+                        } catch (InterruptedException e) { }
                     }
                 }
             }).start();
+
+            mediaPlayer.start();
+            playBtn.setBackgroundResource(android.R.drawable.ic_media_pause);
         }
     }
 
-    //Reproductor
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             int currentPosition = msg.what;
             // Update positionBar.
             positionBar.setProgress(currentPosition);
-
             // Update Labels.
             String elapsedTime = createTimeLabel(currentPosition);
             elapsedTimeLabel.setText(elapsedTime);
-
             String remainingTime = createTimeLabel(totalTime-currentPosition);
             remainingTimeLabel.setText("- " + remainingTime);
         }
@@ -208,26 +200,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String timeLabel = "";
         int min = time / 1000 / 60;
         int sec = time / 1000 % 60;
-
         timeLabel = min + ":";
-        if (sec < 10) timeLabel += "0";
+        if (sec < 10) {
+            timeLabel += "0";
+        }
         timeLabel += sec;
-
         return timeLabel;
     }
 
     public void playBtnClick(View view) {
-
-        if (!mp.isPlaying()) {
-            // Stopping
-            mp.start();
-            playBtn.setBackgroundResource(R.drawable.stop);
-
+        if (!mediaPlayer.isPlaying()) {
+            mediaPlayer.start();
+            playBtn.setBackgroundResource(android.R.drawable.ic_media_pause);
         } else {
-            // Playing
-            mp.pause();
-            playBtn.setBackgroundResource(R.drawable.play);
+            mediaPlayer.pause();
+            playBtn.setBackgroundResource(android.R.drawable.ic_media_play);
         }
-
     }
 }
