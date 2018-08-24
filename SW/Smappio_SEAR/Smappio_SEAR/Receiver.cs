@@ -28,6 +28,7 @@ namespace Smappio_SEAR
             this._provider = new BufferedWaveProvider(new WaveFormat(_sampleRate, 24, 1));
         }
 
+        #region Public Methods
         public virtual void Play()
         {
             if (_waveOut.PlaybackState != PlaybackState.Playing)
@@ -41,8 +42,7 @@ namespace Smappio_SEAR
         {
             string absolutePath = Path.GetFullPath(_filePath);
             string fileName = $"{DateTime.Now.ToString("yyyy-MM-dd_hhmmss")}.pcm";
-            string fullPath = Path.Combine(absolutePath, fileName);
-            //string text = _bytes.ByteListToString();
+            string fullPath = Path.Combine(absolutePath, fileName);            
             File.WriteAllBytes(fullPath, ReceivedBytes.ToArray());
         }
 
@@ -52,10 +52,6 @@ namespace Smappio_SEAR
             _offset += errorFreeReaded;
             _provider.AddSamples(bufferForPlaying, 0, bufferForPlaying.Length);
         }
-
-        public abstract byte[] ControlAlgorithm();
-        public abstract void Receive();
-        public abstract void Close();
 
         public void ClearAndClose()
         {
@@ -68,9 +64,16 @@ namespace Smappio_SEAR
             return this.ReceivedBytes.Count;
         }
 
-        internal int GetBytesDepth()
+        public int GetBytesDepth()
         {
             return _bytesDepth;
-        }
+        } 
+        #endregion
+
+        #region Abstract Methods
+        public abstract byte[] ControlAlgorithm();
+        public abstract void Receive();
+        public abstract void Close(); 
+        #endregion
     }
 }

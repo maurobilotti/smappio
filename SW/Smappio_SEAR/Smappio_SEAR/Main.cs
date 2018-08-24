@@ -15,29 +15,27 @@ namespace Smappio_SEAR
             txtPath.Text = filePath;
             if (!Directory.Exists(filePath))
                 Directory.CreateDirectory(filePath);
-        } 
+        }
 
-        private string filePath = "../../AudioSamples/";        
+        private string filePath = "../../AudioSamples/";
         Stopwatch sw = new Stopwatch();
-        long elapsedMilliseconds = 0;
-        string deviceName = "smappio";
+        long elapsedMilliseconds = 0;        
         private bool _notified;
-        
-        public Receiver Receiver;        
+        public Receiver Receiver;
 
         #region Transfering methods
 
         private void btnUSB_Click(object sender, EventArgs e)
         {
-            Receiver = new SerialReceiver(_serialPort);
+            Receiver = new SerialReceiver(ref _serialPort);
 
-            if(!Receiver.Connected)
+            if (!Receiver.Connected)
             {
                 SetNotificationLabel("Can't connect serial.");
             }
             ((SerialReceiver)Receiver).Notify();
             Receiver.Receive();
-            SetNotificationLabel("Serial started");            
+            SetNotificationLabel("Serial started");
 
             if (!sw.IsRunning)
                 sw.Start();
@@ -50,7 +48,7 @@ namespace Smappio_SEAR
             //EnableFeatures();
             //try
             //{
-            //    _serialPort.PortName = BluetoothHelper.GetBluetoothPort(deviceName);
+            //    _serialPort.PortName = BluetoothHelper.GetBluetoothPort("smappio");
             //    _serialPort.BaudRate = Convert.ToInt32(_baudRate);
             //    _serialPort.DtrEnable = true;
             //    _serialPort.RtsEnable = true;
@@ -67,7 +65,7 @@ namespace Smappio_SEAR
             //    _serialPort.Dispose();
             //    return;
             //}
-        }        
+        }
 
         private void btnUdp_Click(object sender, EventArgs e)
         {
@@ -96,8 +94,9 @@ namespace Smappio_SEAR
             SetNotificationLabel("Threads Running");
         }
 
-
         #endregion
+
+        #region Program features
 
         #region TextBox_Methods
         delegate void SetTextCallback(string text);
@@ -137,8 +136,6 @@ namespace Smappio_SEAR
         }
 
         #endregion
-
-        #region Save file methods
         private void btnSave_Click(object sender, EventArgs e)
         {
             if (!_notified)
@@ -170,10 +167,6 @@ namespace Smappio_SEAR
             ClearContents();
         }
 
-        #endregion
-
-        #region private methods
-       
         private void ClearContents()
         {
             SetButtonStatus(true);
@@ -181,18 +174,13 @@ namespace Smappio_SEAR
             sw = new Stopwatch();
 
             Receiver.ClearAndClose();
-
         }
 
         private void SetButtonStatus(bool status = false)
         {
             btnBluetooth.Enabled = btnTcp.Enabled = btnUdp.Enabled = btnSerial.Enabled = status;
         }
-        #endregion       
 
-        private void Main_Load(object sender, EventArgs e)
-        {
-
-        }
+        #endregion
     }
 }

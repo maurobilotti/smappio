@@ -11,7 +11,7 @@ namespace Smappio_SEAR.Serial
     {
         private SerialPort _serialPort;
         private float _baudRate = 2000000;
-        public SerialReceiver(SerialPort serialPort)
+        public SerialReceiver(ref SerialPort serialPort)
         {
             _serialPort = serialPort;
             _serialPort.PortName = "COM4";//BluetoothHelper.GetBluetoothPort("Silicon Labs CP210x USB to UART Bridge");
@@ -26,8 +26,7 @@ namespace Smappio_SEAR.Serial
             {
                 _serialPort.Open();
                 Connected = true;
-            }
-                
+            }                
         }
 
         public override void Close()
@@ -59,7 +58,7 @@ namespace Smappio_SEAR.Serial
             var bufferSize = _serialPort.BytesToRead;
 
             byte[] data = new byte[bufferSize];
-            _serialPort.Read(data, 0, bufferSize);
+            errorFreeReaded = _serialPort.Read(data, 0, bufferSize);
 
             ReceivedBytes.AddRange(data);
 
