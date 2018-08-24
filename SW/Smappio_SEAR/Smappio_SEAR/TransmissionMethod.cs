@@ -8,7 +8,8 @@ namespace Smappio_SEAR
 {
     public enum TransmissionMethod
     {
-        Wifi, 
+        Tcp,
+        Udp,
         Bluetooth,
         Serial
     }
