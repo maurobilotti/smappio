@@ -35,8 +35,6 @@
             this.lblNotification = new System.Windows.Forms.Label();
             this.txtSerialData = new System.Windows.Forms.TextBox();
             this.lblSamplesReceived = new System.Windows.Forms.Label();
-            this.btnUSB = new System.Windows.Forms.Button();
-            this.btnBluetooth = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -50,14 +48,16 @@
             this.label8 = new System.Windows.Forms.Label();
             this.txtPath = new System.Windows.Forms.TextBox();
             this.btnClear = new System.Windows.Forms.Button();
-            this.btnStop = new System.Windows.Forms.Button();
-            this.btnWifiHTTP = new System.Windows.Forms.Button();
+            this.btnUdp = new System.Windows.Forms.Button();
+            this.btnTcp = new System.Windows.Forms.Button();
+            this.btnSerial = new System.Windows.Forms.Button();
+            this.btnBluetooth = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnSave
             // 
             this.btnSave.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSave.Location = new System.Drawing.Point(297, 35);
+            this.btnSave.Location = new System.Drawing.Point(764, 34);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(75, 23);
             this.btnSave.TabIndex = 2;
@@ -68,11 +68,11 @@
             // lblNotification
             // 
             this.lblNotification.AutoSize = true;
-            this.lblNotification.Location = new System.Drawing.Point(693, 131);
+            this.lblNotification.Location = new System.Drawing.Point(677, 118);
             this.lblNotification.Name = "lblNotification";
-            this.lblNotification.Size = new System.Drawing.Size(13, 13);
+            this.lblNotification.Size = new System.Drawing.Size(78, 13);
             this.lblNotification.TabIndex = 3;
-            this.lblNotification.Text = "_";
+            this.lblNotification.Text = "Not connected";
             // 
             // txtSerialData
             // 
@@ -85,22 +85,169 @@
             // lblSamplesReceived
             // 
             this.lblSamplesReceived.AutoSize = true;
-            this.lblSamplesReceived.Location = new System.Drawing.Point(733, 172);
+            this.lblSamplesReceived.Location = new System.Drawing.Point(717, 159);
             this.lblSamplesReceived.Name = "lblSamplesReceived";
             this.lblSamplesReceived.Size = new System.Drawing.Size(13, 13);
             this.lblSamplesReceived.TabIndex = 6;
             this.lblSamplesReceived.Text = "_";
             // 
-            // btnUSB
+            // label1
             // 
-            this.btnUSB.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnUSB.Image = global::Smappio_SEAR.Properties.Resources.if_usb_925801;
-            this.btnUSB.Location = new System.Drawing.Point(141, 11);
-            this.btnUSB.Name = "btnUSB";
-            this.btnUSB.Size = new System.Drawing.Size(48, 48);
-            this.btnUSB.TabIndex = 7;
-            this.btnUSB.UseVisualStyleBackColor = true;
-            this.btnUSB.Click += new System.EventHandler(this.btnUSB_Click);
+            this.label1.AutoSize = true;
+            this.label1.ForeColor = System.Drawing.Color.Red;
+            this.label1.Location = new System.Drawing.Point(612, 159);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(99, 13);
+            this.label1.TabIndex = 8;
+            this.label1.Text = "Samples Received:";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.ForeColor = System.Drawing.Color.Red;
+            this.label2.Location = new System.Drawing.Point(613, 118);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(63, 13);
+            this.label2.TabIndex = 9;
+            this.label2.Text = "Notification:";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.ForeColor = System.Drawing.Color.Red;
+            this.label3.Location = new System.Drawing.Point(613, 137);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(33, 13);
+            this.label3.TabIndex = 10;
+            this.label3.Text = "Time:";
+            // 
+            // lblTime
+            // 
+            this.lblTime.AutoSize = true;
+            this.lblTime.Location = new System.Drawing.Point(677, 137);
+            this.lblTime.Name = "lblTime";
+            this.lblTime.Size = new System.Drawing.Size(13, 13);
+            this.lblTime.TabIndex = 11;
+            this.lblTime.Text = "_";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.ForeColor = System.Drawing.Color.Red;
+            this.label4.Location = new System.Drawing.Point(612, 181);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(66, 13);
+            this.label4.TabIndex = 12;
+            this.label4.Text = "Sample rate:";
+            // 
+            // lblSampleRate
+            // 
+            this.lblSampleRate.AutoSize = true;
+            this.lblSampleRate.Location = new System.Drawing.Point(717, 181);
+            this.lblSampleRate.Name = "lblSampleRate";
+            this.lblSampleRate.Size = new System.Drawing.Size(13, 13);
+            this.lblSampleRate.TabIndex = 13;
+            this.lblSampleRate.Text = "_";
+            // 
+            // lblBitRate
+            // 
+            this.lblBitRate.AutoSize = true;
+            this.lblBitRate.Location = new System.Drawing.Point(718, 207);
+            this.lblBitRate.Name = "lblBitRate";
+            this.lblBitRate.Size = new System.Drawing.Size(13, 13);
+            this.lblBitRate.TabIndex = 15;
+            this.lblBitRate.Text = "_";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.ForeColor = System.Drawing.Color.Red;
+            this.label6.Location = new System.Drawing.Point(613, 207);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(43, 13);
+            this.label6.TabIndex = 14;
+            this.label6.Text = "Bit rate:";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(775, 207);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(30, 13);
+            this.label7.TabIndex = 16;
+            this.label7.Text = "kbps";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(775, 181);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(20, 13);
+            this.label5.TabIndex = 17;
+            this.label5.Text = "Hz";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(775, 137);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(20, 13);
+            this.label8.TabIndex = 18;
+            this.label8.Text = "ms";
+            // 
+            // txtPath
+            // 
+            this.txtPath.Location = new System.Drawing.Point(426, 36);
+            this.txtPath.Name = "txtPath";
+            this.txtPath.Size = new System.Drawing.Size(320, 20);
+            this.txtPath.TabIndex = 19;
+            // 
+            // btnClear
+            // 
+            this.btnClear.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnClear.Location = new System.Drawing.Point(764, 63);
+            this.btnClear.Name = "btnClear";
+            this.btnClear.Size = new System.Drawing.Size(75, 23);
+            this.btnClear.TabIndex = 20;
+            this.btnClear.Text = "Clear";
+            this.btnClear.UseVisualStyleBackColor = true;
+            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
+            // 
+            // btnUdp
+            // 
+            this.btnUdp.BackgroundImage = global::Smappio_SEAR.Properties.Resources.user_datagram_protocol_udp_300x242;
+            this.btnUdp.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnUdp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnUdp.Location = new System.Drawing.Point(140, 12);
+            this.btnUdp.Name = "btnUdp";
+            this.btnUdp.Size = new System.Drawing.Size(48, 48);
+            this.btnUdp.TabIndex = 23;
+            this.btnUdp.UseVisualStyleBackColor = true;
+            this.btnUdp.Click += new System.EventHandler(this.btnUdp_Click);
+            // 
+            // btnTcp
+            // 
+            this.btnTcp.BackgroundImage = global::Smappio_SEAR.Properties.Resources.TCP;
+            this.btnTcp.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnTcp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnTcp.Location = new System.Drawing.Point(79, 11);
+            this.btnTcp.Name = "btnTcp";
+            this.btnTcp.Size = new System.Drawing.Size(48, 48);
+            this.btnTcp.TabIndex = 22;
+            this.btnTcp.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnTcp.UseVisualStyleBackColor = true;
+            this.btnTcp.Click += new System.EventHandler(this.btnTcp_Click);
+            // 
+            // btnSerial
+            // 
+            this.btnSerial.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSerial.Image = global::Smappio_SEAR.Properties.Resources.if_usb_925801;
+            this.btnSerial.Location = new System.Drawing.Point(201, 12);
+            this.btnSerial.Name = "btnSerial";
+            this.btnSerial.Size = new System.Drawing.Size(48, 48);
+            this.btnSerial.TabIndex = 7;
+            this.btnSerial.UseVisualStyleBackColor = true;
+            this.btnSerial.Click += new System.EventHandler(this.btnUSB_Click);
             // 
             // btnBluetooth
             // 
@@ -113,150 +260,6 @@
             this.btnBluetooth.UseVisualStyleBackColor = true;
             this.btnBluetooth.Click += new System.EventHandler(this.btnBluetooth_Click);
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.ForeColor = System.Drawing.Color.Red;
-            this.label1.Location = new System.Drawing.Point(628, 172);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(99, 13);
-            this.label1.TabIndex = 8;
-            this.label1.Text = "Samples Received:";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.ForeColor = System.Drawing.Color.Red;
-            this.label2.Location = new System.Drawing.Point(629, 131);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(63, 13);
-            this.label2.TabIndex = 9;
-            this.label2.Text = "Notification:";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.ForeColor = System.Drawing.Color.Red;
-            this.label3.Location = new System.Drawing.Point(629, 150);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(33, 13);
-            this.label3.TabIndex = 10;
-            this.label3.Text = "Time:";
-            // 
-            // lblTime
-            // 
-            this.lblTime.AutoSize = true;
-            this.lblTime.Location = new System.Drawing.Point(693, 150);
-            this.lblTime.Name = "lblTime";
-            this.lblTime.Size = new System.Drawing.Size(13, 13);
-            this.lblTime.TabIndex = 11;
-            this.lblTime.Text = "_";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.ForeColor = System.Drawing.Color.Red;
-            this.label4.Location = new System.Drawing.Point(628, 194);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(66, 13);
-            this.label4.TabIndex = 12;
-            this.label4.Text = "Sample rate:";
-            // 
-            // lblSampleRate
-            // 
-            this.lblSampleRate.AutoSize = true;
-            this.lblSampleRate.Location = new System.Drawing.Point(733, 194);
-            this.lblSampleRate.Name = "lblSampleRate";
-            this.lblSampleRate.Size = new System.Drawing.Size(13, 13);
-            this.lblSampleRate.TabIndex = 13;
-            this.lblSampleRate.Text = "_";
-            // 
-            // lblBitRate
-            // 
-            this.lblBitRate.AutoSize = true;
-            this.lblBitRate.Location = new System.Drawing.Point(734, 220);
-            this.lblBitRate.Name = "lblBitRate";
-            this.lblBitRate.Size = new System.Drawing.Size(13, 13);
-            this.lblBitRate.TabIndex = 15;
-            this.lblBitRate.Text = "_";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.ForeColor = System.Drawing.Color.Red;
-            this.label6.Location = new System.Drawing.Point(629, 220);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(43, 13);
-            this.label6.TabIndex = 14;
-            this.label6.Text = "Bit rate:";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(791, 220);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(30, 13);
-            this.label7.TabIndex = 16;
-            this.label7.Text = "kbps";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(791, 194);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(20, 13);
-            this.label5.TabIndex = 17;
-            this.label5.Text = "Hz";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(791, 150);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(20, 13);
-            this.label8.TabIndex = 18;
-            this.label8.Text = "ms";
-            // 
-            // txtPath
-            // 
-            this.txtPath.Location = new System.Drawing.Point(407, 38);
-            this.txtPath.Name = "txtPath";
-            this.txtPath.Size = new System.Drawing.Size(320, 20);
-            this.txtPath.TabIndex = 19;
-            // 
-            // btnClear
-            // 
-            this.btnClear.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnClear.Location = new System.Drawing.Point(202, 35);
-            this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(75, 23);
-            this.btnClear.TabIndex = 20;
-            this.btnClear.Text = "Clear";
-            this.btnClear.UseVisualStyleBackColor = true;
-            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
-            // 
-            // btnStop
-            // 
-            this.btnStop.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnStop.Location = new System.Drawing.Point(760, 37);
-            this.btnStop.Name = "btnStop";
-            this.btnStop.Size = new System.Drawing.Size(75, 23);
-            this.btnStop.TabIndex = 21;
-            this.btnStop.Text = "Stop";
-            this.btnStop.UseVisualStyleBackColor = true;
-            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
-            // 
-            // btnWifiHTTP
-            // 
-            this.btnWifiHTTP.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnWifiHTTP.Image = global::Smappio_SEAR.Properties.Resources.if_wifi_Logo_925806;
-            this.btnWifiHTTP.Location = new System.Drawing.Point(79, 11);
-            this.btnWifiHTTP.Name = "btnWifiHTTP";
-            this.btnWifiHTTP.Size = new System.Drawing.Size(48, 48);
-            this.btnWifiHTTP.TabIndex = 22;
-            this.btnWifiHTTP.UseVisualStyleBackColor = true;
-            this.btnWifiHTTP.Click += new System.EventHandler(this.btnWifiHTTP_Click);
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -264,8 +267,8 @@
             this.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.ClientSize = new System.Drawing.Size(851, 284);
-            this.Controls.Add(this.btnWifiHTTP);
-            this.Controls.Add(this.btnStop);
+            this.Controls.Add(this.btnUdp);
+            this.Controls.Add(this.btnTcp);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.txtPath);
             this.Controls.Add(this.label8);
@@ -279,7 +282,7 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.btnUSB);
+            this.Controls.Add(this.btnSerial);
             this.Controls.Add(this.lblSamplesReceived);
             this.Controls.Add(this.txtSerialData);
             this.Controls.Add(this.lblNotification);
@@ -288,7 +291,6 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Main";
             this.Text = "Smappio SEAR";
-            this.Load += new System.EventHandler(this.Main_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -302,7 +304,7 @@
         private System.Windows.Forms.TextBox txtSerialData;
         public System.IO.Ports.SerialPort _serialPort;
         private System.Windows.Forms.Label lblSamplesReceived;
-        private System.Windows.Forms.Button btnUSB;
+        private System.Windows.Forms.Button btnSerial;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
@@ -316,8 +318,8 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox txtPath;
         private System.Windows.Forms.Button btnClear;
-        private System.Windows.Forms.Button btnStop;
-        private System.Windows.Forms.Button btnWifiHTTP;
+        private System.Windows.Forms.Button btnTcp;
+        private System.Windows.Forms.Button btnUdp;
     }
 }
 
