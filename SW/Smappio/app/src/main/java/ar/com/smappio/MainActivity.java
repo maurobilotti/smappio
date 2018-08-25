@@ -3,6 +3,7 @@ package ar.com.smappio;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -92,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
-
+            shareFile();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -105,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("audio/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Archivos"), CODE_FILE_SYSTEM);
+        startActivityForResult(Intent.createChooser(intent, "Seleccionar archivo"), CODE_FILE_SYSTEM);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -178,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }).start();
 
             mediaPlayer.start();
-            playBtn.setBackgroundResource(android.R.drawable.ic_media_pause);
+            playBtn.setBackgroundResource(R.drawable.pause_button);
         }
     }
 
@@ -211,10 +212,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void playBtnClick(View view) {
         if (!mediaPlayer.isPlaying()) {
             mediaPlayer.start();
-            playBtn.setBackgroundResource(android.R.drawable.ic_media_pause);
+            playBtn.setBackgroundResource(R.drawable.pause_button);
         } else {
             mediaPlayer.pause();
-            playBtn.setBackgroundResource(android.R.drawable.ic_media_play);
+            playBtn.setBackgroundResource(R.drawable.play_button);
+        }
+    }
+
+    public void shareFile() {
+        if(currentFileURI != null){
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("audio/*");
+            intent.putExtra(Intent.EXTRA_STREAM, currentFileURI);
+            startActivity(Intent.createChooser(intent, "Compartir archivo de audio"));
         }
     }
 }
