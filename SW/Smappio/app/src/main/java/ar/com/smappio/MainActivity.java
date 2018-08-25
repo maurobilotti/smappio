@@ -1,6 +1,8 @@
 package ar.com.smappio;
 
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.audiofx.Visualizer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -32,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     MediaPlayer mediaPlayer;
     int totalTime;
     Uri currentFileURI;
+    VisualizerView mVisualizerView;
+    private Visualizer mVisualizer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,17 +136,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             ConstraintLayout contentMain = (ConstraintLayout) findViewById(R.id.content_main);
             contentMain.setVisibility(ConstraintLayout.VISIBLE);
 
+            setVolumeControlStream(AudioManager.STREAM_MUSIC);
+
             currentFileURI = data.getData();
 
             playBtn = (Button) findViewById(R.id.playBtn);
             elapsedTimeLabel = (TextView) findViewById(R.id.elapsedTimeLabel);
             remainingTimeLabel = (TextView) findViewById(R.id.remainingTimeLabel);
+            mVisualizerView = (VisualizerView) findViewById(R.id.phonocardiogram);
 
             mediaPlayer = MediaPlayer.create(this, currentFileURI);
             mediaPlayer.setLooping(true);
             mediaPlayer.seekTo(0);
             mediaPlayer.setVolume(0.5f, 0.5f);
             totalTime = mediaPlayer.getDuration();
+
+            setupVisualizerFxAndUI();
+            mVisualizer.setEnabled(true);
+
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        public void onCompletion(MediaPlayer mediaPlayer) {
+                            mVisualizer.setEnabled(false);
+                        }
+                    });
 
             // Position Bar
             positionBar = (SeekBar) findViewById(R.id.positionBar);
@@ -225,6 +241,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             intent.setType("audio/*");
             intent.putExtra(Intent.EXTRA_STREAM, currentFileURI);
             startActivity(Intent.createChooser(intent, "Compartir archivo de audio"));
+        }
+    }
+
+    private void setupVisualizerFxAndUI() {
+
+        // Create the Visualizer object and attach it to our media player.
+        mVisualizer = new Visualizer(mediaPlayer.getAudioSessionId());
+        mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+        mVisualizer.setDataCaptureListener(
+                new Visualizer.OnDataCaptureListener() {
+                    public void onWaveFormDataCapture(Visualizer visualizer,
+                                                      byte[] bytes, int samplingRate) {
+                        mVisualizerView.updateVisualizer(bytes);
+                    }
+
+                    public void onFftDataCapture(Visualizer visualizer,
+                                                 byte[] bytes, int samplingRate) {
+                    }
+                }, Visualizer.getMaxCaptureRate() / 2, true, false);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (isFinishing() && mediaPlayer != null) {
+            mVisualizer.release();
+            mediaPlayer.release();
+            mediaPlayer = null;
         }
     }
 }
