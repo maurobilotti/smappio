@@ -28,20 +28,7 @@ namespace Smappio_SEAR
 
         private void btnUSB_Click(object sender, EventArgs e)
         {
-            Receiver = new SerialReceiver(ref _serialPort);
-
-            if (!Receiver.Connected)
-            {
-                SetNotificationLabel("Can't connect serial.");
-            }
-            ((SerialReceiver)Receiver).Notify();
-            Receiver.Receive();
-            SetNotificationLabel("Serial started");
-
-            if (!sw.IsRunning)
-                sw.Start();
-
-            Receiver.Play();
+            InvokeReceiver(new SerialReceiver(ref _serialPort));
         }
 
         private void btnBluetooth_Click(object sender, EventArgs e)
@@ -70,21 +57,21 @@ namespace Smappio_SEAR
 
         private void btnUdp_Click(object sender, EventArgs e)
         {
-            InvokeWifiReceiver(new UdpReceiver());
+            InvokeReceiver(new UdpReceiver());
         }
 
         private void btnTcp_Click(object sender, EventArgs e)
         {
-            InvokeWifiReceiver(new TcpReceiver());
+            InvokeReceiver(new TcpReceiver());
         }
 
-        public void InvokeWifiReceiver(Receiver receiver)
+        private void InvokeReceiver(Receiver receiver)
         {
             Receiver = receiver;
 
             if (!Receiver.Connected)
             {
-                SetNotificationLabel("Not Available");
+                SetNotificationLabel(Receiver.PortName + " Not Available");
                 return;
             }
 
@@ -92,7 +79,7 @@ namespace Smappio_SEAR
             Receiver.Play();
 
             SetButtonStatus();
-            SetNotificationLabel("Threads Running");
+            SetNotificationLabel(Receiver.PortName + " Running");
         }
 
         #endregion

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 
@@ -8,6 +9,17 @@ namespace Smappio_SEAR.Wifi
     {
         protected Thread _threadReceive;
         protected NetworkStream netStream;
+
+        #region Properties
+        protected override int AvailableBytes => TcpClientReceiver.Client.Available;
+
+        protected TcpClient TcpClientReceiver
+        {
+            get => (TcpClient)ClientReceiver;
+        }
+
+        public override string PortName => "TCP";
+        #endregion
 
         public TcpReceiver()
         {
@@ -25,7 +37,7 @@ namespace Smappio_SEAR.Wifi
         {
             if (Connected)
             {
-                ((TcpClient)ClientReceiver).Close();
+                TcpClientReceiver.Close();
                 ClientReceiver.Dispose();
             }
         }
@@ -34,17 +46,16 @@ namespace Smappio_SEAR.Wifi
         {          
             if(Connected)
             {
-                ((TcpClient)ClientReceiver).Client.NoDelay = false;
+                TcpClientReceiver.Client.NoDelay = false;
                 _threadReceive = new Thread(ReceiveData);
 
                 _threadReceive.Start();
-                Play();
             }                      
         }
 
         protected override void ReadExtraBytes(int size)
         {
-            while (!netStream.CanRead)
+            while (AvailableBytes < size)
             {
                 // do nothing
             }
@@ -53,15 +64,13 @@ namespace Smappio_SEAR.Wifi
 
         private void ReceiveData()
         {
-            netStream = ((TcpClient)ClientReceiver).GetStream();
+            netStream = TcpClientReceiver.GetStream();
 
-            bufferAux = new byte[_playingLength * 2];
-
-            while (((TcpClient)ClientReceiver).Connected)
+            while (TcpClientReceiver.Connected)
             {
                 if (netStream.CanRead)
                 {
-                    if (((TcpClient)ClientReceiver).Client.Available < _playingLength)
+                    if (AvailableBytes < _playingLength)
                         continue;
 
                     readedAux = netStream.Read(bufferAux, 0, _playingLength);

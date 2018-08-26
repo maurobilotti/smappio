@@ -11,6 +11,13 @@ namespace Smappio_SEAR.Serial
     {
         private SerialPort _serialPort;
         private float _baudRate = 2000000;
+
+        #region Properties
+        protected override int AvailableBytes => _serialPort.BytesToRead;
+
+        public override string PortName => "Serial";
+        #endregion
+
         public SerialReceiver(ref SerialPort serialPort)
         {
             _serialPort = serialPort;
@@ -26,8 +33,10 @@ namespace Smappio_SEAR.Serial
             {
                 _serialPort.Open();
                 Connected = true;
-            }                
+            }
+            Notify();
         }
+
 
         public override void Close()
         {
@@ -43,31 +52,34 @@ namespace Smappio_SEAR.Serial
             _serialPort.Write("s");
         }
 
-        public override byte[] ControlAlgorithm()
-        {
-            throw new NotImplementedException();
-        }        
-
         public override void Receive()
         {
             _serialPort.DataReceived += SerialPort_DataReceived;
         }
 
+        protected override void ReadExtraBytes(int size)
+        {
+            while (AvailableBytes < size)
+            {
+                // do nothing
+            }
+            readedAux += _serialPort.Read(bufferAux, readedAux, size);
+        }
+
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            var bufferSize = _serialPort.BytesToRead;
+            if (AvailableBytes >= _playingLength)
+            {
+                readedAux = _serialPort.Read(bufferAux, 0, _playingLength);
+                byte[] errorFreeBuffer = ControlAlgorithm();
 
-            byte[] data = new byte[bufferSize];
-            errorFreeReaded = _serialPort.Read(data, 0, bufferSize);
+                ReceivedBytes.AddRange(errorFreeBuffer.Take(errorFreeReaded).ToList());
 
-            ReceivedBytes.AddRange(data);
+                if (ReceivedBytes.Count < _playingLength * 4)
+                    return;
 
-            bool releaseCondition = ReceivedBytes.Count >= _offset + _playingLength;
-
-            if (ReceivedBytes.Count < _offset + _playingLength)
-                return;
-
-            AddSamples();
+                AddSamples();
+            }
         }
     }
 }

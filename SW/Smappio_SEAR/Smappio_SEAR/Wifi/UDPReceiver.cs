@@ -7,6 +7,17 @@ namespace Smappio_SEAR.Wifi
 {
     public class UdpReceiver : WifiReceiver
     {
+        #region Properties
+        protected override int AvailableBytes => UdpClientReceiver.Client.Available;
+
+        protected UdpClient UdpClientReceiver
+        {
+            get => (UdpClient)ClientReceiver;
+        }
+
+        public override string PortName => "UDP";
+        #endregion
+
         public UdpReceiver()
         {
             this.TransmissionMethod = TransmissionMethod.Udp;
@@ -22,7 +33,7 @@ namespace Smappio_SEAR.Wifi
         {
             if(Connected)
             {
-                ((UdpClient)ClientReceiver).Close();
+                UdpClientReceiver.Close();
                 ClientReceiver.Dispose();
             }
         }
@@ -31,12 +42,12 @@ namespace Smappio_SEAR.Wifi
         {
             await Task.Run(async () =>
             {
-                while (((UdpClient)ClientReceiver).Client.Connected)
+                while (UdpClientReceiver.Client.Connected)
                 {                    
-                    if (((UdpClient)ClientReceiver).Available == 0)
+                    if (AvailableBytes == 0)
                         continue;
 
-                    var receivedResults = await ((UdpClient)ClientReceiver).ReceiveAsync();
+                    var receivedResults = await UdpClientReceiver.ReceiveAsync();
                     byte[] buffer = receivedResults.Buffer;
 
                     byte[] errorFreeBuffer = ControlAlgorithm();
