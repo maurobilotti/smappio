@@ -55,13 +55,19 @@ namespace Smappio_SEAR.Wifi
                                                                                                 //_receivedBytes.AddRange(bufferAux.Take(readedAux).ToList());              // Sin checkeo de errores                  
                     if (ReceivedBytes.Count < _playingLength * 4)
                         continue;
-
-                    AddSamples();
+                    // Maurito, a UDP no le di mucha bola en el refactor, pero creo que deberia quedar parecido a TCP, fijate como esta funcando llamando al metodo
+                    // AddFreeErrorSamples();
+                    AddSamplesToPlayer();
                 }
             });
         }
 
         protected override void ReadExtraBytes(int size)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override int ReadFromPort(byte[] buffer, int offset, int count)
         {
             throw new System.NotImplementedException();
         }

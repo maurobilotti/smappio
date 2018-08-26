@@ -63,23 +63,18 @@ namespace Smappio_SEAR.Serial
             {
                 // do nothing
             }
-            readedAux += _serialPort.Read(bufferAux, readedAux, size);
+            readedAux += ReadFromPort(bufferAux, readedAux, size);
         }
 
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            if (AvailableBytes >= _playingLength)
-            {
-                readedAux = _serialPort.Read(bufferAux, 0, _playingLength);
-                byte[] errorFreeBuffer = ControlAlgorithm();
+            AddFreeErrorSamples();
+        }
 
-                ReceivedBytes.AddRange(errorFreeBuffer.Take(errorFreeReaded).ToList());
 
-                if (ReceivedBytes.Count < _playingLength * 4)
-                    return;
-
-                AddSamples();
-            }
+        protected override int ReadFromPort(byte[] buffer, int offset, int count)
+        {
+            return _serialPort.Read(buffer, offset, count);
         }
     }
 }

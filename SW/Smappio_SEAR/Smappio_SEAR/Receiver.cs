@@ -29,7 +29,7 @@ namespace Smappio_SEAR
         public Receiver()
         {
             this.ReceivedBytes = new List<byte>();
-            this._provider = new BufferedWaveProvider(new WaveFormat(_sampleRate, 24, 1));
+            this._provider = new BufferedWaveProvider(new WaveFormat(_sampleRate, _bitDepth, 1));
         }
 
         #region Public Methods
@@ -50,7 +50,7 @@ namespace Smappio_SEAR
             File.WriteAllBytes(fullPath, ReceivedBytes.ToArray());
         }
 
-        public void AddSamples()
+        public void AddSamplesToPlayer()
         {
             var bufferForPlaying = ReceivedBytes.GetRange(_offset, errorFreeReaded).ToArray();
             _offset += errorFreeReaded;
@@ -162,6 +162,20 @@ namespace Smappio_SEAR
             return errorFreeBuffer;
         }
 
+        protected void AddFreeErrorSamples()
+        {
+            if (AvailableBytes >= _playingLength)
+            {
+                readedAux = ReadFromPort(bufferAux, 0, _playingLength);
+                byte[] errorFreeBuffer = ControlAlgorithm();
+
+                ReceivedBytes.AddRange(errorFreeBuffer);
+
+                if (ReceivedBytes.Count > _playingLength * 4)
+                    AddSamplesToPlayer();
+            }
+        }
+
         public void ClearAndClose()
         {
             ReceivedBytes.Clear();
@@ -183,6 +197,7 @@ namespace Smappio_SEAR
         protected abstract void ReadExtraBytes(int size);
         public abstract void Receive();
         public abstract void Close();
+        protected abstract int ReadFromPort(byte[] buffer, int offset, int count);
         protected abstract int AvailableBytes { get; }
         public abstract string PortName { get; }
         #endregion

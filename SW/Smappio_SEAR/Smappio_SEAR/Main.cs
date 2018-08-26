@@ -80,6 +80,9 @@ namespace Smappio_SEAR
 
             SetButtonStatus();
             SetNotificationLabel(Receiver.PortName + " Running");
+
+            if (!sw.IsRunning)
+                sw.Start();
         }
 
         #endregion

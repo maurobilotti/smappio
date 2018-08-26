@@ -70,19 +70,14 @@ namespace Smappio_SEAR.Wifi
             {
                 if (netStream.CanRead)
                 {
-                    if (AvailableBytes < _playingLength)
-                        continue;
-
-                    readedAux = netStream.Read(bufferAux, 0, _playingLength);
-                    byte[] errorFreeBuffer = ControlAlgorithm();
-                    ReceivedBytes.AddRange(errorFreeBuffer.Take(errorFreeReaded).ToList());                
-
-                    if (ReceivedBytes.Count < _playingLength * 4)
-                        continue;
-
-                    AddSamples();
+                    AddFreeErrorSamples();
                 }
             }
+        }
+
+        protected override int ReadFromPort(byte[] buffer, int offset, int count)
+        {
+            return netStream.Read(bufferAux, 0, _playingLength);
         }
     }
 }
