@@ -49,5 +49,10 @@ namespace Smappio_SEAR.Wifi
                 }
             });
         }
+
+        protected override void ReadExtraBytes(int size)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

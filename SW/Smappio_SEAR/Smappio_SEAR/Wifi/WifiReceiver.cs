@@ -19,7 +19,7 @@ namespace Smappio_SEAR.Wifi
             errorFreeReaded = 0;
             int i = 0;
             int acumDiscardedBytes = 0;
-            while (i < readedAux - 3)
+            while (i < readedAux - 2)
             {
                 int firstByteSeqNumber = bufferAux[i] >> 6;
                 int secondByteSeqNumber = bufferAux[i + 1] >> 6;
@@ -29,18 +29,32 @@ namespace Smappio_SEAR.Wifi
                 // Si algun numero no no sigue la secuencia, se descartan bytes para atras, nunca para delante
                 if (firstByteSeqNumber != 1)
                 {
+                    if (firstByteSeqNumber == 0)
+                    {
+                        bufferSeqNums.Add(bufferAux[i] & 63);
+                    }
                     discardedBytes += 1;
                 }
                 else if (secondByteSeqNumber != 2)
                 {
-                    if (secondByteSeqNumber == 1)
+                    if (secondByteSeqNumber == 0)
+                    {
+                        bufferSeqNums.Add(bufferAux[i + 1] & 63);
+                        discardedBytes += 1;
+                    }
+                    else if (secondByteSeqNumber == 1)
                         discardedBytes += 1;
                     else if (secondByteSeqNumber == 3)
                         discardedBytes += 2;
                 }
                 else if (thirdByteSeqNumber != 3)
                 {
-                    if (thirdByteSeqNumber == 1)
+                    if (thirdByteSeqNumber == 0)
+                    {
+                        bufferSeqNums.Add(bufferAux[i + 2] & 63);
+                        discardedBytes += 1;
+                    }
+                    else if (thirdByteSeqNumber == 1)
                         discardedBytes += 2;
                     else if (thirdByteSeqNumber == 2)
                         discardedBytes += 3;
@@ -92,8 +106,10 @@ namespace Smappio_SEAR.Wifi
                     i += 3;
                 else
                 {
+                    totalDiscardedBtes += discardedBytes;
                     i += discardedBytes;
                     acumDiscardedBytes += discardedBytes;
+                    ReadExtraBytes(discardedBytes);
                 }
             }
             
@@ -106,6 +122,9 @@ namespace Smappio_SEAR.Wifi
             PingReply reply = x.Send(IPAddress.Parse(ipAddress));
             return reply.Status != IPStatus.TimedOut && reply.Status != IPStatus.DestinationHostUnreachable;
         }
-        
+
+        #region Abstract Methods
+        protected abstract void ReadExtraBytes(int size);
+        #endregion
     }
 }

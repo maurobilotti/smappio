@@ -13,7 +13,7 @@ const char* password = "123456789"; // El pass tiene que tener mas de 8 caracter
 
 // VARIABLES
 int32_t *_buffer;
-uint8_t _dataToSend[BYTES_TO_SEND];
+uint8_t _dataToSend[BYTES_TO_SEND + 1];
 SmappioSound smappioSound(MEDIA); 
 
 void setup() { 
@@ -41,10 +41,19 @@ void loop() {
   if (client) 
   {
     client.setNoDelay(false);  
+    int bufferSeqNum = 0;  
     while (client.connected()) 
     {      
+      if(bufferSeqNum == 64)
+        bufferSeqNum = 0;
+        
       bufferSamplesToSendWithControlBits();
-      client.write(_dataToSend, BYTES_TO_SEND);
+
+      // Se agrega el numero de secuencia del bloque en el ultimo byte del mismo, con los 2 primeros bits en '00'y se envia
+      _dataToSend[BYTES_TO_SEND] = bufferSeqNum & 63;
+      client.write(_dataToSend, BYTES_TO_SEND + 1);
+
+      bufferSeqNum++;
     } 
   } 
 }

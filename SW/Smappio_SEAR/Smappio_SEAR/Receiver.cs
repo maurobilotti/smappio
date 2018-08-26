@@ -21,6 +21,8 @@ namespace Smappio_SEAR
         protected int _offset = 0;
         protected int errorFreeReaded = 0;
         protected int _amplitudeMultiplier = 63;
+        public IList<int> bufferSeqNums = new List<int>();
+        public int totalDiscardedBtes = 0;
 
         public Receiver()
         {

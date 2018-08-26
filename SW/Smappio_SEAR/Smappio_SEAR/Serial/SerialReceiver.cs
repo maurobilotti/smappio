@@ -14,7 +14,7 @@ namespace Smappio_SEAR.Serial
         public SerialReceiver(ref SerialPort serialPort)
         {
             _serialPort = serialPort;
-            _serialPort.PortName = "COM4";//BluetoothHelper.GetBluetoothPort("Silicon Labs CP210x USB to UART Bridge");
+            _serialPort.PortName = "COM13";//BluetoothHelper.GetBluetoothPort("Silicon Labs CP210x USB to UART Bridge");
             _serialPort.BaudRate = Convert.ToInt32(_baudRate);
             _serialPort.Handshake = Handshake.None;
 

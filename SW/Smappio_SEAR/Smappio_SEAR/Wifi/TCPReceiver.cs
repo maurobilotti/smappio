@@ -7,6 +7,8 @@ namespace Smappio_SEAR.Wifi
     public class TcpReceiver : WifiReceiver
     {
         protected Thread _threadReceive;
+        protected NetworkStream netStream;
+
         public TcpReceiver()
         {
             this.TransmissionMethod = TransmissionMethod.Tcp;
@@ -40,11 +42,20 @@ namespace Smappio_SEAR.Wifi
             }                      
         }
 
+        protected override void ReadExtraBytes(int size)
+        {
+            while (!netStream.CanRead)
+            {
+                // do nothing
+            }
+            readedAux += netStream.Read(bufferAux, readedAux, size);
+        }
+
         private void ReceiveData()
         {
-            NetworkStream netStream = ((TcpClient)ClientReceiver).GetStream();
+            netStream = ((TcpClient)ClientReceiver).GetStream();
 
-            bufferAux = new byte[_playingLength];
+            bufferAux = new byte[_playingLength * 2];
 
             while (((TcpClient)ClientReceiver).Connected)
             {
@@ -55,8 +66,7 @@ namespace Smappio_SEAR.Wifi
 
                     readedAux = netStream.Read(bufferAux, 0, _playingLength);
                     byte[] errorFreeBuffer = ControlAlgorithm();
-                    ReceivedBytes.AddRange(errorFreeBuffer.Take(errorFreeReaded).ToList());    // Con checkeo de errores
-                    //_receivedBytes.AddRange(bufferAux.Take(readedAux).ToList());              // Sin checkeo de errores                    
+                    ReceivedBytes.AddRange(errorFreeBuffer.Take(errorFreeReaded).ToList());                
 
                     if (ReceivedBytes.Count < _playingLength * 4)
                         continue;
