@@ -5,7 +5,6 @@ import android.media.AudioManager;
 import android.media.audiofx.Visualizer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,6 +19,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -64,27 +64,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.main, menu);
+//        return true;
+//    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -118,6 +118,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == CODE_FILE_SYSTEM) {
+            //Mostrar reproductor al elegir el audio
+            ConstraintLayout contentMain = (ConstraintLayout) findViewById(R.id.content_main);
+            contentMain.setVisibility(ConstraintLayout.VISIBLE);
+            //Mostrar el boton compartir
+            ImageButton shareBtn = (ImageButton) findViewById(R.id.share_btn);
+            shareBtn.setVisibility(ConstraintLayout.VISIBLE);
+
             stopAndResetAudioPlayer();
             startAudioPlayer(data);
         }
@@ -132,10 +139,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void startAudioPlayer(Intent data) {
         if (data != null) {
-            //Mostrar reproductor al elegir el tema
-            ConstraintLayout contentMain = (ConstraintLayout) findViewById(R.id.content_main);
-            contentMain.setVisibility(ConstraintLayout.VISIBLE);
-
             setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
             currentFileURI = data.getData();
@@ -270,5 +273,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             mediaPlayer.release();
             mediaPlayer = null;
         }
+    }
+
+    private void openWifiScanActivity() {
+
     }
 }
