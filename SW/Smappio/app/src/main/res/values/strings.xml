@@ -8,4 +8,8 @@
     <string name="nav_header_desc">Cabecera de navegación</string>
     <string name="action_settings">Configuración</string>
 
+    <!--Labels-->
+    <string name="lbl_connect_button">Conectar con dispositivo</string>
+    <string name="lbl_share_button">Compartir</string>
+
 </resources>

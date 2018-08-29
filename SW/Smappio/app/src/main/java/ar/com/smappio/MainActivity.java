@@ -12,7 +12,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.media.MediaPlayer;
 import android.os.Handler;
@@ -126,8 +125,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (requestCode == CODE_FILE_SYSTEM) {
             //Mostrar reproductor al elegir el audio
-            ConstraintLayout contentMain = (ConstraintLayout) findViewById(R.id.content_main);
-            contentMain.setVisibility(ConstraintLayout.VISIBLE);
+            ConstraintLayout audioPlayer = (ConstraintLayout) findViewById(R.id.audio_player);
+            audioPlayer.setVisibility(ConstraintLayout.VISIBLE);
             //Mostrar el boton compartir
             ImageButton shareBtn = (ImageButton) findViewById(R.id.share_btn);
             shareBtn.setVisibility(ConstraintLayout.VISIBLE);
@@ -205,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }).start();
 
             mediaPlayer.start();
-            playBtn.setBackgroundResource(R.drawable.pause_button);
+            playBtn.setBackgroundResource(R.drawable.audioplayer_pause_btn);
         }
     }
 
@@ -238,10 +237,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void playBtnClick(View view) {
         if (!mediaPlayer.isPlaying()) {
             mediaPlayer.start();
-            playBtn.setBackgroundResource(R.drawable.pause_button);
+            playBtn.setBackgroundResource(R.drawable.audioplayer_pause_btn);
         } else {
             mediaPlayer.pause();
-            playBtn.setBackgroundResource(R.drawable.play_button);
+            playBtn.setBackgroundResource(R.drawable.audioplayer_play_btn);
         }
     }
 
