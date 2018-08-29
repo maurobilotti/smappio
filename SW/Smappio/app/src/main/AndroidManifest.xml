@@ -6,14 +6,15 @@
         android:minSdkVersion="19"
         android:targetSdkVersion="27" />
 
+    <!--Permisos para File System-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <!--Permisos para Waveform-->
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-
 
     <application
         android:allowBackup="true"

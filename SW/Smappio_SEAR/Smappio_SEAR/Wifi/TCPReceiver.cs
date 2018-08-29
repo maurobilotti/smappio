@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 
@@ -7,6 +8,19 @@ namespace Smappio_SEAR.Wifi
     public class TcpReceiver : WifiReceiver
     {
         protected Thread _threadReceive;
+        protected NetworkStream netStream;
+
+        #region Properties
+        protected override int AvailableBytes => TcpClientReceiver.Client.Available;
+
+        protected TcpClient TcpClientReceiver
+        {
+            get => (TcpClient)ClientReceiver;
+        }
+
+        public override string PortName => "TCP";
+        #endregion
+
         public TcpReceiver()
         {
             this.TransmissionMethod = TransmissionMethod.Tcp;
@@ -23,7 +37,7 @@ namespace Smappio_SEAR.Wifi
         {
             if (Connected)
             {
-                ((TcpClient)ClientReceiver).Close();
+                TcpClientReceiver.Close();
                 ClientReceiver.Dispose();
             }
         }
@@ -32,38 +46,38 @@ namespace Smappio_SEAR.Wifi
         {          
             if(Connected)
             {
-                ((TcpClient)ClientReceiver).Client.NoDelay = false;
+                TcpClientReceiver.Client.NoDelay = false;
                 _threadReceive = new Thread(ReceiveData);
 
                 _threadReceive.Start();
-                Play();
             }                      
+        }
+
+        protected override void ReadExtraBytes(int size)
+        {
+            while (AvailableBytes < size)
+            {
+                // do nothing
+            }
+            readedAux += netStream.Read(bufferAux, readedAux, size);
         }
 
         private void ReceiveData()
         {
-            NetworkStream netStream = ((TcpClient)ClientReceiver).GetStream();
+            netStream = TcpClientReceiver.GetStream();
 
-            bufferAux = new byte[_playingLength];
-
-            while (((TcpClient)ClientReceiver).Connected)
+            while (TcpClientReceiver.Connected)
             {
                 if (netStream.CanRead)
                 {
-                    if (((TcpClient)ClientReceiver).Client.Available < _playingLength)
-                        continue;
-
-                    readedAux = netStream.Read(bufferAux, 0, _playingLength);
-                    byte[] errorFreeBuffer = ControlAlgorithm();
-                    ReceivedBytes.AddRange(errorFreeBuffer.Take(errorFreeReaded).ToList());    // Con checkeo de errores
-                    //_receivedBytes.AddRange(bufferAux.Take(readedAux).ToList());              // Sin checkeo de errores                    
-
-                    if (ReceivedBytes.Count < _playingLength * 4)
-                        continue;
-
-                    AddSamples();
+                    AddFreeErrorSamples();
                 }
             }
+        }
+
+        protected override int ReadFromPort(byte[] buffer, int offset, int count)
+        {
+            return netStream.Read(bufferAux, 0, _playingLength);
         }
     }
 }

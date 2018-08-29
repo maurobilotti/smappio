@@ -1,6 +1,7 @@
 ﻿using Smappio_SEAR.Serial;
 using Smappio_SEAR.Wifi;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
@@ -27,20 +28,7 @@ namespace Smappio_SEAR
 
         private void btnUSB_Click(object sender, EventArgs e)
         {
-            Receiver = new SerialReceiver(ref _serialPort);
-
-            if (!Receiver.Connected)
-            {
-                SetNotificationLabel("Can't connect serial.");
-            }
-            ((SerialReceiver)Receiver).Notify();
-            Receiver.Receive();
-            SetNotificationLabel("Serial started");
-
-            if (!sw.IsRunning)
-                sw.Start();
-
-            Receiver.Play();
+            InvokeReceiver(new SerialReceiver(ref _serialPort));
         }
 
         private void btnBluetooth_Click(object sender, EventArgs e)
@@ -69,21 +57,21 @@ namespace Smappio_SEAR
 
         private void btnUdp_Click(object sender, EventArgs e)
         {
-            InvokeWifiReceiver(new UdpReceiver());
+            InvokeReceiver(new UdpReceiver());
         }
 
         private void btnTcp_Click(object sender, EventArgs e)
         {
-            InvokeWifiReceiver(new TcpReceiver());
+            InvokeReceiver(new TcpReceiver());
         }
 
-        public void InvokeWifiReceiver(Receiver receiver)
+        private void InvokeReceiver(Receiver receiver)
         {
             Receiver = receiver;
 
             if (!Receiver.Connected)
             {
-                SetNotificationLabel("Not Available");
+                SetNotificationLabel(Receiver.PortName + " Not Available");
                 return;
             }
 
@@ -91,7 +79,10 @@ namespace Smappio_SEAR
             Receiver.Play();
 
             SetButtonStatus();
-            SetNotificationLabel("Threads Running");
+            SetNotificationLabel(Receiver.PortName + " Running");
+
+            if (!sw.IsRunning)
+                sw.Start();
         }
 
         #endregion
@@ -158,8 +149,24 @@ namespace Smappio_SEAR
             lblSamplesReceived.Text = (Receiver.GetReceivedBytes() / Receiver.GetBytesDepth()).ToString();
             lblBitRate.Text = bitRate.ToString();
 
-            Receiver.SaveFile();
+            int badSequencesCounter = 0;
+            int niceSequencesCounter = 0;
+            IList<int> badSequencesIndexes = new List<int>();
+            for (int i = 1; i < Receiver.bufferSeqNums.Count; i++)
+            {
+                if ((Receiver.bufferSeqNums[i - 1] + 1 == Receiver.bufferSeqNums[i]) || (Receiver.bufferSeqNums[i] == 0 && Receiver.bufferSeqNums[i - 1] == 63))
+                {
+                    niceSequencesCounter++;
+                }
+                else
+                {
+                    badSequencesCounter++;
+                    badSequencesIndexes.Add(i);
+                }
+            }
+
             Receiver.Close();
+            Receiver.SaveFile();
         }
 
         private void btnClear_Click(object sender, EventArgs e)
@@ -169,11 +176,11 @@ namespace Smappio_SEAR
 
         private void ClearContents()
         {
-            SetButtonStatus(true);
-            lblBitRate.Text = lblBitRate.Text = lblSampleRate.Text = lblSamplesReceived.Text = lblTime.Text = "";
-            sw = new Stopwatch();
-
             Receiver.ClearAndClose();
+
+            SetButtonStatus(true);
+            lblBitRate.Text = lblNotification.Text = lblBitRate.Text = lblSampleRate.Text = lblSamplesReceived.Text = lblTime.Text = "";
+            sw = new Stopwatch();
         }
 
         private void SetButtonStatus(bool status = false)

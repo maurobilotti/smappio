@@ -7,6 +7,17 @@ namespace Smappio_SEAR.Wifi
 {
     public class UdpReceiver : WifiReceiver
     {
+        #region Properties
+        protected override int AvailableBytes => UdpClientReceiver.Client.Available;
+
+        protected UdpClient UdpClientReceiver
+        {
+            get => (UdpClient)ClientReceiver;
+        }
+
+        public override string PortName => "UDP";
+        #endregion
+
         public UdpReceiver()
         {
             this.TransmissionMethod = TransmissionMethod.Udp;
@@ -22,7 +33,7 @@ namespace Smappio_SEAR.Wifi
         {
             if(Connected)
             {
-                ((UdpClient)ClientReceiver).Close();
+                UdpClientReceiver.Close();
                 ClientReceiver.Dispose();
             }
         }
@@ -31,12 +42,12 @@ namespace Smappio_SEAR.Wifi
         {
             await Task.Run(async () =>
             {
-                while (((UdpClient)ClientReceiver).Client.Connected)
+                while (UdpClientReceiver.Client.Connected)
                 {                    
-                    if (((UdpClient)ClientReceiver).Available == 0)
+                    if (AvailableBytes == 0)
                         continue;
 
-                    var receivedResults = await ((UdpClient)ClientReceiver).ReceiveAsync();
+                    var receivedResults = await UdpClientReceiver.ReceiveAsync();
                     byte[] buffer = receivedResults.Buffer;
 
                     byte[] errorFreeBuffer = ControlAlgorithm();
@@ -44,10 +55,21 @@ namespace Smappio_SEAR.Wifi
                                                                                                 //_receivedBytes.AddRange(bufferAux.Take(readedAux).ToList());              // Sin checkeo de errores                  
                     if (ReceivedBytes.Count < _playingLength * 4)
                         continue;
-
-                    AddSamples();
+                    // Maurito, a UDP no le di mucha bola en el refactor, pero creo que deberia quedar parecido a TCP, fijate como esta funcando llamando al metodo
+                    // AddFreeErrorSamples();
+                    AddSamplesToPlayer();
                 }
             });
+        }
+
+        protected override void ReadExtraBytes(int size)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override int ReadFromPort(byte[] buffer, int offset, int count)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

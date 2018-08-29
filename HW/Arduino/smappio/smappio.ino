@@ -3,7 +3,6 @@
 // CONSTANTES
 #define BYTES_TO_SEND 3
 #define MEDIA 13700   // I2S:  13700  | PCM:  6835   // valor para nivelar a 0 la señal media
-#define AMPLITUDE_MULTIPLIER 63 // Multiplicador de la amplitud de cada sample
 
 // VARIABLES
 int32_t *_buffer;
@@ -29,7 +28,7 @@ void loop()
     {  
       while(1) 
       { // Se queda transmitiendo por siempre, hasta que se aprete el boton
-        bufferSamplesToSend();
+        bufferSamplesToSendWithControlBits();
         Serial.write(_dataToSend, BYTES_TO_SEND);
       }
     }
@@ -37,6 +36,33 @@ void loop()
 }
 
 
+// Metodo para bufferear sonido con bits de control
+void bufferSamplesToSendWithControlBits() 
+{
+  int32_t value = 0;
+  int bytesReaded = 0;
+
+  for(int i = 0; i < BYTES_TO_SEND; i += 3)
+  {
+    // Se hace la lectura de los samples del microfono
+    bytesReaded = smappioSound.read();
+    while(bytesReaded == 0)
+    {     
+        //Este bucle es necesario para no reenviar una muestra mas de una vez
+        bytesReaded = smappioSound.read();
+    }   
+    // Se lee un sample
+    value = smappioSound.getSampleValue();
+    
+    // Se bufferean los 3 bytes del sample, con un desplazamiento y una numeracion
+    // 'a': bit del primer byte. 'b': bit del segundo byte. 'c': bit del tercer byte.
+    _dataToSend[i] = (value & 63) | 64;               // '64'   =  01|aaaaaa
+    _dataToSend[i + 1] = ((value >> 6)  & 63) | 128;  // '128'  =  10|bbbbaa
+    _dataToSend[i + 2] = ((value >> 12) & 63) | 192;  // '192'  =  11|ccbbbb
+  }  
+}
+
+// Metodo para bufferear sonido sin bits de control
 void bufferSamplesToSend() 
 {
   int32_t value = 0;
@@ -52,7 +78,9 @@ void bufferSamplesToSend()
         bytesReaded = smappioSound.read();
     }   
     // Se lee un sample
-    value = smappioSound.getSampleValue() * AMPLITUDE_MULTIPLIER;
+    value = smappioSound.getSampleValue();
+
+    // Se bufferean los 3 bytes del sample
     _dataToSend[i] = value & 255;
     _dataToSend[i + 1] = (value >> 8)  & 255;
     _dataToSend[i + 2] = (value >> 16) & 255; 
