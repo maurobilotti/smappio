@@ -5,7 +5,6 @@ import android.media.AudioManager;
 import android.media.audiofx.Visualizer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -25,17 +24,23 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    //Constantes
     public static final int CODE_FILE_SYSTEM = 1001;
 
+    //Variables del reproductor
     Button playBtn;
     SeekBar positionBar;
     TextView elapsedTimeLabel;
     TextView remainingTimeLabel;
     MediaPlayer mediaPlayer;
     int totalTime;
+
+    //Variables del file system
     Uri currentFileURI;
-    VisualizerView mVisualizerView;
-    private Visualizer mVisualizer;
+
+    //Variables del fonocardiograma
+    VisualizerView visualizerView;
+    private Visualizer visualizer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+    //Al presionar el botón físico "volver atrás (<)", si esta abierta la sidebar, se cierra
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -143,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             playBtn = (Button) findViewById(R.id.playBtn);
             elapsedTimeLabel = (TextView) findViewById(R.id.elapsedTimeLabel);
             remainingTimeLabel = (TextView) findViewById(R.id.remainingTimeLabel);
-            mVisualizerView = (VisualizerView) findViewById(R.id.phonocardiogram);
+            visualizerView = (VisualizerView) findViewById(R.id.phonocardiogram);
 
             mediaPlayer = MediaPlayer.create(this, currentFileURI);
             mediaPlayer.setLooping(true);
@@ -152,11 +158,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             totalTime = mediaPlayer.getDuration();
 
             setupVisualizerFxAndUI();
-            mVisualizer.setEnabled(true);
+            visualizer.setEnabled(true);
 
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         public void onCompletion(MediaPlayer mediaPlayer) {
-                            mVisualizer.setEnabled(false);
+                            visualizer.setEnabled(false);
                         }
                     });
 
@@ -247,13 +253,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void setupVisualizerFxAndUI() {
 
         // Create the Visualizer object and attach it to our media player.
-        mVisualizer = new Visualizer(mediaPlayer.getAudioSessionId());
-        mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
-        mVisualizer.setDataCaptureListener(
+        visualizer = new Visualizer(mediaPlayer.getAudioSessionId());
+        visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+        visualizer.setDataCaptureListener(
                 new Visualizer.OnDataCaptureListener() {
                     public void onWaveFormDataCapture(Visualizer visualizer,
                                                       byte[] bytes, int samplingRate) {
-                        mVisualizerView.updateVisualizer(bytes);
+                        visualizerView.updateVisualizer(bytes);
                     }
 
                     public void onFftDataCapture(Visualizer visualizer,
@@ -266,7 +272,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onPause() {
         super.onPause();
         if (isFinishing() && mediaPlayer != null) {
-            mVisualizer.release();
+            visualizer.release();
             mediaPlayer.release();
             mediaPlayer = null;
         }
