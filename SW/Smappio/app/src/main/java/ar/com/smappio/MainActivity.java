@@ -281,7 +281,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void openWifiScanActivity() {
-
+    public void openWifiScanActivity(View view) {
+        Intent intent = new Intent(this, WifiActivity.class);
+        startActivity(intent);
     }
 }
