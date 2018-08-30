@@ -1,5 +1,6 @@
 package ar.com.smappio;
 
+import android.content.ClipData;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.audiofx.Visualizer;
@@ -12,6 +13,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.media.MediaPlayer;
 import android.os.Handler;
@@ -28,18 +30,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final int CODE_FILE_SYSTEM = 1001;
 
     //Variables del reproductor
-    Button playBtn;
-    SeekBar positionBar;
-    TextView elapsedTimeLabel;
-    TextView remainingTimeLabel;
-    MediaPlayer mediaPlayer;
-    int totalTime;
+    private Button playBtn;
+    private SeekBar positionBar;
+    private TextView elapsedTimeLabel;
+    private TextView remainingTimeLabel;
+    private MediaPlayer mediaPlayer;
+    private int totalTime;
 
     //Variables del file system
-    Uri currentFileURI;
+    private Uri currentFileURI;
 
     //Variables del fonocardiograma
-    VisualizerView visualizerView;
+    private VisualizerView visualizerView;
     private Visualizer visualizer;
 
     @Override
@@ -70,27 +72,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.main, menu);
-//        return true;
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
 //        if (id == R.id.action_settings) {
 //            return true;
 //        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
+
+        if (id == R.id.action_share) {
+            shareFile();
+            return true;
+        }
+        if (id == R.id.action_connect) {
+            openWifiScanActivity();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -128,8 +139,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             ConstraintLayout audioPlayer = (ConstraintLayout) findViewById(R.id.audio_player);
             audioPlayer.setVisibility(ConstraintLayout.VISIBLE);
             //Mostrar el boton compartir
-            ImageButton shareBtn = (ImageButton) findViewById(R.id.share_btn);
-            shareBtn.setVisibility(ConstraintLayout.VISIBLE);
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            toolbar.getMenu().findItem(R.id.action_share).setVisible(true);
 
             stopAndResetAudioPlayer();
             startAudioPlayer(data);
@@ -281,7 +292,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public void openWifiScanActivity(View view) {
+    public void openWifiScanActivity() {
         Intent intent = new Intent(this, WifiActivity.class);
         startActivity(intent);
     }
