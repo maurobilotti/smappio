@@ -8,11 +8,4 @@
     tools:context=".MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-    <include
-        layout="@layout/audio_player"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/audio_player"
-        android:visibility="invisible"/>
-
 </android.support.constraint.ConstraintLayout>

@@ -16,6 +16,8 @@ import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -47,6 +49,11 @@ public class WifiActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wifi);
 
+        if (getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+
         scanBtn = (Button) findViewById(R.id.scanBtn);
         wifiBtn = (Switch) findViewById(R.id.wifiBtn);
 
@@ -68,6 +75,15 @@ public class WifiActivity extends AppCompatActivity {
         ssidListView.setAdapter(adapter);
         ssidListView.setOnItemClickListener(onItemClickListener);
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 //    @Override
@@ -145,43 +161,50 @@ public class WifiActivity extends AppCompatActivity {
 
             capabilities = networkSelected.capabilities;
 
-            LayoutInflater layoutInflater = LayoutInflater.from(WifiActivity.this);
-            View popupWifiView = layoutInflater.inflate(R.layout.popup_wifi_connection, null);
+            if(!capabilities.toUpperCase().contains("WEP") && !capabilities.toUpperCase().contains("WPA")) {
 
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(WifiActivity.this);
-            alertDialogBuilder.setView(popupWifiView);
-            alertDialogBuilder.setTitle("Conectarse a " + ssid);
-            EditText userInput = (EditText) popupWifiView.findViewById(R.id.passwordEditText);
+                connectWiFi(ssid, null, capabilities);
 
-            CheckBox checkbox = (CheckBox) popupWifiView.findViewById(R.id.showPasswordCheckbox);
-            checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                    if (isChecked) {
-                        userInput.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                    } else {
-                        userInput.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            } else {
+                
+                LayoutInflater layoutInflater = LayoutInflater.from(WifiActivity.this);
+                View popupWifiView = layoutInflater.inflate(R.layout.popup_wifi_connection, null);
+
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(WifiActivity.this);
+                alertDialogBuilder.setView(popupWifiView);
+                alertDialogBuilder.setTitle("Conectarse a " + ssid);
+                EditText userInput = (EditText) popupWifiView.findViewById(R.id.passwordEditText);
+
+                CheckBox checkbox = (CheckBox) popupWifiView.findViewById(R.id.showPasswordCheckbox);
+                checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                        if (isChecked) {
+                            userInput.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                        } else {
+                            userInput.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                        }
                     }
-                }
-            });
+                });
 
-            alertDialogBuilder.setCancelable(false).setPositiveButton("Aceptar",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            // get user input from user for password
-                            password = userInput.getText().toString();
-                            //Call the connectWiFi method to get connected the network
-                            connectWiFi(ssid, password, capabilities);
-                        }
-                    }).setNegativeButton("Cancelar",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    });
+                alertDialogBuilder.setCancelable(false).setPositiveButton("Aceptar",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // get user input from user for password
+                                password = userInput.getText().toString();
+                                //Call the connectWiFi method to get connected the network
+                                connectWiFi(ssid, password, capabilities);
+                            }
+                        }).setNegativeButton("Cancelar",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
 
-            AlertDialog alertDialog = alertDialogBuilder.create();
-            alertDialog.show();
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+            }
         }
 
         public void connectWiFi(String SSID, String password, String Security) {

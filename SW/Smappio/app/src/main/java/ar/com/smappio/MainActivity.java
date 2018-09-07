@@ -1,12 +1,8 @@
 package ar.com.smappio;
 
-import android.content.ClipData;
 import android.content.Intent;
-import android.media.AudioManager;
-import android.media.audiofx.Visualizer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -15,34 +11,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.media.MediaPlayer;
-import android.os.Handler;
-import android.os.Message;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     //Constantes
-    public static final int CODE_FILE_SYSTEM = 1001;
-
-    //Variables del reproductor
-    private Button playBtn;
-    private SeekBar positionBar;
-    private TextView elapsedTimeLabel;
-    private TextView remainingTimeLabel;
-    private MediaPlayer mediaPlayer;
-    private int totalTime;
-
-    //Variables del file system
-    private Uri currentFileURI;
-
-    //Variables del fonocardiograma
-    private VisualizerView visualizerView;
-    private Visualizer visualizer;
+    public static final int CODE_FILE_SYSTEM_PLAY = 1001;
+    public static final int CODE_FILE_SYSTEM_SHARE = 1002;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,10 +65,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //            return true;
 //        }
 
-        if (id == R.id.action_share) {
-            shareFile();
-            return true;
-        }
         if (id == R.id.action_connect) {
             openWifiScanActivity();
             return true;
@@ -110,11 +80,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_slideshow) {
-            openFileSystem();
+            openFileSystem(CODE_FILE_SYSTEM_PLAY);
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
-            shareFile();
+            openFileSystem(CODE_FILE_SYSTEM_SHARE);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -122,173 +92,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    public void openFileSystem(){
+    public void openFileSystem(int code){
         Intent intent = new Intent();
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("audio/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Seleccionar archivo"), CODE_FILE_SYSTEM);
+        startActivityForResult(Intent.createChooser(intent, "Seleccionar archivo"), code);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == CODE_FILE_SYSTEM) {
-            //Mostrar reproductor al elegir el audio
-            ConstraintLayout audioPlayer = (ConstraintLayout) findViewById(R.id.audio_player);
-            audioPlayer.setVisibility(ConstraintLayout.VISIBLE);
-            //Mostrar el boton compartir
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            toolbar.getMenu().findItem(R.id.action_share).setVisible(true);
+        if (requestCode == CODE_FILE_SYSTEM_PLAY && data != null) {
+            Uri currentFileURI = data.getData();
 
-            stopAndResetAudioPlayer();
-            startAudioPlayer(data);
+            Intent intent = new Intent(this, AudioPlayerActivity.class);
+            intent.putExtra("currentFileURI", currentFileURI);
+            startActivity(intent);
         }
-    }
 
-    public void stopAndResetAudioPlayer(){
-        if(mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.reset();
-        }
-    }
+        if (requestCode == CODE_FILE_SYSTEM_SHARE && data != null) {
+            Uri currentFileURI = data.getData();
 
-    public void startAudioPlayer(Intent data) {
-        if (data != null) {
-            setVolumeControlStream(AudioManager.STREAM_MUSIC);
-
-            currentFileURI = data.getData();
-
-            playBtn = (Button) findViewById(R.id.playBtn);
-            elapsedTimeLabel = (TextView) findViewById(R.id.elapsedTimeLabel);
-            remainingTimeLabel = (TextView) findViewById(R.id.remainingTimeLabel);
-            visualizerView = (VisualizerView) findViewById(R.id.phonocardiogram);
-
-            mediaPlayer = MediaPlayer.create(this, currentFileURI);
-            mediaPlayer.setLooping(true);
-            mediaPlayer.seekTo(0);
-            mediaPlayer.setVolume(0.5f, 0.5f);
-            totalTime = mediaPlayer.getDuration();
-
-            setupVisualizerFxAndUI();
-            visualizer.setEnabled(true);
-
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        public void onCompletion(MediaPlayer mediaPlayer) {
-                            visualizer.setEnabled(false);
-                        }
-                    });
-
-            // Position Bar
-            positionBar = (SeekBar) findViewById(R.id.positionBar);
-            positionBar.setMax(totalTime);
-            positionBar.setOnSeekBarChangeListener(
-                    new SeekBar.OnSeekBarChangeListener() {
-                        @Override
-                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                            if (fromUser) {
-                                mediaPlayer.seekTo(progress);
-                                positionBar.setProgress(progress);
-                            }
-                        }
-                        @Override
-                        public void onStartTrackingTouch(SeekBar seekBar) { }
-                        @Override
-                        public void onStopTrackingTouch(SeekBar seekBar) {  }
-                    }
-            );
-
-            // Thread (Update positionBar & timeLabel)
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while (mediaPlayer != null) {
-                        try {
-                            Message msg = new Message();
-                            msg.what = mediaPlayer.getCurrentPosition();
-                            handler.sendMessage(msg);
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) { }
-                    }
-                }
-            }).start();
-
-            mediaPlayer.start();
-            playBtn.setBackgroundResource(R.drawable.audioplayer_pause_btn);
-        }
-    }
-
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            int currentPosition = msg.what;
-            // Update positionBar.
-            positionBar.setProgress(currentPosition);
-            // Update Labels.
-            String elapsedTime = createTimeLabel(currentPosition);
-            elapsedTimeLabel.setText(elapsedTime);
-            String remainingTime = createTimeLabel(totalTime-currentPosition);
-            remainingTimeLabel.setText("- " + remainingTime);
-        }
-    };
-
-    public String createTimeLabel(int time) {
-        String timeLabel = "";
-        int min = time / 1000 / 60;
-        int sec = time / 1000 % 60;
-        timeLabel = min + ":";
-        if (sec < 10) {
-            timeLabel += "0";
-        }
-        timeLabel += sec;
-        return timeLabel;
-    }
-
-    public void playBtnClick(View view) {
-        if (!mediaPlayer.isPlaying()) {
-            mediaPlayer.start();
-            playBtn.setBackgroundResource(R.drawable.audioplayer_pause_btn);
-        } else {
-            mediaPlayer.pause();
-            playBtn.setBackgroundResource(R.drawable.audioplayer_play_btn);
-        }
-    }
-
-    public void shareFile() {
-        if(currentFileURI != null){
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("audio/*");
             intent.putExtra(Intent.EXTRA_STREAM, currentFileURI);
             startActivity(Intent.createChooser(intent, "Compartir archivo de audio"));
-        }
-    }
-
-    private void setupVisualizerFxAndUI() {
-
-        // Create the Visualizer object and attach it to our media player.
-        visualizer = new Visualizer(mediaPlayer.getAudioSessionId());
-        visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
-        visualizer.setDataCaptureListener(
-                new Visualizer.OnDataCaptureListener() {
-                    public void onWaveFormDataCapture(Visualizer visualizer,
-                                                      byte[] bytes, int samplingRate) {
-                        visualizerView.updateVisualizer(bytes);
-                    }
-
-                    public void onFftDataCapture(Visualizer visualizer,
-                                                 byte[] bytes, int samplingRate) {
-                    }
-                }, Visualizer.getMaxCaptureRate() / 2, true, false);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (isFinishing() && mediaPlayer != null) {
-            visualizer.release();
-            mediaPlayer.release();
-            mediaPlayer = null;
         }
     }
 
