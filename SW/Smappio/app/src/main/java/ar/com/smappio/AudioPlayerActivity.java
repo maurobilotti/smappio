@@ -90,10 +90,10 @@ public class AudioPlayerActivity extends AppCompatActivity {
     public void startAudioPlayer() {
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-        playBtn = (Button) findViewById(R.id.playBtn);
-        elapsedTimeLabel = (TextView) findViewById(R.id.elapsedTimeLabel);
-        remainingTimeLabel = (TextView) findViewById(R.id.remainingTimeLabel);
-        visualizerView = (VisualizerView) findViewById(R.id.phonocardiogram);
+        playBtn = findViewById(R.id.playBtn);
+        elapsedTimeLabel = findViewById(R.id.elapsedTimeLabel);
+        remainingTimeLabel = findViewById(R.id.remainingTimeLabel);
+        visualizerView = findViewById(R.id.phonocardiogram);
 
         mediaPlayer = MediaPlayer.create(this, currentFileURI);
         mediaPlayer.setLooping(true);
@@ -111,7 +111,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
         });
 
         // Position Bar
-        positionBar = (SeekBar) findViewById(R.id.positionBar);
+        positionBar = findViewById(R.id.positionBar);
         positionBar.setMax(totalTime);
         positionBar.setOnSeekBarChangeListener(
                 new SeekBar.OnSeekBarChangeListener() {
