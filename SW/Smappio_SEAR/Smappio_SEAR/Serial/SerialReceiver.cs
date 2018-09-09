@@ -71,7 +71,6 @@ namespace Smappio_SEAR.Serial
             AddFreeErrorSamples();
         }
 
-
         protected override int ReadFromPort(byte[] buffer, int offset, int count)
         {
             return _serialPort.Read(buffer, offset, count);

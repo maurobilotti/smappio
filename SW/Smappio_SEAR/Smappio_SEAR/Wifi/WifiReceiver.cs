@@ -7,13 +7,13 @@ namespace Smappio_SEAR.Wifi
     public abstract class WifiReceiver : Receiver
     {
         protected IDisposable ClientReceiver { get; set; }        
-        protected string ipAddress = "192.168.1.2";
-        protected int port = 80;
+        protected string IpAddress = "192.168.1.3";
+        protected int Port = 80;
 
         public bool CanConnect()
         {
             Ping x = new Ping();
-            PingReply reply = x.Send(IPAddress.Parse(ipAddress));
+            PingReply reply = x.Send(IPAddress.Parse(IpAddress));
             return reply.Status != IPStatus.TimedOut && reply.Status != IPStatus.DestinationHostUnreachable;
         }
     }

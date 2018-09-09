@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ namespace Smappio_SEAR.Wifi
     {
         #region Properties
         protected override int AvailableBytes => UdpClientReceiver.Client.Available;
-
+        new readonly string ipAddress = "192.168.1.2";
         protected UdpClient UdpClientReceiver
         {
             get => (UdpClient)ClientReceiver;
@@ -17,6 +18,8 @@ namespace Smappio_SEAR.Wifi
 
         public override string PortName => "UDP";
         #endregion
+        public TcpClient TcpClient { get; set; }
+        public int UdpListenPort = 1234;
 
         public UdpReceiver()
         {
@@ -25,7 +28,9 @@ namespace Smappio_SEAR.Wifi
             if (CanConnect())
             {
                 this.Connected = true;
-                this.ClientReceiver = new UdpClient(new IPEndPoint(IPAddress.Parse(ipAddress), 80));
+                this.ClientReceiver = new UdpClient(UdpListenPort);
+                this.TcpClient = new TcpClient(ipAddress, Port);
+                //((UdpClient)this.ClientReceiver).Connect(IPAddress.Parse("192.168.1.15"), 1234);
             }
         }
 
@@ -40,26 +45,25 @@ namespace Smappio_SEAR.Wifi
 
         public async override void Receive()
         {
-            await Task.Run(async () =>
+            while (TcpClient.Client.Connected)
             {
-                while (UdpClientReceiver.Client.Connected)
-                {                    
-                    if (AvailableBytes == 0)
-                        continue;
+                var ipEndPoint = new IPEndPoint(IPAddress.Any, 1444);
+                var result = UdpClientReceiver.Receive(ref ipEndPoint);                
 
-                    var receivedResults = await UdpClientReceiver.ReceiveAsync();
-                    byte[] buffer = receivedResults.Buffer;
+                byte[] errorFreeBuffer = ControlAlgorithm();
+                ReceivedBytes.AddRange(errorFreeBuffer.Take(errorFreeReaded).ToList());    // Con checkeo de errores
+                                                                                           //_receivedBytes.AddRange(bufferAux.Take(readedAux).ToList());              // Sin checkeo de errores                  
+                if (ReceivedBytes.Count < _playingLength * 4)
+                    continue;
+                // Maurito, a UDP no le di mucha bola en el refactor, pero creo que deberia quedar parecido a TCP, fijate como esta funcando llamando al metodo
+                // AddFreeErrorSamples();
+                AddSamplesToPlayer();
+            }
+        }
 
-                    byte[] errorFreeBuffer = ControlAlgorithm();
-                    ReceivedBytes.AddRange(errorFreeBuffer.Take(errorFreeReaded).ToList());    // Con checkeo de errores
-                                                                                                //_receivedBytes.AddRange(bufferAux.Take(readedAux).ToList());              // Sin checkeo de errores                  
-                    if (ReceivedBytes.Count < _playingLength * 4)
-                        continue;
-                    // Maurito, a UDP no le di mucha bola en el refactor, pero creo que deberia quedar parecido a TCP, fijate como esta funcando llamando al metodo
-                    // AddFreeErrorSamples();
-                    AddSamplesToPlayer();
-                }
-            });
+        private void ReceiveUdp(IAsyncResult ar)
+        {
+            throw new NotImplementedException();
         }
 
         protected override void ReadExtraBytes(int size)
