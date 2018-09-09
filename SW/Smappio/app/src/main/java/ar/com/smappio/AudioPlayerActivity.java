@@ -13,13 +13,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 public class AudioPlayerActivity extends AppCompatActivity {
 
     //Variables del reproductor
-    private Button playBtn;
+    private ImageButton playBtn;
     private SeekBar positionBar;
     private TextView elapsedTimeLabel;
     private TextView remainingTimeLabel;
@@ -38,11 +39,13 @@ public class AudioPlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_player);
 
+        //Flecha de la toolbar para volver al activity anterior
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
+        //Obtener parametro enviado desde el activity anterior
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
             currentFileURI = (Uri) extras.get("currentFileURI");
@@ -96,9 +99,8 @@ public class AudioPlayerActivity extends AppCompatActivity {
         visualizerView = findViewById(R.id.phonocardiogram);
 
         mediaPlayer = MediaPlayer.create(this, currentFileURI);
-        mediaPlayer.setLooping(true);
+        mediaPlayer.setLooping(false);
         mediaPlayer.seekTo(0);
-        mediaPlayer.setVolume(0.5f, 0.5f);
         totalTime = mediaPlayer.getDuration();
 
         setupVisualizerFxAndUI();
@@ -145,6 +147,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
         }).start();
 
         mediaPlayer.start();
+
         playBtn.setBackgroundResource(R.drawable.audioplayer_pause_btn);
     }
 
@@ -194,18 +197,17 @@ public class AudioPlayerActivity extends AppCompatActivity {
     }
 
     private void setupVisualizerFxAndUI() {
-
         // Create the Visualizer object and attach it to our media player.
         visualizer = new Visualizer(mediaPlayer.getAudioSessionId());
         visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
-        visualizer.setDataCaptureListener(
-                new Visualizer.OnDataCaptureListener() {
-                    public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
-                        visualizerView.updateVisualizer(bytes);
-                    }
+        visualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
+            public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
+                visualizerView.updateVisualizer(bytes);
+            }
 
-                    public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
-                    }
-                }, Visualizer.getMaxCaptureRate() / 2, true, false);
+            public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
+
+            }
+        }, Visualizer.getMaxCaptureRate() / 2, true, false);
     }
 }
