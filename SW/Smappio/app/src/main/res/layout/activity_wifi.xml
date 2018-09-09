@@ -12,11 +12,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <Switch
+            android:id="@+id/wifiBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Wifi"
+            android:textSize="15dp"
+            android:onClick="wifiOnOff"/>
+
         <ListView
             android:id="@+id/wifiList"
             android:layout_width="match_parent"
             android:layout_height="312dp"
-            android:layout_weight="0.97"/>
+            android:layout_weight="0.97">
+        </ListView>
 
         <Button
             android:id="@+id/scanBtn"
@@ -24,8 +33,8 @@
             android:layout_height="50dp"
             android:layout_gravity="bottom"
             android:layout_margin="15dp"
-            android:background="@android:color/holo_blue_light"
-            android:text="Buscar Dispositivo"
+            android:background="@android:color/background_light"
+            android:text="Buscar"
             android:onClick="scanWifi"/>
 
     </LinearLayout>
