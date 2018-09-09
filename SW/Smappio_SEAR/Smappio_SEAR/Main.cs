@@ -15,7 +15,7 @@ namespace Smappio_SEAR
             InitializeComponent();
             txtPath.Text = filePath;
             if (!Directory.Exists(filePath))
-                Directory.CreateDirectory(filePath);
+                Directory.CreateDirectory(filePath);            
         }
 
         private string filePath = "../../AudioSamples/";
@@ -188,6 +188,6 @@ namespace Smappio_SEAR
             btnBluetooth.Enabled = btnTcp.Enabled = btnUdp.Enabled = btnSerial.Enabled = status;
         }
 
-        #endregion
+        #endregion       
     }
 }

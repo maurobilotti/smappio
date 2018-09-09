@@ -25,11 +25,13 @@ namespace Smappio_SEAR
         public int totalDiscardedBtes = 0;
         protected byte[] bufferAux = new byte[_playingLength * 2];
         protected int readedAux = 0;
+        protected WaveFormat _waveFormat;
 
         public Receiver()
         {
             this.ReceivedBytes = new List<byte>();
-            this._provider = new BufferedWaveProvider(new WaveFormat(_sampleRate, _bitDepth, 1));
+            this._waveFormat = new WaveFormat(_sampleRate, _bitDepth, 1);
+            this._provider = new BufferedWaveProvider(this._waveFormat);
         }
 
         #region Public Methods
@@ -45,9 +47,11 @@ namespace Smappio_SEAR
         public virtual void SaveFile()
         {
             string absolutePath = Path.GetFullPath(_filePath);
-            string fileName = $"{DateTime.Now.ToString("yyyy-MM-dd_hhmmss")}.pcm";
+            string fileName = $"{DateTime.Now.ToString("yyyy-MM-dd_hhmmss")}.wav";
             string fullPath = Path.Combine(absolutePath, fileName);
-            File.WriteAllBytes(fullPath, ReceivedBytes.ToArray());
+            var bytes = ReceivedBytes.ToArray();
+            RawSourceWaveStream source = new RawSourceWaveStream(bytes, 0, bytes.Length, _waveFormat);
+            WaveFileWriter.CreateWaveFile(fullPath, source);            
         }
 
         public void AddSamplesToPlayer()
@@ -56,7 +60,6 @@ namespace Smappio_SEAR
             _offset += errorFreeReaded;
             _provider.AddSamples(bufferForPlaying, 0, bufferForPlaying.Length);
         }
-
 
         protected byte[] ControlAlgorithm()
         {

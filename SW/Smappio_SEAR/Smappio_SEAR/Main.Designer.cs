@@ -52,6 +52,7 @@
             this.btnTcp = new System.Windows.Forms.Button();
             this.btnSerial = new System.Windows.Forms.Button();
             this.btnBluetooth = new System.Windows.Forms.Button();
+            this.waveViewer = new NAudio.Gui.WaveViewer();
             this.SuspendLayout();
             // 
             // btnSave
@@ -79,7 +80,7 @@
             this.txtSerialData.Location = new System.Drawing.Point(12, 89);
             this.txtSerialData.Multiline = true;
             this.txtSerialData.Name = "txtSerialData";
-            this.txtSerialData.Size = new System.Drawing.Size(557, 172);
+            this.txtSerialData.Size = new System.Drawing.Size(557, 131);
             this.txtSerialData.TabIndex = 4;
             // 
             // lblSamplesReceived
@@ -260,13 +261,25 @@
             this.btnBluetooth.UseVisualStyleBackColor = true;
             this.btnBluetooth.Click += new System.EventHandler(this.btnBluetooth_Click);
             // 
+            // waveViewer
+            // 
+            this.waveViewer.BackColor = System.Drawing.SystemColors.GrayText;
+            this.waveViewer.Location = new System.Drawing.Point(12, 246);
+            this.waveViewer.Name = "waveViewer";
+            this.waveViewer.SamplesPerPixel = 128;
+            this.waveViewer.Size = new System.Drawing.Size(827, 255);
+            this.waveViewer.StartPosition = ((long)(0));
+            this.waveViewer.TabIndex = 25;
+            this.waveViewer.WaveStream = null;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.ClientSize = new System.Drawing.Size(851, 284);
+            this.ClientSize = new System.Drawing.Size(851, 507);
+            this.Controls.Add(this.waveViewer);
             this.Controls.Add(this.btnUdp);
             this.Controls.Add(this.btnTcp);
             this.Controls.Add(this.btnClear);
@@ -320,6 +333,7 @@
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.Button btnTcp;
         private System.Windows.Forms.Button btnUdp;
+        private NAudio.Gui.WaveViewer waveViewer;
     }
 }
 

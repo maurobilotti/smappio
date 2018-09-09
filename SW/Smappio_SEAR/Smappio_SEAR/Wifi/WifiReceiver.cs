@@ -7,7 +7,7 @@ namespace Smappio_SEAR.Wifi
     public abstract class WifiReceiver : Receiver
     {
         protected IDisposable ClientReceiver { get; set; }        
-        protected string IpAddress = "192.168.1.3";
+        protected string IpAddress = "192.168.1.2";
         protected int Port = 80;
 
         public bool CanConnect()

@@ -3,7 +3,7 @@
 
 WiFiServer server(80);
  
-const char* ssid     = "mauro";
+const char* ssid     = "smappio_server";
 const char* password = "123456789"; // El pass tiene que tener mas de 8 caracteres
 
 // CONSTANTES
