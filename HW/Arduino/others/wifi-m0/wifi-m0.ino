@@ -14,6 +14,8 @@ int32_t *_buffer;
 uint8_t _dataToSend[BYTES_TO_SEND];
 
 void setup() { 
+  //Configure pins for Adafruit ATWINC1500 Feather
+  WiFi.setPins(8,7,4,2);
   // Se crea un Access Point, para poder conectarse al dispositivo
   //WiFi.softAP(ssid, password, WIFI_CHANNEL);
   WiFi.beginAP(ssid);
