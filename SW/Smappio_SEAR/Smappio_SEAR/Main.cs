@@ -1,6 +1,5 @@
 ﻿using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using Smappio_SEAR.Provider;
 using Smappio_SEAR.Serial;
 using Smappio_SEAR.Wifi;
 using System;
