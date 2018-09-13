@@ -1,4 +1,7 @@
-﻿using Smappio_SEAR.Serial;
+﻿using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
+using Smappio_SEAR.Provider;
+using Smappio_SEAR.Serial;
 using Smappio_SEAR.Wifi;
 using System;
 using System.Collections.Generic;
@@ -15,14 +18,18 @@ namespace Smappio_SEAR
             InitializeComponent();
             txtPath.Text = filePath;
             if (!Directory.Exists(filePath))
-                Directory.CreateDirectory(filePath);            
+                Directory.CreateDirectory(filePath);
         }
 
         private string filePath = "../../AudioSamples/";
         Stopwatch sw = new Stopwatch();
-        long elapsedMilliseconds = 0;        
+        long elapsedMilliseconds = 0;
         private bool _notified;
         public Receiver Receiver;
+        private string fileName;
+        public WaveOut waveOut = new WaveOut();
+        private AudioFileReader audioFileReader;
+        private Action<float> setVolumeDelegate;
 
         #region Transfering methods
 
@@ -62,7 +69,7 @@ namespace Smappio_SEAR
 
         private void btnTcp_Click(object sender, EventArgs e)
         {
-            InvokeReceiver(new TcpReceiver());
+            InvokeReceiver(new TcpReceiver(ref waveformPainter));
         }
 
         private void InvokeReceiver(Receiver receiver)
@@ -90,34 +97,18 @@ namespace Smappio_SEAR
         #region Program features
 
         #region TextBox_Methods
-        delegate void SetTextCallback(string text);
-        private void SetTextBox(string text)
-        {
-            // InvokeRequired required compares the thread ID of the
-            // calling thread to the thread ID of the creating thread.
-            // If these threads are different, it returns true.
+        
 
-            if (this.txtSerialData.InvokeRequired)
-            {
-                SetTextCallback d = new SetTextCallback(SetTextBox);
-                this.Invoke(d, new object[] { text });
-            }
-            else
-            {
-                txtSerialData.AppendText(text + " ");
-            }
-        }
-
-        delegate void SetSetNotificationLabelCallback(string text);
+        delegate void SetNotificationLabelCallback(string text);
         private void SetNotificationLabel(string text)
         {
             // InvokeRequired required compares the thread ID of the
             // calling thread to the thread ID of the creating thread.
             // If these threads are different, it returns true.
 
-            if (this.txtSerialData.InvokeRequired)
+            if (this.lblNotification.InvokeRequired)
             {
-                SetTextCallback d = new SetTextCallback(SetNotificationLabel);
+                SetNotificationLabelCallback d = new SetNotificationLabelCallback(SetNotificationLabel);
                 this.Invoke(d, new object[] { text });
             }
             else
@@ -135,6 +126,7 @@ namespace Smappio_SEAR
                 elapsedMilliseconds = sw.ElapsedMilliseconds;
                 SetNotificationLabel("Finished");
                 _notified = true;
+                SetButtonStatus(true);
             }
 
             if (elapsedMilliseconds == 0)
@@ -179,8 +171,7 @@ namespace Smappio_SEAR
             Receiver.ClearAndClose();
 
             SetButtonStatus(true);
-            lblBitRate.Text = lblNotification.Text = lblBitRate.Text = lblSampleRate.Text = lblSamplesReceived.Text = lblTime.Text = "";
-            sw = new Stopwatch();
+            lblBitRate.Text = lblNotification.Text = lblBitRate.Text = lblSampleRate.Text = lblSamplesReceived.Text = lblTime.Text = "";            
         }
 
         private void SetButtonStatus(bool status = false)
@@ -188,6 +179,86 @@ namespace Smappio_SEAR
             btnBluetooth.Enabled = btnTcp.Enabled = btnUdp.Enabled = btnSerial.Enabled = status;
         }
 
-        #endregion       
+        #endregion
+
+        #region File Methods
+        private void btnBrowse_Click(object sender, EventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog();
+            string allExtensions = "*.wav";
+            openFileDialog.Filter = String.Format("All Supported Files|{0}|All Files (*.*)|*.*", allExtensions);
+            openFileDialog.FilterIndex = 1;
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                fileName = openFileDialog.FileName;
+            }
+        }
+
+        private void btnPlay_Click(object sender, EventArgs e)
+        {
+            if (waveOut != null)
+            {
+                if (waveOut.PlaybackState == PlaybackState.Playing)
+                {
+                    return;
+                }
+                else if (waveOut.PlaybackState == PlaybackState.Paused)
+                {
+                    waveOut.Play();
+                }
+            }
+
+            ISampleProvider sampleProvider;
+            try
+            {
+                sampleProvider = CreateInputStream(fileName);
+            }
+            catch (Exception createException)
+            {
+                MessageBox.Show(String.Format("{0}", createException.Message), "Error Loading File");
+                return;
+            }
+
+
+            try
+            {
+                waveOut.Init(sampleProvider);
+            }
+            catch (Exception initException)
+            {
+                MessageBox.Show(String.Format("{0}", initException.Message), "Error Initializing Output");
+                return;
+            }
+
+            waveOut.Play();
+        }
+
+        private ISampleProvider CreateInputStream(string fileName)
+        {
+            audioFileReader = new AudioFileReader(fileName);
+            var sampleChannel = new SampleChannel(audioFileReader, false);
+            setVolumeDelegate = vol => sampleChannel.Volume = vol;
+            var postVolumeMeter = new MeteringSampleProvider(sampleChannel);
+            postVolumeMeter.StreamVolume += OnPostVolumeMeter;
+
+
+            return postVolumeMeter;
+        }
+
+        private void OnPostVolumeMeter(object sender, StreamVolumeEventArgs e)
+        {
+            waveformPainter.AddMax(e.MaxSampleValues[0]);
+        }
+        #endregion
+
+        private void Main_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Main_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Receiver.ClearAndClose();
+        }
     }
 }

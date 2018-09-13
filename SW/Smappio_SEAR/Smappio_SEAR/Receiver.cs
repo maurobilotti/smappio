@@ -1,22 +1,27 @@
-﻿using NAudio.Wave;
+﻿using NAudio.Gui;
+using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
+using System.Windows.Forms;
 
 namespace Smappio_SEAR
 {
     public abstract class Receiver
     {
+        
         protected List<byte> ReceivedBytes { get; set; }
         private string _filePath = "../../AudioSamples/";
         private readonly int _sampleRate = 32000;// No modificar, pues modifica el audio escuchado.
         private readonly int _bytesDepth = 3;
         private readonly int _bitDepth = 24;
-        private readonly BufferedWaveProvider _provider;
+        private readonly BufferedWaveProvider _provider;        
         private WaveOut _waveOut = new WaveOut();
         public bool Connected = false;
         public TransmissionMethod TransmissionMethod;
-
+        private WaveformPainter _wavePainter;
         protected const int _playingLength = 3000;// 3 * 20400
         protected int _offset = 0;
         protected int errorFreeReaded = 0;
@@ -26,20 +31,46 @@ namespace Smappio_SEAR
         protected byte[] bufferAux = new byte[_playingLength * 2];
         protected int readedAux = 0;
         protected WaveFormat _waveFormat;
+        private Action<float> setVolumeDelegate;
+        private MeteringSampleProvider _meteringSampleProvider;
 
         public Receiver()
         {
             this.ReceivedBytes = new List<byte>();
             this._waveFormat = new WaveFormat(_sampleRate, _bitDepth, 1);
             this._provider = new BufferedWaveProvider(this._waveFormat);
+            var sampleChannel = new SampleChannel(_provider);
+            sampleChannel.PreVolumeMeter += SampleChannel_PreVolumeMeter;
         }
 
+        public Receiver(ref WaveformPainter wavePainter)
+        {
+            this._wavePainter = wavePainter;
+            this.ReceivedBytes = new List<byte>();
+            this._waveFormat = new WaveFormat(_sampleRate, _bitDepth, 1);
+            this._provider = new BufferedWaveProvider(this._waveFormat);
+            var sampleChannel = new SampleChannel(_provider);
+            setVolumeDelegate = vol => sampleChannel.Volume = vol;
+            _meteringSampleProvider = new MeteringSampleProvider(sampleChannel);
+            _meteringSampleProvider.StreamVolume += OnPostVolumeMeter;            
+        }
+
+        private void OnPostVolumeMeter(object sender, StreamVolumeEventArgs e)
+        {
+            _wavePainter.AddMax(e.MaxSampleValues[0]);
+        }
+
+        private void SampleChannel_PreVolumeMeter(object sender, StreamVolumeEventArgs e)
+        {
+            _wavePainter.AddMax(e.MaxSampleValues[0]);
+        }
+        
         #region Public Methods
         public virtual void Play()
         {
             if (_waveOut.PlaybackState != PlaybackState.Playing)
             {
-                _waveOut.Init(_provider);
+                _waveOut.Init(_meteringSampleProvider);
                 _waveOut.Play();
             }
         }
@@ -59,6 +90,8 @@ namespace Smappio_SEAR
             var bufferForPlaying = ReceivedBytes.GetRange(_offset, errorFreeReaded).ToArray();
             _offset += errorFreeReaded;
             _provider.AddSamples(bufferForPlaying, 0, bufferForPlaying.Length);
+            
+            //Utils.DrawNormalizedAudio(ref bufferForPlaying, this._pictureBox, Color.Green);
         }
 
         protected byte[] ControlAlgorithm()
@@ -181,7 +214,9 @@ namespace Smappio_SEAR
 
         public void ClearAndClose()
         {
+            _waveOut.Dispose();
             ReceivedBytes.Clear();
+            _wavePainter.Refresh();
             Close();
         }
 

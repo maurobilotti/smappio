@@ -1,7 +1,9 @@
-﻿using System;
+﻿using NAudio.Gui;
+using System;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace Smappio_SEAR.Wifi
 {
@@ -11,9 +13,9 @@ namespace Smappio_SEAR.Wifi
         protected NetworkStream netStream;
 
         #region Properties
-        protected override int AvailableBytes => TcpClientReceiver.Client.Available;
+        protected override int AvailableBytes => TcpClient.Client.Available;
 
-        protected TcpClient TcpClientReceiver
+        protected TcpClient TcpClient
         {
             get => (TcpClient)ClientReceiver;
         }
@@ -21,7 +23,7 @@ namespace Smappio_SEAR.Wifi
         public override string PortName => "TCP";
         #endregion
 
-        public TcpReceiver()
+        public TcpReceiver(ref WaveformPainter wavePainter) : base(ref wavePainter)
         {
             this.TransmissionMethod = TransmissionMethod.Tcp;
             this.ClientReceiver = new TcpClient();
@@ -29,16 +31,18 @@ namespace Smappio_SEAR.Wifi
             {
                 this.Connected = true;
                 this.ClientReceiver = new TcpClient(IpAddress, Port);
-            }
-            
+            }            
         }
 
         public override void Close()
         {
             if (Connected)
             {
-                TcpClientReceiver.Close();
+                TcpClient.Close();
+                TcpClient.Dispose();
                 ClientReceiver.Dispose();
+                netStream.Close();
+                netStream.Dispose();
             }
         }
 
@@ -46,7 +50,7 @@ namespace Smappio_SEAR.Wifi
         {          
             if(Connected)
             {
-                TcpClientReceiver.Client.NoDelay = false;
+                TcpClient.Client.NoDelay = false;
                 _threadReceive = new Thread(ReceiveData);
 
                 _threadReceive.Start();
@@ -64,9 +68,9 @@ namespace Smappio_SEAR.Wifi
 
         private void ReceiveData()
         {
-            netStream = TcpClientReceiver.GetStream();
+            netStream = TcpClient.GetStream();
 
-            while (TcpClientReceiver.Connected)
+            while (TcpClient.Connected)
             {
                 if (netStream.CanRead)
                 {

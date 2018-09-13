@@ -121,6 +121,9 @@
   <data name="TCPIPRN" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\TCPIPRN.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="TCP" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\TCP.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="if_wifi_Logo_925806" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\if_wifi_Logo_925806.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -139,7 +142,10 @@
   <data name="if_usb_925801" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\if_usb_925801.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="TCP" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\TCP.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="folder-outline-filled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\folder-outline-filled.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="play1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\play1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

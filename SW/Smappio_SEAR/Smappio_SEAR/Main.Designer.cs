@@ -33,7 +33,6 @@
             this.btnSave = new System.Windows.Forms.Button();
             this._serialPort = new System.IO.Ports.SerialPort(this.components);
             this.lblNotification = new System.Windows.Forms.Label();
-            this.txtSerialData = new System.Windows.Forms.TextBox();
             this.lblSamplesReceived = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -48,11 +47,15 @@
             this.label8 = new System.Windows.Forms.Label();
             this.txtPath = new System.Windows.Forms.TextBox();
             this.btnClear = new System.Windows.Forms.Button();
+            this.waveformPainter = new NAudio.Gui.WaveformPainter();
+            this.btnPlay = new System.Windows.Forms.Button();
+            this.btnBrowse = new System.Windows.Forms.Button();
             this.btnUdp = new System.Windows.Forms.Button();
             this.btnTcp = new System.Windows.Forms.Button();
             this.btnSerial = new System.Windows.Forms.Button();
             this.btnBluetooth = new System.Windows.Forms.Button();
-            this.waveViewer = new NAudio.Gui.WaveViewer();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnSave
@@ -69,24 +72,16 @@
             // lblNotification
             // 
             this.lblNotification.AutoSize = true;
-            this.lblNotification.Location = new System.Drawing.Point(677, 118);
+            this.lblNotification.Location = new System.Drawing.Point(79, 7);
             this.lblNotification.Name = "lblNotification";
             this.lblNotification.Size = new System.Drawing.Size(78, 13);
             this.lblNotification.TabIndex = 3;
             this.lblNotification.Text = "Not connected";
             // 
-            // txtSerialData
-            // 
-            this.txtSerialData.Location = new System.Drawing.Point(12, 89);
-            this.txtSerialData.Multiline = true;
-            this.txtSerialData.Name = "txtSerialData";
-            this.txtSerialData.Size = new System.Drawing.Size(557, 131);
-            this.txtSerialData.TabIndex = 4;
-            // 
             // lblSamplesReceived
             // 
             this.lblSamplesReceived.AutoSize = true;
-            this.lblSamplesReceived.Location = new System.Drawing.Point(717, 159);
+            this.lblSamplesReceived.Location = new System.Drawing.Point(284, 4);
             this.lblSamplesReceived.Name = "lblSamplesReceived";
             this.lblSamplesReceived.Size = new System.Drawing.Size(13, 13);
             this.lblSamplesReceived.TabIndex = 6;
@@ -96,7 +91,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.Color.Red;
-            this.label1.Location = new System.Drawing.Point(612, 159);
+            this.label1.Location = new System.Drawing.Point(179, 4);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(99, 13);
             this.label1.TabIndex = 8;
@@ -106,7 +101,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.ForeColor = System.Drawing.Color.Red;
-            this.label2.Location = new System.Drawing.Point(613, 118);
+            this.label2.Location = new System.Drawing.Point(15, 7);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(63, 13);
             this.label2.TabIndex = 9;
@@ -116,7 +111,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.ForeColor = System.Drawing.Color.Red;
-            this.label3.Location = new System.Drawing.Point(613, 137);
+            this.label3.Location = new System.Drawing.Point(15, 26);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(33, 13);
             this.label3.TabIndex = 10;
@@ -125,7 +120,7 @@
             // lblTime
             // 
             this.lblTime.AutoSize = true;
-            this.lblTime.Location = new System.Drawing.Point(677, 137);
+            this.lblTime.Location = new System.Drawing.Point(79, 26);
             this.lblTime.Name = "lblTime";
             this.lblTime.Size = new System.Drawing.Size(13, 13);
             this.lblTime.TabIndex = 11;
@@ -135,7 +130,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.ForeColor = System.Drawing.Color.Red;
-            this.label4.Location = new System.Drawing.Point(612, 181);
+            this.label4.Location = new System.Drawing.Point(179, 26);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(66, 13);
             this.label4.TabIndex = 12;
@@ -144,7 +139,7 @@
             // lblSampleRate
             // 
             this.lblSampleRate.AutoSize = true;
-            this.lblSampleRate.Location = new System.Drawing.Point(717, 181);
+            this.lblSampleRate.Location = new System.Drawing.Point(284, 26);
             this.lblSampleRate.Name = "lblSampleRate";
             this.lblSampleRate.Size = new System.Drawing.Size(13, 13);
             this.lblSampleRate.TabIndex = 13;
@@ -153,7 +148,7 @@
             // lblBitRate
             // 
             this.lblBitRate.AutoSize = true;
-            this.lblBitRate.Location = new System.Drawing.Point(718, 207);
+            this.lblBitRate.Location = new System.Drawing.Point(509, 4);
             this.lblBitRate.Name = "lblBitRate";
             this.lblBitRate.Size = new System.Drawing.Size(13, 13);
             this.lblBitRate.TabIndex = 15;
@@ -163,7 +158,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.ForeColor = System.Drawing.Color.Red;
-            this.label6.Location = new System.Drawing.Point(613, 207);
+            this.label6.Location = new System.Drawing.Point(404, 4);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(43, 13);
             this.label6.TabIndex = 14;
@@ -172,7 +167,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(775, 207);
+            this.label7.Location = new System.Drawing.Point(566, 4);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(30, 13);
             this.label7.TabIndex = 16;
@@ -181,7 +176,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(775, 181);
+            this.label5.Location = new System.Drawing.Point(342, 26);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(20, 13);
             this.label5.TabIndex = 17;
@@ -190,7 +185,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(775, 137);
+            this.label8.Location = new System.Drawing.Point(112, 26);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(20, 13);
             this.label8.TabIndex = 18;
@@ -213,6 +208,38 @@
             this.btnClear.Text = "Clear";
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
+            // 
+            // waveformPainter
+            // 
+            this.waveformPainter.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.waveformPainter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.waveformPainter.Location = new System.Drawing.Point(12, 169);
+            this.waveformPainter.Name = "waveformPainter";
+            this.waveformPainter.Size = new System.Drawing.Size(826, 273);
+            this.waveformPainter.TabIndex = 24;
+            this.waveformPainter.Text = "waveformPainter1";
+            // 
+            // btnPlay
+            // 
+            this.btnPlay.BackgroundImage = global::Smappio_SEAR.Properties.Resources.play1;
+            this.btnPlay.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnPlay.Location = new System.Drawing.Point(79, 66);
+            this.btnPlay.Name = "btnPlay";
+            this.btnPlay.Size = new System.Drawing.Size(48, 49);
+            this.btnPlay.TabIndex = 26;
+            this.btnPlay.UseVisualStyleBackColor = true;
+            this.btnPlay.Click += new System.EventHandler(this.btnPlay_Click);
+            // 
+            // btnBrowse
+            // 
+            this.btnBrowse.BackgroundImage = global::Smappio_SEAR.Properties.Resources.folder_outline_filled;
+            this.btnBrowse.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnBrowse.Location = new System.Drawing.Point(13, 66);
+            this.btnBrowse.Name = "btnBrowse";
+            this.btnBrowse.Size = new System.Drawing.Size(50, 49);
+            this.btnBrowse.TabIndex = 25;
+            this.btnBrowse.UseVisualStyleBackColor = true;
+            this.btnBrowse.Click += new System.EventHandler(this.btnBrowse_Click);
             // 
             // btnUdp
             // 
@@ -261,49 +288,52 @@
             this.btnBluetooth.UseVisualStyleBackColor = true;
             this.btnBluetooth.Click += new System.EventHandler(this.btnBluetooth_Click);
             // 
-            // waveViewer
+            // panel1
             // 
-            this.waveViewer.BackColor = System.Drawing.SystemColors.GrayText;
-            this.waveViewer.Location = new System.Drawing.Point(12, 246);
-            this.waveViewer.Name = "waveViewer";
-            this.waveViewer.SamplesPerPixel = 128;
-            this.waveViewer.Size = new System.Drawing.Size(827, 255);
-            this.waveViewer.StartPosition = ((long)(0));
-            this.waveViewer.TabIndex = 25;
-            this.waveViewer.WaveStream = null;
+            this.panel1.BackColor = System.Drawing.Color.Gainsboro;
+            this.panel1.Controls.Add(this.label2);
+            this.panel1.Controls.Add(this.lblNotification);
+            this.panel1.Controls.Add(this.label3);
+            this.panel1.Controls.Add(this.lblTime);
+            this.panel1.Controls.Add(this.label8);
+            this.panel1.Controls.Add(this.label4);
+            this.panel1.Controls.Add(this.lblSamplesReceived);
+            this.panel1.Controls.Add(this.label1);
+            this.panel1.Controls.Add(this.label7);
+            this.panel1.Controls.Add(this.label5);
+            this.panel1.Controls.Add(this.lblBitRate);
+            this.panel1.Controls.Add(this.lblSampleRate);
+            this.panel1.Controls.Add(this.label6);
+            this.panel1.Location = new System.Drawing.Point(140, 66);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(606, 49);
+            this.panel1.TabIndex = 27;
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.BackColor = System.Drawing.SystemColors.ButtonShadow;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.ClientSize = new System.Drawing.Size(851, 507);
-            this.Controls.Add(this.waveViewer);
+            this.ClientSize = new System.Drawing.Size(858, 507);
+            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.btnPlay);
+            this.Controls.Add(this.btnBrowse);
+            this.Controls.Add(this.waveformPainter);
             this.Controls.Add(this.btnUdp);
             this.Controls.Add(this.btnTcp);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.txtPath);
-            this.Controls.Add(this.label8);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.label7);
-            this.Controls.Add(this.lblBitRate);
-            this.Controls.Add(this.label6);
-            this.Controls.Add(this.lblSampleRate);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.lblTime);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.btnSerial);
-            this.Controls.Add(this.lblSamplesReceived);
-            this.Controls.Add(this.txtSerialData);
-            this.Controls.Add(this.lblNotification);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnBluetooth);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Main";
             this.Text = "Smappio SEAR";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Main_FormClosing);
+            this.Load += new System.EventHandler(this.Main_Load);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -314,7 +344,6 @@
         private System.Windows.Forms.Button btnBluetooth;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Label lblNotification;
-        private System.Windows.Forms.TextBox txtSerialData;
         public System.IO.Ports.SerialPort _serialPort;
         private System.Windows.Forms.Label lblSamplesReceived;
         private System.Windows.Forms.Button btnSerial;
@@ -333,7 +362,10 @@
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.Button btnTcp;
         private System.Windows.Forms.Button btnUdp;
-        private NAudio.Gui.WaveViewer waveViewer;
+        private NAudio.Gui.WaveformPainter waveformPainter;
+        private System.Windows.Forms.Button btnPlay;
+        private System.Windows.Forms.Button btnBrowse;
+        private System.Windows.Forms.Panel panel1;
     }
 }
 

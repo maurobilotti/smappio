@@ -73,6 +73,16 @@ namespace Smappio_SEAR.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap folder_outline_filled {
+            get {
+                object obj = ResourceManager.GetObject("folder-outline-filled", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap if_drop_kbtobexclient_17894 {
             get {
                 object obj = ResourceManager.GetObject("if_drop kbtobexclient_17894", resourceCulture);
@@ -106,6 +116,16 @@ namespace Smappio_SEAR.Properties {
         internal static System.Drawing.Bitmap if_wifi_Logo_925806 {
             get {
                 object obj = ResourceManager.GetObject("if_wifi_Logo_925806", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap play1 {
+            get {
+                object obj = ResourceManager.GetObject("play1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
