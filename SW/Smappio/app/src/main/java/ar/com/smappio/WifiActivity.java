@@ -65,7 +65,7 @@ public class WifiActivity extends AppCompatActivity {
             } else {
                 wifiBtn.setChecked(true);
                 scanBtn.setEnabled(true);
-                scanWifi(null);
+                scanWifi(scanBtn);
             }
         }
 
@@ -107,7 +107,7 @@ public class WifiActivity extends AppCompatActivity {
         } else {
             wifiManager.setWifiEnabled(true);
             scanBtn.setEnabled(true);
-            scanWifi(null);
+            scanWifi(scanBtn);
         }
     }
 
@@ -115,6 +115,7 @@ public class WifiActivity extends AppCompatActivity {
         Toast.makeText(this, "Buscando Dispositivo ...", Toast.LENGTH_SHORT).show();
         registerReceiver(wifiReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
         wifiManager.startScan();
+        unregisterReceiver(wifiReceiver);
     }
 
     private BroadcastReceiver wifiReceiver = new BroadcastReceiver() {
@@ -132,8 +133,6 @@ public class WifiActivity extends AppCompatActivity {
                         ssidLst.add(scanResult.SSID);//+ " - " + scanResult.capabilities);
                     }
                     adapter.notifyDataSetChanged();
-                    //Se quita el receiver para que no consuma bateria, sino queda funcionando en segundo plano y escuchando los cambios
-                    unregisterReceiver(this);
                 }
             }
         }

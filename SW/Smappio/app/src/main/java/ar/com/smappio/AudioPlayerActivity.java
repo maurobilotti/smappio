@@ -148,7 +148,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
 
         mediaPlayer.start();
 
-        playBtn.setBackgroundResource(R.drawable.audioplayer_pause_btn);
+        playBtn.setBackgroundResource(R.drawable.ic_pause_black_24dp);
     }
 
     private Handler handler = new Handler() {
@@ -180,10 +180,10 @@ public class AudioPlayerActivity extends AppCompatActivity {
     public void playBtnClick(View view) {
         if (!mediaPlayer.isPlaying()) {
             mediaPlayer.start();
-            playBtn.setBackgroundResource(R.drawable.audioplayer_pause_btn);
+            playBtn.setBackgroundResource(R.drawable.ic_pause_black_24dp);
         } else {
             mediaPlayer.pause();
-            playBtn.setBackgroundResource(R.drawable.audioplayer_play_btn);
+            playBtn.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
         }
     }
 
