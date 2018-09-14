@@ -14,7 +14,7 @@ namespace Smappio_SEAR
         
         protected List<byte> ReceivedBytes { get; set; }
         private string _filePath = "../../AudioSamples/";
-        private readonly int _sampleRate = 32000;// No modificar, pues modifica el audio escuchado.
+        private readonly int _sampleRate = 8000;// No modificar, pues modifica el audio escuchado.
         private readonly int _bytesDepth = 3;
         private readonly int _bitDepth = 24;
         private readonly BufferedWaveProvider _provider;        

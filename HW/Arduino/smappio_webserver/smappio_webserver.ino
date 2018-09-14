@@ -3,7 +3,7 @@
 
 WiFiServer server(80);
  
-const char* ssid     = "smappio_server";
+const char* ssid     = "smappio_8khz";
 const char* password = "123456789"; // El pass tiene que tener mas de 8 caracteres
 
 // CONSTANTES
@@ -66,15 +66,18 @@ void bufferSamplesToSendWithControlBits()
 
   for(int i = 0; i < BYTES_TO_SEND; i += 3)
   {
-    // Se hace la lectura de los samples del microfono
-    bytesReaded = smappioSound.read();
-    while(bytesReaded == 0)
-    {     
-        //Este bucle es necesario para no reenviar una muestra mas de una vez
-        bytesReaded = smappioSound.read();
-    }   
-    // Se lee un sample
-    value = smappioSound.getSampleValue();
+    // Se hacen "8" lecturas de samples del microfono, "7" se descartan y el octavo es el que se envia
+    for(int j = 0; j <= 3; j++)
+    {
+      bytesReaded = smappioSound.read();
+      while(bytesReaded == 0)
+      {     
+          //Este bucle es necesario para no reenviar una muestra mas de una vez
+          bytesReaded = smappioSound.read();
+      }  
+      // Se lee el sample
+      value = smappioSound.getSampleValue();
+    }
     
     // Se bufferean los 3 bytes del sample, con un desplazamiento y una numeracion
     // 'a': bit del primer byte. 'b': bit del segundo byte. 'c': bit del tercer byte.
