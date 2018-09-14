@@ -55,6 +55,7 @@
             this.btnSerial = new System.Windows.Forms.Button();
             this.btnBluetooth = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.volumeMeter = new NAudio.Gui.VolumeMeter();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -158,7 +159,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.ForeColor = System.Drawing.Color.Red;
-            this.label6.Location = new System.Drawing.Point(404, 4);
+            this.label6.Location = new System.Drawing.Point(426, 4);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(43, 13);
             this.label6.TabIndex = 14;
@@ -213,9 +214,9 @@
             // 
             this.waveformPainter.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.waveformPainter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.waveformPainter.Location = new System.Drawing.Point(12, 169);
+            this.waveformPainter.Location = new System.Drawing.Point(41, 137);
             this.waveformPainter.Name = "waveformPainter";
-            this.waveformPainter.Size = new System.Drawing.Size(826, 273);
+            this.waveformPainter.Size = new System.Drawing.Size(798, 201);
             this.waveformPainter.TabIndex = 24;
             this.waveformPainter.Text = "waveformPainter1";
             // 
@@ -309,13 +310,27 @@
             this.panel1.Size = new System.Drawing.Size(606, 49);
             this.panel1.TabIndex = 27;
             // 
+            // volumeMeter
+            // 
+            this.volumeMeter.Amplitude = 0F;
+            this.volumeMeter.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.volumeMeter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.volumeMeter.Location = new System.Drawing.Point(13, 137);
+            this.volumeMeter.MaxDb = 18F;
+            this.volumeMeter.MinDb = -60F;
+            this.volumeMeter.Name = "volumeMeter";
+            this.volumeMeter.Size = new System.Drawing.Size(22, 200);
+            this.volumeMeter.TabIndex = 28;
+            this.volumeMeter.Text = "volumeMeter";
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.ButtonShadow;
+            this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.ClientSize = new System.Drawing.Size(858, 507);
+            this.ClientSize = new System.Drawing.Size(858, 359);
+            this.Controls.Add(this.volumeMeter);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.btnPlay);
             this.Controls.Add(this.btnBrowse);
@@ -366,6 +381,7 @@
         private System.Windows.Forms.Button btnPlay;
         private System.Windows.Forms.Button btnBrowse;
         private System.Windows.Forms.Panel panel1;
+        private NAudio.Gui.VolumeMeter volumeMeter;
     }
 }
 
