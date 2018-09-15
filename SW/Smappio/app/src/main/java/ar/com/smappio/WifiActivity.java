@@ -34,8 +34,7 @@ import java.util.List;
 public class WifiActivity extends AppCompatActivity {
 
     private WifiManager wifiManager;
-    private ListView ssidListView;
-    private List<ScanResult> networkLst;
+    private List<ScanResult> networkLst = new ArrayList<>();
     private ArrayList<String> ssidLst = new ArrayList<>();
     private ArrayAdapter adapter;
     private Button scanBtn;
@@ -47,6 +46,7 @@ public class WifiActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wifi);
 
+        //Icono para volver a la activity anterior
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -58,12 +58,9 @@ public class WifiActivity extends AppCompatActivity {
         wifiBtn = findViewById(R.id.wifiBtn);
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, ssidLst);
-        ssidListView = findViewById(R.id.wifiList);
+        ListView ssidListView = findViewById(R.id.wifiList);
         ssidListView.setOnItemClickListener(onItemClickListener);
         ssidListView.setAdapter(adapter);
-
-        wifiManager.setWifiEnabled(true);
-        scanWifi(scanBtn);
     }
 
     @Override
@@ -84,26 +81,28 @@ public class WifiActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(wifiReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        registerReceiver(wifiReceiver, new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION));
+    }
+
+    public void updateWifi(View view) {
+        ssidLst.clear();
+        networkLst.clear();
+        if(wifiManager.isWifiEnabled()) {
+            Toast.makeText(this, "Buscando Dispositivo ...", Toast.LENGTH_SHORT).show();
+            networkLst = wifiManager.getScanResults();
+            for (ScanResult scanResult : networkLst) {
+                ssidLst.add(scanResult.SSID);//+ " - " + scanResult.capabilities);
+            }
+        }
+        adapter.notifyDataSetChanged();
     }
 
     public void wifiOnOff(View view) {
         if(!wifiBtn.isChecked()) {
             wifiManager.setWifiEnabled(false);
-            scanBtn.setEnabled(false);
-            ssidLst.clear();
-            adapter.notifyDataSetChanged();
         } else {
             wifiManager.setWifiEnabled(true);
-            scanBtn.setEnabled(true);
-            scanWifi(scanBtn);
         }
-    }
-
-    public void scanWifi(View view) {
-        Toast.makeText(this, "Buscando Dispositivo ...", Toast.LENGTH_SHORT).show();
-        registerReceiver(wifiReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-        wifiManager.startScan();
     }
 
     private BroadcastReceiver wifiReceiver = new BroadcastReceiver() {
@@ -114,13 +113,15 @@ public class WifiActivity extends AppCompatActivity {
             String action = intent.getAction();
 
             if (action != null && !action.isEmpty()) {
-                if(action.equals(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)) {
-                    networkLst = wifiManager.getScanResults();
-                    ssidLst.clear();
-                    for (ScanResult scanResult : networkLst) {
-                        ssidLst.add(scanResult.SSID);//+ " - " + scanResult.capabilities);
+                if(action.equals(WifiManager.WIFI_STATE_CHANGED_ACTION)) {
+                    if(!wifiManager.isWifiEnabled()) {
+                        scanBtn.setEnabled(false);
+                        wifiBtn.setChecked(false);
+                    } else {
+                        scanBtn.setEnabled(true);
+                        wifiBtn.setChecked(true);
                     }
-                    adapter.notifyDataSetChanged();
+                    updateWifi(scanBtn);
                 }
             }
         }

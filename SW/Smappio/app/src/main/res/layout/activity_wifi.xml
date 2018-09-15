@@ -18,7 +18,6 @@
             android:layout_height="wrap_content"
             android:text="Wifi"
             android:textSize="15dp"
-            android:checked="true"
             android:onClick="wifiOnOff"/>
 
         <ListView
@@ -36,7 +35,7 @@
             android:layout_margin="15dp"
             android:background="@android:color/background_light"
             android:text="Buscar"
-            android:onClick="scanWifi"/>
+            android:onClick="updateWifi"/>
 
     </LinearLayout>
 
