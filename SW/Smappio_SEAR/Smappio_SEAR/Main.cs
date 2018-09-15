@@ -82,7 +82,6 @@ namespace Smappio_SEAR
             }
 
             Receiver.Receive();
-            Receiver.Play();
 
             SetButtonStatus();
             SetNotificationLabel(Receiver.PortName + " Running");

@@ -50,7 +50,7 @@ namespace Smappio_SEAR.Wifi
         {          
             if(Connected)
             {
-                TcpClient.Client.NoDelay = false;
+                TcpClient.Client.NoDelay = true;
                 _threadReceive = new Thread(ReceiveData);
 
                 _threadReceive.Start();
