@@ -86,17 +86,17 @@ public class WifiActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-//    @Override
-//    protected void onPause() {
-//        unregisterReceiver(wifiReceiver);
-//        super.onPause();
-//    }
-//
-//    @Override
-//    protected void onResume() {
-//        registerReceiver(wifiReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-//        super.onResume();
-//    }
+    @Override
+    protected void onPause() {
+        unregisterReceiver(wifiReceiver);
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        registerReceiver(wifiReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        super.onResume();
+    }
 
     public void wifiOnOff(View view) {
         if(!wifiBtn.isChecked()) {
@@ -115,7 +115,6 @@ public class WifiActivity extends AppCompatActivity {
         Toast.makeText(this, "Buscando Dispositivo ...", Toast.LENGTH_SHORT).show();
         registerReceiver(wifiReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
         wifiManager.startScan();
-        unregisterReceiver(wifiReceiver);
     }
 
     private BroadcastReceiver wifiReceiver = new BroadcastReceiver() {
