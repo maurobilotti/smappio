@@ -52,29 +52,18 @@ public class WifiActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
+        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
         scanBtn = findViewById(R.id.scanBtn);
         wifiBtn = findViewById(R.id.wifiBtn);
 
-        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-
-        if(wifiManager != null) {
-            if(!wifiManager.isWifiEnabled()) {
-                Toast.makeText(this, "Activar la tecnología WiFi", Toast.LENGTH_LONG).show();
-                wifiBtn.setChecked(false);
-                scanBtn.setEnabled(false);
-            } else {
-                wifiBtn.setChecked(true);
-                scanBtn.setEnabled(true);
-                scanWifi(scanBtn);
-            }
-        }
-
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, ssidLst);
-
         ssidListView = findViewById(R.id.wifiList);
-        ssidListView.setAdapter(adapter);
         ssidListView.setOnItemClickListener(onItemClickListener);
+        ssidListView.setAdapter(adapter);
 
+        wifiManager.setWifiEnabled(true);
+        scanWifi(scanBtn);
     }
 
     @Override
@@ -88,14 +77,14 @@ public class WifiActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        unregisterReceiver(wifiReceiver);
         super.onPause();
+        unregisterReceiver(wifiReceiver);
     }
 
     @Override
     protected void onResume() {
-        registerReceiver(wifiReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
         super.onResume();
+        registerReceiver(wifiReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
     }
 
     public void wifiOnOff(View view) {
