@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
@@ -271,7 +272,16 @@ public class WifiActivity extends AppCompatActivity {
                         break;
                     }
                 }
+
                 Toast.makeText(WifiActivity.this, "Se conectó al dispositivo", Toast.LENGTH_LONG).show();
+
+                //Devolver datos al activity padre (Quien inicio con startActivityForResult)
+//                Intent response = new Intent();
+//                response.putExtra("networkId", networkId);
+//                response.putExtra("ssid", ssid);
+//                setResult(Constant.CODE_WIFI_CONNECTED, response);
+                finish();
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

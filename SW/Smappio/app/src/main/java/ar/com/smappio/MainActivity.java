@@ -1,7 +1,15 @@
 package ar.com.smappio;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.res.Resources;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -12,12 +20,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    //Constantes
-    public static final int CODE_FILE_SYSTEM_PLAY = 1001;
-    public static final int CODE_FILE_SYSTEM_SHARE = 1002;
+    private WifiManager wifiManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +50,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        updateDeviceConnected();
     }
 
     //Al presionar el botón físico "volver atrás (<)", si esta abierta la sidebar, se cierra
@@ -53,6 +64,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(wifiReceiver);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(wifiReceiver, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
     }
 
 //    @Override
@@ -84,11 +107,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_slideshow) {
-            openFileSystem(CODE_FILE_SYSTEM_PLAY);
+            openFileSystem(Constant.CODE_FILE_SYSTEM_PLAY);
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
-            openFileSystem(CODE_FILE_SYSTEM_SHARE);
+            openFileSystem(Constant.CODE_FILE_SYSTEM_SHARE);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -104,11 +127,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivityForResult(Intent.createChooser(intent, "Seleccionar archivo"), code);
     }
 
+    public void openWifiScanActivity() {
+        Intent intent = new Intent(this, WifiActivity.class);
+        startActivityForResult(intent, Constant.CODE_WIFI_CONNECTED);
+    }
+
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == CODE_FILE_SYSTEM_PLAY && data != null) {
+        if (requestCode == Constant.CODE_FILE_SYSTEM_PLAY && data != null) {
             Uri currentFileURI = data.getData();
 
             Intent intent = new Intent(this, AudioPlayerActivity.class);
@@ -116,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(intent);
         }
 
-        if (requestCode == CODE_FILE_SYSTEM_SHARE && data != null) {
+        if (requestCode == Constant.CODE_FILE_SYSTEM_SHARE && data != null) {
             Uri currentFileURI = data.getData();
 
             Intent intent = new Intent(Intent.ACTION_SEND);
@@ -124,10 +152,46 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             intent.putExtra(Intent.EXTRA_STREAM, currentFileURI);
             startActivity(Intent.createChooser(intent, "Compartir archivo de audio"));
         }
+
+        if(requestCode == Constant.CODE_WIFI_CONNECTED && data != null) {
+//            int networkId = (int) data.getExtras().get("networkId");
+//            String ssid = (String) data.getExtras().get("ssid");
+//            TextView deviceConnectedLbl = findViewById(R.id.connectedDeviceLbl);
+//            deviceConnectedLbl.setText("Conectado al dispositivo: " + ssid);
+        }
     }
 
-    public void openWifiScanActivity() {
-        Intent intent = new Intent(this, WifiActivity.class);
-        startActivity(intent);
+    private BroadcastReceiver wifiReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action != null && !action.isEmpty()) {
+                if(action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
+                    updateDeviceConnected();
+                }
+            }
+        }
+    };
+
+    private void updateDeviceConnected() {
+        TextView stateLbl = findViewById(R.id.stateLbl);
+        TextView deviceConnectedLbl = findViewById(R.id.connectedDeviceLbl);
+        TextView deviceConnectedMacLbl = findViewById(R.id.connectedDeviceMacLbl);
+        if (wifiManager.isWifiEnabled()) {
+            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+            if(wifiInfo.getNetworkId() != -1 ){
+                stateLbl.setText("Conectado");
+                deviceConnectedLbl.setText("Dispositivo: " + wifiInfo.getSSID());
+                deviceConnectedMacLbl.setText("MAC: " + wifiInfo.getMacAddress());
+            } else {
+                stateLbl.setText("Desconectado");
+                deviceConnectedLbl.setText("");
+                deviceConnectedMacLbl.setText("");
+            }
+        } else {
+            stateLbl.setText("Desconectado");
+            deviceConnectedLbl.setText("");
+            deviceConnectedMacLbl.setText("");
+        }
     }
 }
