@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BluetoothHelper.cs" />
+    <Compile Include="UIControls.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -145,6 +146,24 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\play1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\grid_background_by_inflationking-d4tw1da.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\composite grid.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\axis.jpeg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\grid-background-in-motion_4ydoij-ox__F0000.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\grid-background-in-motion_4ydoij-ox__F00001.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\composite grid1.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -29,6 +29,7 @@ namespace Smappio_SEAR
         public WaveOut waveOut = new WaveOut();
         private AudioFileReader audioFileReader;
         private Action<float> setVolumeDelegate;
+        public UIControls UIControls { get; private set; }
 
         #region Transfering methods
 
@@ -68,7 +69,7 @@ namespace Smappio_SEAR
 
         private void btnTcp_Click(object sender, EventArgs e)
         {
-            InvokeReceiver(new TcpReceiver(ref waveformPainter));
+            InvokeReceiver(new TcpReceiver(UIControls));
         }
 
         private void InvokeReceiver(Receiver receiver)
@@ -115,6 +116,25 @@ namespace Smappio_SEAR
             }
         }
 
+        //delegate void ClearWaveFormPainterCallback();
+        //private void ClearWaveFormPainter()
+        //{
+        //    // InvokeRequired required compares the thread ID of the
+        //    // calling thread to the thread ID of the creating thread.
+        //    // If these threads are different, it returns true.
+
+        //    if (this.waveformPainter.InvokeRequired)
+        //    {
+        //        ClearWaveFormPainterCallback d = new ClearWaveFormPainterCallback();
+        //        this.Invoke(d, new object[] {});
+        //    }
+        //    else
+        //    {
+        //        waveformPainter.Refresh();
+        //    }
+        //}
+
+
         #endregion
         private void btnSave_Click(object sender, EventArgs e)
         {
@@ -155,18 +175,20 @@ namespace Smappio_SEAR
                 }
             }
 
-            Receiver.Close();
+            Receiver.ClearAndClose();
             Receiver.SaveFile();
         }
 
         private void btnClear_Click(object sender, EventArgs e)
         {
             ClearContents();
+            this.UIControls.Refresh();
         }
 
         private void ClearContents()
         {
-            Receiver.ClearAndClose();
+            if(Receiver != null)
+                Receiver.ClearAndClose();
 
             SetButtonStatus(true);
             lblBitRate.Text = lblNotification.Text = lblBitRate.Text = lblSampleRate.Text = lblSamplesReceived.Text = lblTime.Text = "";            
@@ -251,12 +273,13 @@ namespace Smappio_SEAR
 
         private void Main_Load(object sender, EventArgs e)
         {
-
+            this.UIControls = new UIControls(ref this.waveformPainter, ref this.volumeMeter);
         }
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Receiver.ClearAndClose();
+            if(Receiver != null)
+                Receiver.ClearAndClose();
         }
     }
 }

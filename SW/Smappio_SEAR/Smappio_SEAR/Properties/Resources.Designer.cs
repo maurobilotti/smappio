@@ -63,6 +63,16 @@ namespace Smappio_SEAR.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap axis {
+            get {
+                object obj = ResourceManager.GetObject("axis", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Bluetooth {
             get {
                 object obj = ResourceManager.GetObject("Bluetooth", resourceCulture);
@@ -73,9 +83,59 @@ namespace Smappio_SEAR.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap composite_grid {
+            get {
+                object obj = ResourceManager.GetObject("composite grid", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap composite_grid1 {
+            get {
+                object obj = ResourceManager.GetObject("composite grid1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap folder_outline_filled {
             get {
                 object obj = ResourceManager.GetObject("folder-outline-filled", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap grid_background_by_inflationking_d4tw1da {
+            get {
+                object obj = ResourceManager.GetObject("grid_background_by_inflationking-d4tw1da", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap grid_background_in_motion_4ydoij_ox__F0000 {
+            get {
+                object obj = ResourceManager.GetObject("grid-background-in-motion_4ydoij-ox__F0000", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap grid_background_in_motion_4ydoij_ox__F00001 {
+            get {
+                object obj = ResourceManager.GetObject("grid-background-in-motion_4ydoij-ox__F00001", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

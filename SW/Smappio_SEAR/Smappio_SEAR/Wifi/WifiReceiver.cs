@@ -12,7 +12,7 @@ namespace Smappio_SEAR.Wifi
         {
 
         }
-        public WifiReceiver(ref WaveformPainter wavePainter) : base(ref wavePainter)
+        public WifiReceiver(UIControls ui) : base(ui)
         {
         }
         protected IDisposable ClientReceiver { get; set; }
