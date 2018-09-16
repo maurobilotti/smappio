@@ -14,14 +14,16 @@ namespace Smappio_SEAR
         public UIControls UI { get; }
         protected List<byte> ReceivedBytes { get; set; }
         private string _filePath = "../../AudioSamples/";
-        private readonly int _sampleRate = 8000;// No modificar, pues modifica el audio escuchado.
+        private readonly int _sampleRate = 4600;// No modificar, pues modifica el audio escuchado.
         private readonly int _bytesDepth = 3;
         private readonly int _bitDepth = 24;
         private readonly BufferedWaveProvider _provider;        
         private WaveOut _waveOut = new WaveOut();
         public bool Connected = false;
         public TransmissionMethod TransmissionMethod;
-        protected const int _playingLength = 3000;// 3 * 20400
+        private bool _prebuffering = true;
+        protected const int _prebufferingSize = 4;
+        protected const int _playingLength = 345;// 3 * 20400
         protected int _offset = 0;
         protected int errorFreeReaded = 0;
         protected int _amplitudeMultiplier = 63;
@@ -67,7 +69,7 @@ namespace Smappio_SEAR
         }
 
         #region Public Methods
-        public virtual void Play()
+        protected virtual void Play()
         {
             if (_waveOut.PlaybackState != PlaybackState.Playing)
             {
@@ -205,9 +207,19 @@ namespace Smappio_SEAR
                 byte[] errorFreeBuffer = ControlAlgorithm();
 
                 ReceivedBytes.AddRange(errorFreeBuffer);
-
-                if (ReceivedBytes.Count > _playingLength * 4)
+                if (ReceivedBytes.Count > _playingLength * _prebufferingSize)
+                {
+                    if(_prebuffering)
+                    {
+                        _prebuffering = false;
+                        for (int i = 0; i < _prebufferingSize - 1; i++)
+                        {
+                            AddSamplesToPlayer();
+                        }
+                        this.Play();
+                    }
                     AddSamplesToPlayer();
+                }
             }
         }
 

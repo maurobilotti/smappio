@@ -3,11 +3,11 @@
 
 WiFiServer server(80);
  
-const char* ssid     = "smappio_8khz";
+const char* ssid     = "Smappio 4.6KHz";
 const char* password = "123456789"; // El pass tiene que tener mas de 8 caracteres
 
 // CONSTANTES
-#define BYTES_TO_SEND   42000   //57438 es aparentemente el max   // Tiene que ser multiplo de 3  
+#define BYTES_TO_SEND  345 //57438 es aparentemente el max   // Tiene que ser multiplo de 3  
 #define MEDIA 13700   // I2S:  13700  | PCM:  6835   // valor para nivelar a 0 la señal media
 #define WIFI_CHANNEL 1  //  1  |  6  |  11
 
@@ -30,7 +30,7 @@ void setup() {
   IPAddress NMask(255, 255, 255, 0);
   WiFi.softAPConfig(Ip, gateway, NMask);
   server.begin();
-  server.setNoDelay(false);
+  server.setNoDelay(true);
 }
 
 void loop() {
@@ -40,7 +40,7 @@ void loop() {
   // Si el cliente inicio el handshake
   if (client) 
   {
-    client.setNoDelay(false);  
+    client.setNoDelay(true);  
     int bufferSeqNum = 0;  
     while (client.connected()) 
     {      
@@ -62,22 +62,11 @@ void loop() {
 void bufferSamplesToSendWithControlBits() 
 {
   int32_t value = 0;
-  int bytesReaded = 0;
 
   for(int i = 0; i < BYTES_TO_SEND; i += 3)
   {
-    // Se hacen "8" lecturas de samples del microfono, "7" se descartan y el octavo es el que se envia
-    for(int j = 0; j <= 3; j++)
-    {
-      bytesReaded = smappioSound.read();
-      while(bytesReaded == 0)
-      {     
-          //Este bucle es necesario para no reenviar una muestra mas de una vez
-          bytesReaded = smappioSound.read();
-      }  
-      // Se lee el sample
-      value = smappioSound.getSampleValue();
-    }
+    // Se obtiene le valor de un sample.
+    value = getOneSampleValueOfN(7); 
     
     // Se bufferean los 3 bytes del sample, con un desplazamiento y una numeracion
     // 'a': bit del primer byte. 'b': bit del segundo byte. 'c': bit del tercer byte.
@@ -85,6 +74,23 @@ void bufferSamplesToSendWithControlBits()
     _dataToSend[i + 1] = ((value >> 6)  & 63) | 128;  // '128'  =  10|bbbbaa
     _dataToSend[i + 2] = ((value >> 12) & 63) | 192;  // '192'  =  11|ccbbbb
   }  
+}
+
+// Funcion en la que se hacen "n" lecturas de samples del microfono, "n - 1" se descartan.
+// Se retorna el valor del sample nro "n"
+int32_t getOneSampleValueOfN(int n)
+{
+  int bytesReaded = 0;
+  for(int j = 1; j <= n; j++)
+  {
+    bytesReaded = smappioSound.read();
+    while(bytesReaded == 0)
+    {     
+        //Este bucle es necesario para no reenviar una muestra mas de una vez
+        bytesReaded = smappioSound.read();
+    }  
+  }
+  return smappioSound.getSampleValue();
 }
 
 // Metodo para bufferear sonido sin bits de control
