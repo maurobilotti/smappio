@@ -30,7 +30,7 @@ void setup() {
   IPAddress NMask(255, 255, 255, 0);
   WiFi.softAPConfig(Ip, gateway, NMask);
   server.begin();
-  server.setNoDelay(false);
+  server.setNoDelay(true);
 }
 
 void loop() {
