@@ -207,9 +207,9 @@
             // 
             // txtPath
             // 
-            this.txtPath.Location = new System.Drawing.Point(490, 26);
+            this.txtPath.Location = new System.Drawing.Point(468, 26);
             this.txtPath.Name = "txtPath";
-            this.txtPath.Size = new System.Drawing.Size(320, 20);
+            this.txtPath.Size = new System.Drawing.Size(342, 20);
             this.txtPath.TabIndex = 19;
             // 
             // btnClear
@@ -275,7 +275,7 @@
             // 
             this.btnBrowse.BackgroundImage = global::Smappio_SEAR.Properties.Resources.folder_outline_filled;
             this.btnBrowse.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnBrowse.Location = new System.Drawing.Point(333, 10);
+            this.btnBrowse.Location = new System.Drawing.Point(358, 10);
             this.btnBrowse.Name = "btnBrowse";
             this.btnBrowse.Size = new System.Drawing.Size(50, 49);
             this.btnBrowse.TabIndex = 25;
@@ -302,7 +302,7 @@
             this.btnUdp.BackgroundImage = global::Smappio_SEAR.Properties.Resources.user_datagram_protocol_udp_300x242;
             this.btnUdp.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnUdp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnUdp.Location = new System.Drawing.Point(140, 12);
+            this.btnUdp.Location = new System.Drawing.Point(140, 11);
             this.btnUdp.Name = "btnUdp";
             this.btnUdp.Size = new System.Drawing.Size(48, 48);
             this.btnUdp.TabIndex = 23;
@@ -326,7 +326,7 @@
             // 
             this.btnSerial.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSerial.Image = global::Smappio_SEAR.Properties.Resources.if_usb_925801;
-            this.btnSerial.Location = new System.Drawing.Point(201, 12);
+            this.btnSerial.Location = new System.Drawing.Point(201, 11);
             this.btnSerial.Name = "btnSerial";
             this.btnSerial.Size = new System.Drawing.Size(48, 48);
             this.btnSerial.TabIndex = 7;
@@ -337,7 +337,7 @@
             // 
             this.btnBluetooth.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnBluetooth.Image = global::Smappio_SEAR.Properties.Resources.if_drop_kbtobexclient_17894;
-            this.btnBluetooth.Location = new System.Drawing.Point(12, 12);
+            this.btnBluetooth.Location = new System.Drawing.Point(13, 11);
             this.btnBluetooth.Name = "btnBluetooth";
             this.btnBluetooth.Size = new System.Drawing.Size(51, 48);
             this.btnBluetooth.TabIndex = 0;

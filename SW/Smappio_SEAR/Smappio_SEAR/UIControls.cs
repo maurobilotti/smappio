@@ -15,12 +15,6 @@ namespace Smappio_SEAR
             this.VolumeMeter = volumeMeter;
         }
         public WaveformPainter WavePainter;
-        public VolumeMeter VolumeMeter;
-
-        public void Refresh()
-        {
-            this.WavePainter.Refresh();
-            this.VolumeMeter.Refresh();
-        }
+        public VolumeMeter VolumeMeter;        
     }
 }
