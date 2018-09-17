@@ -63,16 +63,6 @@ namespace Smappio_SEAR.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap axis {
-            get {
-                object obj = ResourceManager.GetObject("axis", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap Bluetooth {
             get {
                 object obj = ResourceManager.GetObject("Bluetooth", resourceCulture);
