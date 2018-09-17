@@ -8,24 +8,24 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
 
-public class VisualizerView extends View {
+public class EqualizerView extends View {
 
     private byte[] mBytes;
     private float[] mPoints;
     private Rect mRect = new Rect();
     private Paint mForePaint = new Paint();
 
-    public VisualizerView(Context context) {
+    public EqualizerView(Context context) {
         super(context);
         init();
     }
 
-    public VisualizerView(Context context, AttributeSet attrs) {
+    public EqualizerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public VisualizerView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public EqualizerView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
