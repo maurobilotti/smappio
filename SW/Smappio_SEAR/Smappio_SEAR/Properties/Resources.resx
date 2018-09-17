@@ -124,17 +124,23 @@
   <data name="TCPIPRN" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\TCPIPRN.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="composite grid1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\composite grid1.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="if_drop kbtobexclient_17894" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\if_drop kbtobexclient_17894.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="TCP" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\TCP.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="grid-background-in-motion_4ydoij-ox__F0000" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\grid-background-in-motion_4ydoij-ox__F0000.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="play1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\play1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="composite grid" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\composite grid.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Bluetooth" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Bluetooth.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="if_usb_925801" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\if_usb_925801.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -142,28 +148,25 @@
   <data name="folder-outline-filled" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\folder-outline-filled.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="axis" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\axis.jpeg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="grid_background_by_inflationking-d4tw1da" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\grid_background_by_inflationking-d4tw1da.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="if_wifi_Logo_925806" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\if_wifi_Logo_925806.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="if_drop kbtobexclient_17894" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\if_drop kbtobexclient_17894.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="axis" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\axis.jpeg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="user-datagram-protocol-udp-300x242" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\user-datagram-protocol-udp-300x242.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Bluetooth" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Bluetooth.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="play1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\play1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="grid-background-in-motion_4ydoij-ox__F00001" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\grid-background-in-motion_4ydoij-ox__F00001.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="composite grid1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\composite grid1.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="eje" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\eje.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

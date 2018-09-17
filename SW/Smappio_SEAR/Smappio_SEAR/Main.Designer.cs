@@ -74,7 +74,7 @@
             // 
             this.lblNotification.AutoSize = true;
             this.lblNotification.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblNotification.Location = new System.Drawing.Point(190, 14);
+            this.lblNotification.Location = new System.Drawing.Point(112, 14);
             this.lblNotification.Name = "lblNotification";
             this.lblNotification.Size = new System.Drawing.Size(105, 18);
             this.lblNotification.TabIndex = 3;
@@ -127,7 +127,7 @@
             // 
             this.lblTime.AutoSize = true;
             this.lblTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTime.Location = new System.Drawing.Point(79, 45);
+            this.lblTime.Location = new System.Drawing.Point(76, 45);
             this.lblTime.Name = "lblTime";
             this.lblTime.Size = new System.Drawing.Size(16, 18);
             this.lblTime.TabIndex = 11;
@@ -158,7 +158,7 @@
             // 
             this.lblBitRate.AutoSize = true;
             this.lblBitRate.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBitRate.Location = new System.Drawing.Point(646, 11);
+            this.lblBitRate.Location = new System.Drawing.Point(734, 14);
             this.lblBitRate.Name = "lblBitRate";
             this.lblBitRate.Size = new System.Drawing.Size(16, 18);
             this.lblBitRate.TabIndex = 15;
@@ -169,7 +169,7 @@
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label6.ForeColor = System.Drawing.Color.Red;
-            this.label6.Location = new System.Drawing.Point(568, 11);
+            this.label6.Location = new System.Drawing.Point(656, 14);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(58, 18);
             this.label6.TabIndex = 14;
@@ -179,7 +179,7 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(703, 14);
+            this.label7.Location = new System.Drawing.Point(793, 14);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(40, 18);
             this.label7.TabIndex = 16;
@@ -189,7 +189,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(521, 45);
+            this.label5.Location = new System.Drawing.Point(513, 45);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(27, 18);
             this.label5.TabIndex = 17;
@@ -288,7 +288,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.waveformPainter.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.waveformPainter.BackgroundImage = global::Smappio_SEAR.Properties.Resources.composite_grid1;
+            this.waveformPainter.BackgroundImage = global::Smappio_SEAR.Properties.Resources.eje;
             this.waveformPainter.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.waveformPainter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.waveformPainter.Location = new System.Drawing.Point(41, 170);

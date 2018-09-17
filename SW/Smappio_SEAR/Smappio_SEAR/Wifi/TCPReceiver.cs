@@ -29,8 +29,15 @@ namespace Smappio_SEAR.Wifi
             this.ClientReceiver = new TcpClient();
             if (CanConnect())
             {
-                this.Connected = true;
-                this.ClientReceiver = new TcpClient(IpAddress, Port);
+                try
+                {
+                    this.Connected = true;
+                    this.ClientReceiver = new TcpClient(IpAddress, Port);
+                }
+                catch 
+                {
+                    return;
+                }
             }            
         }
 

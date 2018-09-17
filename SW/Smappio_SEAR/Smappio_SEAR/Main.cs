@@ -181,8 +181,7 @@ namespace Smappio_SEAR
 
         private void btnClear_Click(object sender, EventArgs e)
         {
-            ClearContents();
-            this.UIControls.Refresh();
+            ClearContents();            
         }
 
         private void ClearContents()

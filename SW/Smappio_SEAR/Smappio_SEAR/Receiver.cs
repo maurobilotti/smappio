@@ -54,13 +54,15 @@ namespace Smappio_SEAR
             sampleChannel.PreVolumeMeter += OnPreVolumeMeter;
             setVolumeDelegate = vol => sampleChannel.Volume = vol;
             _meteringSampleProvider = new MeteringSampleProvider(sampleChannel);
-            _meteringSampleProvider.SamplesPerNotification = 10000;
+            _meteringSampleProvider.SamplesPerNotification = 50;
             _meteringSampleProvider.StreamVolume += OnPostVolumeMeter;            
         }
 
         private void OnPostVolumeMeter(object sender, StreamVolumeEventArgs e)
         {
-            UI.WavePainter.AddMax(e.MaxSampleValues[0] * 20);
+            //string str = e.MaxSampleValues[0].ToString("0.##");
+            //float val = str == "0" ? 0.001f : float.Parse(str);
+            UI.WavePainter.AddMax(e.MaxSampleValues[0] * 5);
         }
 
         private void OnPreVolumeMeter(object sender, StreamVolumeEventArgs e)

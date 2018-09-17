@@ -154,9 +154,6 @@
     <None Include="Resources\composite grid.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\axis.jpeg" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\grid-background-in-motion_4ydoij-ox__F0000.png" />
   </ItemGroup>
   <ItemGroup>
@@ -164,6 +161,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\composite grid1.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\eje.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
