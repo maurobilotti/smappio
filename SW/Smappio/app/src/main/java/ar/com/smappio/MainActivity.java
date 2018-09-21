@@ -20,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -177,21 +178,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView stateLbl = findViewById(R.id.stateLbl);
         TextView deviceConnectedLbl = findViewById(R.id.connectedDeviceLbl);
         TextView deviceConnectedMacLbl = findViewById(R.id.connectedDeviceMacLbl);
+        Button auscultarBtn = findViewById(R.id.auscultarBtn);
         if (wifiManager.isWifiEnabled()) {
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
             if(wifiInfo.getNetworkId() != -1 ){
                 stateLbl.setText("Conectado");
                 deviceConnectedLbl.setText("Dispositivo: " + wifiInfo.getSSID());
                 deviceConnectedMacLbl.setText("MAC: " + wifiInfo.getMacAddress());
+                auscultarBtn.setVisibility(View.VISIBLE);
             } else {
                 stateLbl.setText("Desconectado");
                 deviceConnectedLbl.setText("");
                 deviceConnectedMacLbl.setText("");
+                auscultarBtn.setVisibility(View.GONE);
             }
         } else {
             stateLbl.setText("Desconectado");
             deviceConnectedLbl.setText("");
             deviceConnectedMacLbl.setText("");
+            auscultarBtn.setVisibility(View.GONE);
         }
+    }
+
+    public void auscultar(View view) {
+        Intent intent = new Intent(this, StreamActivity.class);
+        startActivity(intent);
     }
 }

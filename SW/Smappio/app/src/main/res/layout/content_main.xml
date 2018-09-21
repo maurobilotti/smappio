@@ -38,4 +38,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/connectedDeviceLbl" />
 
+    <Button
+        android:id="@+id/auscultarBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Auscultar"
+        android:visibility="gone"
+        android:onClick="auscultar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/connectedDeviceMacLbl" />
+
 </android.support.constraint.ConstraintLayout>
