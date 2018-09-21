@@ -175,8 +175,8 @@ namespace Smappio_SEAR
                 }
             }
 
-            Receiver.ClearAndClose();
             Receiver.SaveFile();
+            Receiver.ClearAndClose();            
         }
 
         private void btnClear_Click(object sender, EventArgs e)
