@@ -62,7 +62,7 @@ namespace Smappio_SEAR
         {
             //string str = e.MaxSampleValues[0].ToString("0.##");
             //float val = str == "0" ? 0.001f : float.Parse(str);
-            UI.WavePainter.AddMax(e.MaxSampleValues[0] * 5);
+            UI.WavePainter.AddMax(e.MaxSampleValues[0]);
         }
 
         private void OnPreVolumeMeter(object sender, StreamVolumeEventArgs e)
