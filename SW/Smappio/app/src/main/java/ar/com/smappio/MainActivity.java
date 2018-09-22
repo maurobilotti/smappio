@@ -4,9 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Resources;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -22,7 +19,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -178,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView stateLbl = findViewById(R.id.stateLbl);
         TextView deviceConnectedLbl = findViewById(R.id.connectedDeviceLbl);
         TextView deviceConnectedMacLbl = findViewById(R.id.connectedDeviceMacLbl);
-        Button auscultarBtn = findViewById(R.id.auscultarBtn);
+        Button auscultarBtn = findViewById(R.id.auscultateBtn);
         if (wifiManager.isWifiEnabled()) {
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
             if(wifiInfo.getNetworkId() != -1 ){
@@ -200,8 +196,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public void auscultar(View view) {
-        Intent intent = new Intent(this, StreamActivity.class);
+    public void auscultate(View view) {
+        Intent intent = new Intent(this, AscultateActivity.class);
         startActivity(intent);
     }
 }
