@@ -15,13 +15,14 @@ public class PCMSocket {
 
     private static final int SAMPLE_RATE = 4600;
     private static final int CHANNEL_CONFIG = AudioFormat.CHANNEL_OUT_MONO;
-    private static final int AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
+    private static final int AUDIO_ENCODING = AudioFormat.ENCODING_PCM_FLOAT;
     private AudioTrack audioTrack;
     private boolean isPlaying = true;
     private int playBufferSize;
     private Socket socket;
     private int playingLength = 345;
     private int amplitudeMultiplier = 8000;
+    private static final int MAX_SAMPLE_VALUE = 131072; // 2^17 (el bit 18 se usa para el signo)
 
     Thread thread;
 
@@ -69,13 +70,14 @@ public class PCMSocket {
                         asInt = asInt | 0xFF000000;
                     }
 
-                    asInt = asInt * amplitudeMultiplier;
+//                    asInt = asInt * amplitudeMultiplier;
+                    float normalizedFloatSample = (float) asInt / MAX_SAMPLE_VALUE; // Se obtiene un un número entre -1.00 y 1.00
 
-                    float asFloat = 0;
-                    asFloat = Float.intBitsToFloat(asInt);
+//                    float asFloat = 0;
+//                    asFloat = Float.intBitsToFloat(asInt);
 
                     int baseIndex = (i * 4) / 3;
-                    byte[] floatArray = float2ByteArray(asFloat);
+                    byte[] floatArray = float2ByteArray(normalizedFloatSample);
                     sbuffer[baseIndex] = floatArray[0];
                     sbuffer[baseIndex + 1] = floatArray[1];
                     sbuffer[baseIndex + 2] = floatArray[2];
