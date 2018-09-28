@@ -6,7 +6,6 @@ import android.media.AudioTrack;
 
 import java.io.InputStream;
 import java.net.Socket;
-import java.nio.ByteBuffer;
 
 public class PCMSocket {
 
@@ -18,10 +17,9 @@ public class PCMSocket {
     private static final int AUDIO_ENCODING = AudioFormat.ENCODING_PCM_FLOAT;
     private AudioTrack audioTrack;
     private boolean isPlaying = true;
-    private int playBufferSize;
+    private int minBufferSize;
     private Socket socket;
     private int playingLength = 345;
-    private int amplitudeMultiplier = 8000;
     private static final int MAX_SAMPLE_VALUE = 131072; // 2^17 (el bit 18 se usa para el signo)
 
     Thread thread;
@@ -31,7 +29,7 @@ public class PCMSocket {
         @Override
         public void run() {
 
-            byte[] buffer = new byte[playingLength * 2];
+            byte[] buffer = new byte[playingLength];
 
             try {
                 socket = new Socket(HOST, PORT);
@@ -43,50 +41,38 @@ public class PCMSocket {
 
             while(isPlaying) {
 
-                int readSize = 0;
-
                 try {
                     InputStream is = socket.getInputStream();
                     if(is.available() < playingLength) {
                         continue;
                     }
-                    readSize = socket.getInputStream().read(buffer,0, playingLength);
+                    socket.getInputStream().read(buffer,0, playingLength);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
-                byte[] sbuffer = new byte[(readSize * 4) / 3];
+                float[] fbuffer = new float[playingLength / 3];
 
-                for (int i = 0; i < readSize; i += 3) {
+                for (int i = 0; i < playingLength; i += 3) {
                     byte signBit = (byte)((buffer[i + 2] >> 1) & 1);
 
                     int asInt = 0;
                     asInt = ((buffer[i] & 0xFF) << 0)
                             | ((buffer[i + 1] & 0xFF) << 8)
                             | ((buffer[i + 2] & 0xFF) << 16);
-//                            | ((buffer[i + 3] & 0xFF) << 24);
 
                     if(signBit == 1) {
                         asInt = asInt | 0xFF000000;
                     }
 
-//                    asInt = asInt * amplitudeMultiplier;
                     float normalizedFloatSample = (float) asInt / MAX_SAMPLE_VALUE; // Se obtiene un un número entre -1.00 y 1.00
 
-//                    float asFloat = 0;
-//                    asFloat = Float.intBitsToFloat(asInt);
+                    int index = i / 3;
+                    fbuffer[index] = normalizedFloatSample;
 
-                    int baseIndex = (i * 4) / 3;
-                    byte[] floatArray = float2ByteArray(normalizedFloatSample);
-                    sbuffer[baseIndex] = floatArray[0];
-                    sbuffer[baseIndex + 1] = floatArray[1];
-                    sbuffer[baseIndex + 2] = floatArray[2];
-                    sbuffer[baseIndex + 3] = floatArray[3];
-
-//                    sbuffer[i] = (byte) i;
                 }
 
-                audioTrack.write(sbuffer, 0, (playingLength * 4) / 3);
+                audioTrack.write(fbuffer, 0, fbuffer.length, AudioTrack.WRITE_NON_BLOCKING);
             }
 
             audioTrack.stop();
@@ -100,8 +86,8 @@ public class PCMSocket {
     };
 
     public void auscultate() {
-        playBufferSize = AudioTrack.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_ENCODING);
-        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_ENCODING, playBufferSize, AudioTrack.MODE_STREAM);
+        minBufferSize = AudioTrack.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_ENCODING);
+        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_ENCODING, minBufferSize * 2, AudioTrack.MODE_STREAM);
         thread = new Thread(runnable);
         thread.start();
     }
@@ -110,7 +96,4 @@ public class PCMSocket {
         thread.interrupt();
     }
 
-    private byte [] float2ByteArray (float value) {
-        return ByteBuffer.allocate(4).putFloat(value).array();
-    }
 }
