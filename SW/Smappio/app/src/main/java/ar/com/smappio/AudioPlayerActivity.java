@@ -1,10 +1,13 @@
 package ar.com.smappio;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.audiofx.Visualizer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -61,6 +64,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
             stopAndResetAudioPlayer();
             startAudioPlayer();
         }
+
     }
 
     @Override
@@ -142,7 +146,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
         }).start();
 
         setupEqualizer();
-        setupWaveform();
+        //setupWaveform();
         mediaPlayer.start();
 
         playBtn.setBackgroundResource(R.drawable.ic_pause_black_24dp);
@@ -194,14 +198,12 @@ public class AudioPlayerActivity extends AppCompatActivity {
     }
 
     private void setupEqualizer() {
-        // Create the Visualizer object and attach it to our media player.
         visualizer = new Visualizer(mediaPlayer.getAudioSessionId());
         visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
         visualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
             public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
                 equalizerView.updateVisualizer(bytes);
             }
-
             public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
 
             }
@@ -216,20 +218,20 @@ public class AudioPlayerActivity extends AppCompatActivity {
         });
     }
 
-    public void setupWaveform() {
-        try {
-            String filePath = FileUtils.getFilePath(this,currentFileURI);
-            File file = new File(filePath);
-            updateVisualizer(FileUtils.fileToBytes(file));
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-    }
+//    public void setupWaveform() {
+//        try {
+//            String filePath = FileUtils.getFilePath(this,currentFileURI);
+//            File file = new File(filePath);
+//            updateVisualizer(FileUtils.fileToBytes(file));
+//        } catch (URISyntaxException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
-    public void updateVisualizer(byte[] bytes) {
-        waveformView.updateVisualizer(bytes);
-    }
-    public void updatePlayerProgress(float percent) {
-        waveformView.updatePlayerPercent(percent);
-    }
+//    public void updateVisualizer(byte[] bytes) {
+//        waveformView.updateVisualizer(bytes);
+//    }
+//    public void updatePlayerProgress(float percent) {
+//        waveformView.updatePlayerPercent(percent);
+//    }
 }

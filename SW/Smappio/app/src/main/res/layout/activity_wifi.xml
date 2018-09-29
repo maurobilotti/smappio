@@ -6,37 +6,43 @@
     android:layout_height="match_parent"
     tools:context=".WifiActivity">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
-        android:padding="10dp"
+    <Switch
+        android:id="@+id/wifiBtn"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:onClick="wifiOnOff"
+        android:text="Wifi"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <Switch
-            android:id="@+id/wifiBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Wifi"
-            android:textSize="15dp"
-            android:onClick="wifiOnOff"/>
+    <ListView
+        android:id="@+id/wifiList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/scanBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/wifiBtn" />
 
-        <ListView
-            android:id="@+id/wifiList"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.97">
-        </ListView>
-
-        <Button
-            android:id="@+id/scanBtn"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_gravity="bottom"
-            android:layout_margin="15dp"
-            android:background="@android:color/background_light"
-            android:text="Buscar"
-            android:onClick="updateWifi"/>
-
-    </LinearLayout>
+    <Button
+        android:id="@+id/scanBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:background="@android:color/background_light"
+        android:onClick="updateWifi"
+        android:text="Buscar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
