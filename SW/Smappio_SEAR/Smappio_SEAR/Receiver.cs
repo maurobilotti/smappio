@@ -17,7 +17,7 @@ namespace Smappio_SEAR
         private readonly int _sampleRate = 4600;// No modificar, pues modifica el audio escuchado.
         private readonly int _bytesDepth = 3;
         private readonly int _bitDepth = 24;
-        private readonly BufferedWaveProvider _provider;        
+        private readonly BufferedWaveProvider _provider;
         private WaveOut _waveOut = new WaveOut();
         public bool Connected = false;
         public TransmissionMethod TransmissionMethod;
@@ -34,11 +34,13 @@ namespace Smappio_SEAR
         protected WaveFormat _waveFormat;
         private Action<float> setVolumeDelegate;
         private MeteringSampleProvider _meteringSampleProvider;
+        private const int MAX_SAMPLE_VALUE = 131072; // 2^17 (el bit 18 se usa para el signo)
 
         public Receiver()
         {
             this.ReceivedBytes = new List<byte>();
-            this._waveFormat = new WaveFormat(_sampleRate, _bitDepth, 1);
+            //this._waveFormat = new WaveFormat(_sampleRate, _bitDepth, 1);
+            this._waveFormat = WaveFormat.CreateIeeeFloatWaveFormat(_sampleRate, 1);
             this._provider = new BufferedWaveProvider(this._waveFormat);
             var sampleChannel = new SampleChannel(_provider);
             //sampleChannel.PreVolumeMeter += SampleChannel_PreVolumeMeter;
@@ -48,14 +50,15 @@ namespace Smappio_SEAR
         {
             this.UI = ui;
             this.ReceivedBytes = new List<byte>();
-            this._waveFormat = new WaveFormat(_sampleRate, _bitDepth, 1);
+            //this._waveFormat = new WaveFormat(_sampleRate, _bitDepth, 1);
+            this._waveFormat = WaveFormat.CreateIeeeFloatWaveFormat(_sampleRate, 1);
             this._provider = new BufferedWaveProvider(this._waveFormat);
             var sampleChannel = new SampleChannel(_provider);
             sampleChannel.PreVolumeMeter += OnPreVolumeMeter;
             setVolumeDelegate = vol => sampleChannel.Volume = vol;
             _meteringSampleProvider = new MeteringSampleProvider(sampleChannel);
             _meteringSampleProvider.SamplesPerNotification = 50;
-            _meteringSampleProvider.StreamVolume += OnPostVolumeMeter;            
+            _meteringSampleProvider.StreamVolume += OnPostVolumeMeter;
         }
 
         private void OnPostVolumeMeter(object sender, StreamVolumeEventArgs e)
@@ -67,7 +70,7 @@ namespace Smappio_SEAR
 
         private void OnPreVolumeMeter(object sender, StreamVolumeEventArgs e)
         {
-            UI.VolumeMeter.Amplitude = e.MaxSampleValues[0];            
+            UI.VolumeMeter.Amplitude = e.MaxSampleValues[0];
         }
 
         #region Public Methods
@@ -87,20 +90,20 @@ namespace Smappio_SEAR
             string fullPath = Path.Combine(absolutePath, fileName);
             var bytes = ReceivedBytes.ToArray();
             RawSourceWaveStream source = new RawSourceWaveStream(bytes, 0, bytes.Length, _waveFormat);
-            WaveFileWriter.CreateWaveFile(fullPath, source);            
+            WaveFileWriter.CreateWaveFile(fullPath, source);
         }
 
         public void AddSamplesToPlayer()
         {
             var bufferForPlaying = ReceivedBytes.GetRange(_offset, errorFreeReaded).ToArray();
             _offset += errorFreeReaded;
-            _provider.AddSamples(bufferForPlaying, 0, bufferForPlaying.Length);            
+            _provider.AddSamples(bufferForPlaying, 0, bufferForPlaying.Length);
         }
 
         protected byte[] ControlAlgorithm()
         {
             //Verificar que lo que se lee cumpla con la secuencia 01, 10, 11                    
-            byte[] errorFreeBuffer = new byte[_playingLength];
+            byte[] errorFreeBuffer = new byte[_playingLength * 4 / 3];
             errorFreeReaded = 0;
             int i = 0;
             int acumDiscardedBytes = 0;
@@ -178,12 +181,22 @@ namespace Smappio_SEAR
                     }
 
                     // Se amplifica el sonido multiplicando por la constante '_amplitudeMultiplier'
-                    sample = BitConverter.ToInt32(sampleAsByteArray, 0) * _amplitudeMultiplier;
-                    sampleAsByteArray = BitConverter.GetBytes(sample);
+                    //sample = BitConverter.ToInt32(sampleAsByteArray, 0) * _amplitudeMultiplier;
+                    //sampleAsByteArray = BitConverter.GetBytes(sample);
+
+                    //errorFreeBuffer[errorFreeBaseIndex] = sampleAsByteArray[0];
+                    //errorFreeBuffer[errorFreeBaseIndex + 1] = sampleAsByteArray[1];
+                    //errorFreeBuffer[errorFreeBaseIndex + 2] = sampleAsByteArray[2];
+
+                    sample = BitConverter.ToInt32(sampleAsByteArray, 0);
+                    float normalizedFloatSample = (float)sample / MAX_SAMPLE_VALUE; // Se obtiene un un número entre -1.00 y 1.00
+                    sampleAsByteArray = BitConverter.GetBytes(normalizedFloatSample);
 
                     errorFreeBuffer[errorFreeBaseIndex] = sampleAsByteArray[0];
                     errorFreeBuffer[errorFreeBaseIndex + 1] = sampleAsByteArray[1];
                     errorFreeBuffer[errorFreeBaseIndex + 2] = sampleAsByteArray[2];
+                    errorFreeBuffer[errorFreeBaseIndex + 3] = sampleAsByteArray[3];
+
                     errorFreeReaded += 3;
                 }
 
@@ -211,7 +224,7 @@ namespace Smappio_SEAR
                 ReceivedBytes.AddRange(errorFreeBuffer);
                 if (ReceivedBytes.Count > _playingLength * _prebufferingSize)
                 {
-                    if(_prebuffering)
+                    if (_prebuffering)
                     {
                         _prebuffering = false;
                         for (int i = 0; i < _prebufferingSize - 1; i++)
@@ -228,7 +241,7 @@ namespace Smappio_SEAR
         public void ClearAndClose()
         {
             _waveOut.Dispose();
-            ReceivedBytes.Clear();            
+            ReceivedBytes.Clear();
             Close();
         }
 
