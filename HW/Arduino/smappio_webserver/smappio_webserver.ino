@@ -1,4 +1,4 @@
-#include "libraries/SmappioSound/SmappioSound.cpp"
+﻿#include "libraries/SmappioSound/SmappioSound.cpp"
 #include <WiFi.h>
 
 WiFiServer server(80);
@@ -47,11 +47,12 @@ void loop() {
       if(bufferSeqNum == 64)
         bufferSeqNum = 0;
         
-      bufferSamplesToSendWithControlBits();
-
       // Se agrega el numero de secuencia del bloque en el ultimo byte del mismo, con los 2 primeros bits en '00'y se envia
       _dataToSend[BYTES_TO_SEND] = bufferSeqNum & 63;
-      client.write(_dataToSend, BYTES_TO_SEND + 1);
+
+      bufferSamplesToSendWithControlBits();
+
+      client.write(_dataToSend, BYTES_TO_SEND); // Hacer BYTES_TO_SEND + 1 para enviar el bufferSeqNum
 
       bufferSeqNum++;
     } 
