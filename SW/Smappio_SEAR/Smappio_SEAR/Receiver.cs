@@ -35,6 +35,12 @@ namespace Smappio_SEAR
         private Action<float> setVolumeDelegate;
         private MeteringSampleProvider _meteringSampleProvider;
         private const int MAX_SAMPLE_VALUE = 131072; // 2^17 (el bit 18 se usa para el signo)
+        protected int _floatPlayingLength {
+            get
+            {
+                return _playingLength * 4 / 3;
+            }
+        }
 
         public Receiver()
         {
@@ -95,15 +101,15 @@ namespace Smappio_SEAR
 
         public void AddSamplesToPlayer()
         {
-            var bufferForPlaying = ReceivedBytes.GetRange(_offset, errorFreeReaded).ToArray();
-            _offset += errorFreeReaded;
+            var bufferForPlaying = ReceivedBytes.GetRange(_offset, _floatPlayingLength).ToArray();
+            _offset += _floatPlayingLength;
             _provider.AddSamples(bufferForPlaying, 0, bufferForPlaying.Length);
         }
 
         protected byte[] ControlAlgorithm()
         {
             //Verificar que lo que se lee cumpla con la secuencia 01, 10, 11                    
-            byte[] errorFreeBuffer = new byte[_playingLength * 4 / 3];
+            byte[] errorFreeBuffer = new byte[_floatPlayingLength];
             errorFreeReaded = 0;
             int i = 0;
             int acumDiscardedBytes = 0;
