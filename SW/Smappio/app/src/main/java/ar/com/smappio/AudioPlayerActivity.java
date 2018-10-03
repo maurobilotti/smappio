@@ -1,13 +1,10 @@
 package ar.com.smappio;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.audiofx.Visualizer;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -46,6 +43,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_audio_player);
 
         playBtn = findViewById(R.id.playBtn);
+        positionBar = findViewById(R.id.positionBar);
         elapsedTimeLabel = findViewById(R.id.elapsedTimeLabel);
         remainingTimeLabel = findViewById(R.id.remainingTimeLabel);
         equalizerView = findViewById(R.id.equalizer);
@@ -61,8 +59,9 @@ public class AudioPlayerActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
             currentFileURI = (Uri) extras.get("currentFileURI");
-            stopAndResetAudioPlayer();
-            startAudioPlayer();
+            setupAudioPlayer();
+            setupEqualizer();
+            //setupWaveform();
         }
 
     }
@@ -89,30 +88,33 @@ public class AudioPlayerActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (isFinishing() && mediaPlayer != null) {
-            visualizer.release();
-            mediaPlayer.release();
-            mediaPlayer = null;
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+            playBtn.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
         }
     }
 
-    public void stopAndResetAudioPlayer(){
-        if(mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.reset();
-        }
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
+//            mediaPlayer.start();
+//            playBtn.setBackgroundResource(R.drawable.ic_pause_black_24dp);
+//        }
     }
 
-    public void startAudioPlayer() {
+    public void setupAudioPlayer() {
+
+        //Se le settea el volumen a la activity segun el volumen de Sonido Multimedia
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
+
         mediaPlayer = MediaPlayer.create(this, currentFileURI);
         mediaPlayer.setLooping(false);
         mediaPlayer.seekTo(0);
+        mediaPlayer.setVolume(1,1);
 
         totalTime = mediaPlayer.getDuration();
 
-        // Position Bar
-        positionBar = findViewById(R.id.positionBar);
         positionBar.setMax(totalTime);
         positionBar.setOnSeekBarChangeListener(
             new SeekBar.OnSeekBarChangeListener() {
@@ -130,27 +132,28 @@ public class AudioPlayerActivity extends AppCompatActivity {
             }
         );
 
-        // Thread (Update positionBar & timeLabel)
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (mediaPlayer != null) {
-                    try {
-                        Message msg = new Message();
-                        msg.what = mediaPlayer.getCurrentPosition();
-                        handler.sendMessage(msg);
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) { }
-                }
-            }
-        }).start();
+        //Actualiza el tiempo de reproduccion
+        new Thread(runnable).start();
 
-        setupEqualizer();
-        //setupWaveform();
         mediaPlayer.start();
 
         playBtn.setBackgroundResource(R.drawable.ic_pause_black_24dp);
     }
+
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            while (mediaPlayer != null) {
+                try {
+                    Message msg = new Message();
+                    msg.what = mediaPlayer.getCurrentPosition();
+                    handler.sendMessage(msg);
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                }
+            }
+        }
+    };
 
     private Handler handler = new Handler() {
         @Override
@@ -218,20 +221,20 @@ public class AudioPlayerActivity extends AppCompatActivity {
         });
     }
 
-//    public void setupWaveform() {
-//        try {
-//            String filePath = FileUtils.getFilePath(this,currentFileURI);
-//            File file = new File(filePath);
-//            updateVisualizer(FileUtils.fileToBytes(file));
-//        } catch (URISyntaxException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    public void setupWaveform() {
+        try {
+            String filePath = FileUtils.getFilePath(this,currentFileURI);
+            File file = new File(filePath);
+            updateVisualizer(FileUtils.fileToBytes(file));
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
 
-//    public void updateVisualizer(byte[] bytes) {
-//        waveformView.updateVisualizer(bytes);
-//    }
-//    public void updatePlayerProgress(float percent) {
-//        waveformView.updatePlayerPercent(percent);
-//    }
+    public void updateVisualizer(byte[] bytes) {
+        waveformView.updateVisualizer(bytes);
+    }
+    public void updatePlayerProgress(float percent) {
+        waveformView.updatePlayerPercent(percent);
+    }
 }
