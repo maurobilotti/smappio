@@ -29,7 +29,7 @@ namespace Smappio_SEAR
         public WaveOut waveOut = new WaveOut();
         private AudioFileReader audioFileReader;
         private Action<float> setVolumeDelegate;
-        public UIControls UIControls { get; private set; }
+        public UIParams UIControls { get; private set; }
 
         #region Transfering methods
 
@@ -272,13 +272,19 @@ namespace Smappio_SEAR
 
         private void Main_Load(object sender, EventArgs e)
         {
-            this.UIControls = new UIControls(ref this.waveformPainter, ref this.volumeMeter);
+            cbEncoding.SelectedIndex = 1;
+            this.UIControls = new UIParams(ref this.waveformPainter, ref this.volumeMeter, (PCMAudioFormat)cbEncoding.SelectedIndex);
         }
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
             if(Receiver != null)
                 Receiver.ClearAndClose();
+        }
+
+        private void cbEncoding_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            this.UIControls = new UIParams(ref this.waveformPainter, ref this.volumeMeter, (PCMAudioFormat)cbEncoding.SelectedIndex);
         }
     }
 }

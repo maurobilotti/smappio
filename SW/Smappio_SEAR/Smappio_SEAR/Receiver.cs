@@ -11,7 +11,9 @@ namespace Smappio_SEAR
 {
     public abstract class Receiver
     {
-        public UIControls UI { get; }
+        public UIParams UI { get; }
+
+        private PCMHelper pcmHelper;
         protected List<byte> ReceivedBytes { get; set; }
         private string _filePath = "../../AudioSamples/";
         private readonly int _sampleRate = 4600;// No modificar, pues modifica el audio escuchado.
@@ -22,7 +24,7 @@ namespace Smappio_SEAR
         public bool Connected = false;
         public TransmissionMethod TransmissionMethod;
         private bool _prebuffering = true;
-        protected const int _prebufferingSize = 4;
+        protected const int _prebufferingSize = 0;
         protected const int _playingLength = 345;// 3 * 20400
         protected int _offset = 0;
         protected int errorFreeReaded = 0;
@@ -34,6 +36,7 @@ namespace Smappio_SEAR
         protected WaveFormat _waveFormat;
         private Action<float> setVolumeDelegate;
         private MeteringSampleProvider _meteringSampleProvider;
+        private int _channels = 1;        
 
         public Receiver()
         {
@@ -44,12 +47,14 @@ namespace Smappio_SEAR
             //sampleChannel.PreVolumeMeter += SampleChannel_PreVolumeMeter;
         }
 
-        public Receiver(UIControls ui)
+        public Receiver(UIParams ui)
         {
             this.UI = ui;
+            this.pcmHelper = new PCMHelper(ui.Format);
             this.ReceivedBytes = new List<byte>();
-            this._waveFormat = new WaveFormat(_sampleRate, _bitDepth, 1);
+            this._waveFormat = GetWaveFormat(ui.Format);
             this._provider = new BufferedWaveProvider(this._waveFormat);
+            this._provider.BufferLength = this._provider.BufferLength * 10;
             var sampleChannel = new SampleChannel(_provider);
             sampleChannel.PreVolumeMeter += OnPreVolumeMeter;
             setVolumeDelegate = vol => sampleChannel.Volume = vol;
@@ -58,11 +63,21 @@ namespace Smappio_SEAR
             _meteringSampleProvider.StreamVolume += OnPostVolumeMeter;            
         }
 
+        private WaveFormat GetWaveFormat(PCMAudioFormat format)
+        {
+            if (format == PCMAudioFormat.PCM_32_Float)
+                return WaveFormat.CreateIeeeFloatWaveFormat(_sampleRate, _channels);
+            if (format == PCMAudioFormat.PCM_16)
+                return new WaveFormat(_sampleRate, 16, _channels);
+
+            return new WaveFormat(_sampleRate, _bitDepth, _channels);
+        }
+
         private void OnPostVolumeMeter(object sender, StreamVolumeEventArgs e)
         {
             //string str = e.MaxSampleValues[0].ToString("0.##");
             //float val = str == "0" ? 0.001f : float.Parse(str);
-            UI.WavePainter.AddMax(e.MaxSampleValues[0]);
+            UI.WavePainter.AddMax(e.MaxSampleValues[0] * 10);
         }
 
         private void OnPreVolumeMeter(object sender, StreamVolumeEventArgs e)
@@ -92,9 +107,14 @@ namespace Smappio_SEAR
 
         public void AddSamplesToPlayer()
         {
-            var bufferForPlaying = ReceivedBytes.GetRange(_offset, errorFreeReaded).ToArray();
-            _offset += errorFreeReaded;
-            _provider.AddSamples(bufferForPlaying, 0, bufferForPlaying.Length);            
+            var auxBuffer = ReceivedBytes.GetRange(_offset, errorFreeReaded).ToArray();
+
+            var bufferForPlaying = pcmHelper.GetBufferForPlaying(auxBuffer);
+
+            _offset += errorFreeReaded;            
+            
+            _provider.AddSamples(bufferForPlaying, 0, bufferForPlaying.Length);              
+            
         }
 
         protected byte[] ControlAlgorithm()
@@ -177,8 +197,16 @@ namespace Smappio_SEAR
                         sampleAsByteArray[3] = 0;                                               // '00000000'
                     }
 
-                    // Se amplifica el sonido multiplicando por la constante '_amplitudeMultiplier'
-                    sample = BitConverter.ToInt32(sampleAsByteArray, 0) * _amplitudeMultiplier;
+                    // Se amplifica el sonido multiplicando por la constante '_amplitudeMultiplier' si está en PCM-24
+                    if(UI.Format == PCMAudioFormat.PCM_24)
+                    {
+                        sample = BitConverter.ToInt32(sampleAsByteArray, 0) * _amplitudeMultiplier;
+                    }
+                    else
+                    {
+                        sample = BitConverter.ToInt32(sampleAsByteArray, 0);
+                    }
+                    
                     sampleAsByteArray = BitConverter.GetBytes(sample);
 
                     errorFreeBuffer[errorFreeBaseIndex] = sampleAsByteArray[0];

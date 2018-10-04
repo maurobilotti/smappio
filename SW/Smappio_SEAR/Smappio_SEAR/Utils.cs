@@ -26,6 +26,31 @@ namespace Smappio_SEAR
             return buffer;
         }
 
+        public static unsafe byte[] GetBytes(this float value)
+        {
+            var bytes = new byte[4];
+            fixed (byte* b = bytes)
+                *((int*)b) = *(int*)&value;
+
+            return bytes;
+        }
+
+        public static unsafe byte[] GetBytes(this int value)
+        {
+            var bytes = new byte[4];
+            fixed (byte* b = bytes)
+                *((int*)b) = *(int*)&value;
+
+            return bytes;
+        }
+
+        public static string ToHexString(this float f)
+        {
+            var bytes = BitConverter.GetBytes(f);
+            var i = BitConverter.ToInt32(bytes, 0);
+            return "0x" + i.ToString("X8");
+        }
+
         public static byte[] ToByteArray(this string text)
         {
             return Encoding.UTF8.GetBytes(text);

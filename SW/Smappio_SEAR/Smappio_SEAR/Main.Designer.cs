@@ -56,6 +56,7 @@
             this.btnTcp = new System.Windows.Forms.Button();
             this.btnSerial = new System.Windows.Forms.Button();
             this.btnBluetooth = new System.Windows.Forms.Button();
+            this.cbEncoding = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -207,9 +208,9 @@
             // 
             // txtPath
             // 
-            this.txtPath.Location = new System.Drawing.Point(468, 26);
+            this.txtPath.Location = new System.Drawing.Point(566, 26);
             this.txtPath.Name = "txtPath";
-            this.txtPath.Size = new System.Drawing.Size(342, 20);
+            this.txtPath.Size = new System.Drawing.Size(244, 20);
             this.txtPath.TabIndex = 19;
             // 
             // btnClear
@@ -240,7 +241,7 @@
             this.panel1.Controls.Add(this.lblBitRate);
             this.panel1.Controls.Add(this.lblSampleRate);
             this.panel1.Controls.Add(this.label6);
-            this.panel1.Location = new System.Drawing.Point(13, 66);
+            this.panel1.Location = new System.Drawing.Point(13, 75);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(965, 83);
             this.panel1.TabIndex = 27;
@@ -256,7 +257,7 @@
             this.volumeMeter.MaxDb = 18F;
             this.volumeMeter.MinDb = -60F;
             this.volumeMeter.Name = "volumeMeter";
-            this.volumeMeter.Size = new System.Drawing.Size(22, 308);
+            this.volumeMeter.Size = new System.Drawing.Size(22, 351);
             this.volumeMeter.TabIndex = 28;
             this.volumeMeter.Text = "volumeMeter";
             // 
@@ -264,7 +265,7 @@
             // 
             this.btnPlay.BackgroundImage = global::Smappio_SEAR.Properties.Resources.play1;
             this.btnPlay.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnPlay.Location = new System.Drawing.Point(414, 10);
+            this.btnPlay.Location = new System.Drawing.Point(350, 10);
             this.btnPlay.Name = "btnPlay";
             this.btnPlay.Size = new System.Drawing.Size(48, 49);
             this.btnPlay.TabIndex = 26;
@@ -275,7 +276,7 @@
             // 
             this.btnBrowse.BackgroundImage = global::Smappio_SEAR.Properties.Resources.folder_outline_filled;
             this.btnBrowse.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnBrowse.Location = new System.Drawing.Point(358, 10);
+            this.btnBrowse.Location = new System.Drawing.Point(294, 10);
             this.btnBrowse.Name = "btnBrowse";
             this.btnBrowse.Size = new System.Drawing.Size(50, 49);
             this.btnBrowse.TabIndex = 25;
@@ -293,7 +294,7 @@
             this.waveformPainter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.waveformPainter.Location = new System.Drawing.Point(41, 170);
             this.waveformPainter.Name = "waveformPainter";
-            this.waveformPainter.Size = new System.Drawing.Size(937, 309);
+            this.waveformPainter.Size = new System.Drawing.Size(937, 352);
             this.waveformPainter.TabIndex = 24;
             this.waveformPainter.Text = "waveformPainter1";
             // 
@@ -344,13 +345,28 @@
             this.btnBluetooth.UseVisualStyleBackColor = true;
             this.btnBluetooth.Click += new System.EventHandler(this.btnBluetooth_Click);
             // 
+            // cbEncoding
+            // 
+            this.cbEncoding.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbEncoding.FormattingEnabled = true;
+            this.cbEncoding.Items.AddRange(new object[] {
+            "PCM 24 bit",
+            "PCM 32 bit Float",
+            "PCM 16 bit"});
+            this.cbEncoding.Location = new System.Drawing.Point(405, 26);
+            this.cbEncoding.Name = "cbEncoding";
+            this.cbEncoding.Size = new System.Drawing.Size(121, 21);
+            this.cbEncoding.TabIndex = 30;
+            this.cbEncoding.SelectedIndexChanged += new System.EventHandler(this.cbEncoding_SelectedIndexChanged);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.AliceBlue;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.ClientSize = new System.Drawing.Size(997, 500);
+            this.ClientSize = new System.Drawing.Size(997, 543);
+            this.Controls.Add(this.cbEncoding);
             this.Controls.Add(this.volumeMeter);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.btnPlay);
@@ -403,6 +419,7 @@
         private System.Windows.Forms.Button btnBrowse;
         private System.Windows.Forms.Panel panel1;
         private NAudio.Gui.VolumeMeter volumeMeter;
+        private System.Windows.Forms.ComboBox cbEncoding;
     }
 }
 

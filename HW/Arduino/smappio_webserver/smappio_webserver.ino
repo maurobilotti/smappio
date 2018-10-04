@@ -1,5 +1,5 @@
-﻿#include "libraries/SmappioSound/SmappioSound.cpp"
 #include <WiFi.h>
+#include "libraries/SmappioSound/SmappioSound.cpp"
 
 WiFiServer server(80);
  
@@ -160,6 +160,22 @@ void bufferAlternateSignTest()
     value = i;
     if(i % 6 == 0)
       value = value * (-1);
+
+    _dataToSend[i] = (value & 63) | 64;
+    _dataToSend[i + 1] = ((value >> 6)  & 63) | 128;
+    _dataToSend[i + 2] = ((value >> 12) & 63) | 192;
+  }  
+}
+
+void bufferAlternateOneAndMinusOne()
+{
+  int32_t value = 0;
+
+  for(int i = 0; i < BYTES_TO_SEND; i += 3)
+  {
+    value = 1;
+    if(i % 2 == 0)
+      value = -1;
 
     _dataToSend[i] = (value & 63) | 64;
     _dataToSend[i + 1] = ((value >> 6)  & 63) | 128;

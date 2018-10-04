@@ -23,7 +23,7 @@ namespace Smappio_SEAR.Wifi
         public override string PortName => "TCP";
         #endregion
 
-        public TcpReceiver(UIControls ui) : base(ui)
+        public TcpReceiver(UIParams ui) : base(ui)
         {
             this.TransmissionMethod = TransmissionMethod.Tcp;
             this.ClientReceiver = new TcpClient();
