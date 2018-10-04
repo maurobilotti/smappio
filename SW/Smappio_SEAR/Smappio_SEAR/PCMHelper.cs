@@ -69,14 +69,14 @@ namespace Smappio_SEAR
             {
                 byte signBit = (byte)((buffer[i + 2] >> 1) & 1);
 
-                int asInt = ((buffer[i] & 0xFF) << 0)
+                int intValue = ((buffer[i] & 0xFF) << 0)
                             | ((buffer[i + 1] & 0xFF) << 8)
                             | ((buffer[i + 2] & 0xFF) << 16)
                             | (signBit == 1 ? 0xFF : 0x00) << 24; // Relleno 1s;               
 
-                var intResult = BitConverter.GetBytes(asInt);
+                var intResult = BitConverter.GetBytes(intValue);
 
-                float floatValue = asInt / (float)131071;
+                float floatValue = intValue / (float)131072;
 
                 if (floatValue > 1 || floatValue < -1)
                     throw new IndexOutOfRangeException("Fuera del margen -1 a 1");                

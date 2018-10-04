@@ -62,7 +62,7 @@
             // btnSave
             // 
             this.btnSave.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSave.Location = new System.Drawing.Point(816, 25);
+            this.btnSave.Location = new System.Drawing.Point(822, 23);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(75, 23);
             this.btnSave.TabIndex = 2;
@@ -207,7 +207,7 @@
             // 
             // txtPath
             // 
-            this.txtPath.Location = new System.Drawing.Point(566, 26);
+            this.txtPath.Location = new System.Drawing.Point(557, 24);
             this.txtPath.Name = "txtPath";
             this.txtPath.Size = new System.Drawing.Size(244, 20);
             this.txtPath.TabIndex = 19;
@@ -215,11 +215,11 @@
             // btnClear
             // 
             this.btnClear.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnClear.Location = new System.Drawing.Point(897, 26);
+            this.btnClear.Location = new System.Drawing.Point(903, 23);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(75, 23);
             this.btnClear.TabIndex = 20;
-            this.btnClear.Text = "Clear";
+            this.btnClear.Text = "Stop";
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
@@ -252,11 +252,11 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.volumeMeter.BackColor = System.Drawing.Color.WhiteSmoke;
             this.volumeMeter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.volumeMeter.Location = new System.Drawing.Point(13, 170);
+            this.volumeMeter.Location = new System.Drawing.Point(12, 164);
             this.volumeMeter.MaxDb = 18F;
             this.volumeMeter.MinDb = -60F;
             this.volumeMeter.Name = "volumeMeter";
-            this.volumeMeter.Size = new System.Drawing.Size(22, 351);
+            this.volumeMeter.Size = new System.Drawing.Size(23, 352);
             this.volumeMeter.TabIndex = 28;
             this.volumeMeter.Text = "volumeMeter";
             // 
@@ -264,7 +264,7 @@
             // 
             this.btnPlay.BackgroundImage = global::Smappio_SEAR.Properties.Resources.play1;
             this.btnPlay.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnPlay.Location = new System.Drawing.Point(350, 10);
+            this.btnPlay.Location = new System.Drawing.Point(312, 10);
             this.btnPlay.Name = "btnPlay";
             this.btnPlay.Size = new System.Drawing.Size(48, 49);
             this.btnPlay.TabIndex = 26;
@@ -275,7 +275,7 @@
             // 
             this.btnBrowse.BackgroundImage = global::Smappio_SEAR.Properties.Resources.folder_outline_filled;
             this.btnBrowse.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnBrowse.Location = new System.Drawing.Point(294, 10);
+            this.btnBrowse.Location = new System.Drawing.Point(256, 10);
             this.btnBrowse.Name = "btnBrowse";
             this.btnBrowse.Size = new System.Drawing.Size(50, 49);
             this.btnBrowse.TabIndex = 25;
@@ -291,7 +291,7 @@
             this.waveformPainter.BackgroundImage = global::Smappio_SEAR.Properties.Resources.eje;
             this.waveformPainter.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.waveformPainter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.waveformPainter.Location = new System.Drawing.Point(41, 170);
+            this.waveformPainter.Location = new System.Drawing.Point(41, 164);
             this.waveformPainter.Name = "waveformPainter";
             this.waveformPainter.Size = new System.Drawing.Size(937, 352);
             this.waveformPainter.TabIndex = 24;
@@ -340,9 +340,9 @@
             "PCM 24 bit",
             "PCM 32 bit Float",
             "PCM 16 bit"});
-            this.cbEncoding.Location = new System.Drawing.Point(405, 26);
+            this.cbEncoding.Location = new System.Drawing.Point(394, 23);
             this.cbEncoding.Name = "cbEncoding";
-            this.cbEncoding.Size = new System.Drawing.Size(121, 21);
+            this.cbEncoding.Size = new System.Drawing.Size(138, 21);
             this.cbEncoding.TabIndex = 30;
             this.cbEncoding.SelectedIndexChanged += new System.EventHandler(this.cbEncoding_SelectedIndexChanged);
             // 

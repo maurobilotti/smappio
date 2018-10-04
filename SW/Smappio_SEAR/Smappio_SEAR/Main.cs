@@ -190,7 +190,14 @@ namespace Smappio_SEAR
                 Receiver.ClearAndClose();
 
             SetButtonStatus(true);
-            lblBitRate.Text = lblNotification.Text = lblBitRate.Text = lblSampleRate.Text = lblSamplesReceived.Text = lblTime.Text = "";            
+            lblBitRate.Text = lblNotification.Text = lblBitRate.Text = lblSampleRate.Text = lblSamplesReceived.Text = lblTime.Text = "";
+            for (int i = 0; i < 2000; i++)
+            {
+                this.waveformPainter.AddMax(0);
+            }
+
+            this.volumeMeter.Amplitude = 0;
+
         }
 
         private void SetButtonStatus(bool status = false)
