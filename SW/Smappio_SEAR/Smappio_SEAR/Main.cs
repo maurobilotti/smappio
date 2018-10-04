@@ -29,7 +29,7 @@ namespace Smappio_SEAR
         public WaveOut waveOut = new WaveOut();
         private AudioFileReader audioFileReader;
         private Action<float> setVolumeDelegate;
-        public UIParams UIControls { get; private set; }
+        public UIParams UIParams { get; private set; }
 
         #region Transfering methods
 
@@ -69,7 +69,7 @@ namespace Smappio_SEAR
 
         private void btnTcp_Click(object sender, EventArgs e)
         {
-            InvokeReceiver(new TcpReceiver(UIControls));
+            InvokeReceiver(new TcpReceiver(UIParams));
         }
 
         private void InvokeReceiver(Receiver receiver)
@@ -195,7 +195,7 @@ namespace Smappio_SEAR
 
         private void SetButtonStatus(bool status = false)
         {
-            btnBluetooth.Enabled = btnTcp.Enabled = btnUdp.Enabled = btnSerial.Enabled = status;
+            btnBluetooth.Enabled = btnTcp.Enabled = btnSerial.Enabled = status;
         }
 
         #endregion
@@ -273,7 +273,7 @@ namespace Smappio_SEAR
         private void Main_Load(object sender, EventArgs e)
         {
             cbEncoding.SelectedIndex = 1;
-            this.UIControls = new UIParams(ref this.waveformPainter, ref this.volumeMeter, (PCMAudioFormat)cbEncoding.SelectedIndex);
+            this.UIParams = new UIParams(ref this.waveformPainter, ref this.volumeMeter, (PCMAudioFormat)cbEncoding.SelectedIndex);
         }
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
@@ -284,7 +284,7 @@ namespace Smappio_SEAR
 
         private void cbEncoding_SelectedIndexChanged(object sender, EventArgs e)
         {
-            this.UIControls = new UIParams(ref this.waveformPainter, ref this.volumeMeter, (PCMAudioFormat)cbEncoding.SelectedIndex);
+            this.UIParams = new UIParams(ref this.waveformPainter, ref this.volumeMeter, (PCMAudioFormat)cbEncoding.SelectedIndex);
         }
     }
 }

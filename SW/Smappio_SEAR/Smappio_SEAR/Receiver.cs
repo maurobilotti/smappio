@@ -36,7 +36,12 @@ namespace Smappio_SEAR
         protected WaveFormat _waveFormat;
         private Action<float> setVolumeDelegate;
         private MeteringSampleProvider _meteringSampleProvider;
-        private int _channels = 1;        
+        private int _channels = 1;
+        #region Plotter
+        private float _silenceAverage = 0.0187f;
+        private float _soundMultiplier = 15;
+        #endregion
+
 
         public Receiver()
         {
@@ -59,7 +64,8 @@ namespace Smappio_SEAR
             sampleChannel.PreVolumeMeter += OnPreVolumeMeter;
             setVolumeDelegate = vol => sampleChannel.Volume = vol;
             _meteringSampleProvider = new MeteringSampleProvider(sampleChannel);
-            _meteringSampleProvider.SamplesPerNotification = 50;
+            //indica la cantidad de samples que representan un punto en la grafica
+            _meteringSampleProvider.SamplesPerNotification = 80; 
             _meteringSampleProvider.StreamVolume += OnPostVolumeMeter;            
         }
 
@@ -75,9 +81,10 @@ namespace Smappio_SEAR
 
         private void OnPostVolumeMeter(object sender, StreamVolumeEventArgs e)
         {
-            //string str = e.MaxSampleValues[0].ToString("0.##");
-            //float val = str == "0" ? 0.001f : float.Parse(str);
-            UI.WavePainter.AddMax(e.MaxSampleValues[0] * 10);
+            var value = Math.Exp((_soundMultiplier * e.MaxSampleValues[0]) - (_soundMultiplier * _silenceAverage)) - 1;
+            if (value < 0.005f)
+                value = 0.001f;
+            UI.WavePainter.AddMax((float)value);
         }
 
         private void OnPreVolumeMeter(object sender, StreamVolumeEventArgs e)

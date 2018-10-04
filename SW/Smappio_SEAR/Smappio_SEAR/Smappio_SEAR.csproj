@@ -73,7 +73,7 @@
   <ItemGroup>
     <Compile Include="BluetoothHelper.cs" />
     <Compile Include="PCMHelper.cs" />
-    <Compile Include="UIControls.cs" />
+    <Compile Include="UIParams.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -52,7 +52,6 @@
             this.btnPlay = new System.Windows.Forms.Button();
             this.btnBrowse = new System.Windows.Forms.Button();
             this.waveformPainter = new NAudio.Gui.WaveformPainter();
-            this.btnUdp = new System.Windows.Forms.Button();
             this.btnTcp = new System.Windows.Forms.Button();
             this.btnSerial = new System.Windows.Forms.Button();
             this.btnBluetooth = new System.Windows.Forms.Button();
@@ -298,18 +297,6 @@
             this.waveformPainter.TabIndex = 24;
             this.waveformPainter.Text = "waveformPainter1";
             // 
-            // btnUdp
-            // 
-            this.btnUdp.BackgroundImage = global::Smappio_SEAR.Properties.Resources.user_datagram_protocol_udp_300x242;
-            this.btnUdp.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnUdp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnUdp.Location = new System.Drawing.Point(140, 11);
-            this.btnUdp.Name = "btnUdp";
-            this.btnUdp.Size = new System.Drawing.Size(48, 48);
-            this.btnUdp.TabIndex = 23;
-            this.btnUdp.UseVisualStyleBackColor = true;
-            this.btnUdp.Click += new System.EventHandler(this.btnUdp_Click);
-            // 
             // btnTcp
             // 
             this.btnTcp.BackgroundImage = global::Smappio_SEAR.Properties.Resources.TCP;
@@ -327,7 +314,7 @@
             // 
             this.btnSerial.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSerial.Image = global::Smappio_SEAR.Properties.Resources.if_usb_925801;
-            this.btnSerial.Location = new System.Drawing.Point(201, 11);
+            this.btnSerial.Location = new System.Drawing.Point(142, 11);
             this.btnSerial.Name = "btnSerial";
             this.btnSerial.Size = new System.Drawing.Size(48, 48);
             this.btnSerial.TabIndex = 7;
@@ -372,7 +359,6 @@
             this.Controls.Add(this.btnPlay);
             this.Controls.Add(this.btnBrowse);
             this.Controls.Add(this.waveformPainter);
-            this.Controls.Add(this.btnUdp);
             this.Controls.Add(this.btnTcp);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.txtPath);
@@ -413,7 +399,6 @@
         private System.Windows.Forms.TextBox txtPath;
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.Button btnTcp;
-        private System.Windows.Forms.Button btnUdp;
         private NAudio.Gui.WaveformPainter waveformPainter;
         private System.Windows.Forms.Button btnPlay;
         private System.Windows.Forms.Button btnBrowse;
