@@ -102,13 +102,6 @@ void bufferSamplesToSend()
 
   for(int i = 0; i < BYTES_TO_SEND; i += 3)
   {
-    // Se hace la lectura de los samples del microfono
-    bytesReaded = smappioSound.read();
-    while(bytesReaded == 0)
-    {     
-        //Este bucle es necesario para no reenviar una muestra mas de una vez
-        bytesReaded = smappioSound.read();
-    }   
     // Se obtiene le valor de un sample.
     value = getOneSampleValueOfN(7); 
 
