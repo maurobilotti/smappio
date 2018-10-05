@@ -50,7 +50,7 @@ void loop() {
       // Se agrega el numero de secuencia del bloque en el ultimo byte del mismo, con los 2 primeros bits en '00'y se envia
       _dataToSend[BYTES_TO_SEND] = bufferSeqNum & 63;
 
-      bufferSamplesToSendWithControlBits();
+      bufferSamplesToSend();
 
       client.write(_dataToSend, BYTES_TO_SEND); // Hacer BYTES_TO_SEND + 1 para enviar el bufferSeqNum
 
@@ -109,8 +109,8 @@ void bufferSamplesToSend()
         //Este bucle es necesario para no reenviar una muestra mas de una vez
         bytesReaded = smappioSound.read();
     }   
-    // Se lee un sample
-    value = smappioSound.getSampleValue();
+    // Se obtiene le valor de un sample.
+    value = getOneSampleValueOfN(7); 
 
     // Se bufferean los 3 bytes del sample
     _dataToSend[i] = value & 255;
@@ -161,9 +161,12 @@ void bufferAlternateSignTest()
     if(i % 6 == 0)
       value = value * (-1);
 
-    _dataToSend[i] = (value & 63) | 64;
+    /*_dataToSend[i] = (value & 63) | 64;
     _dataToSend[i + 1] = ((value >> 6)  & 63) | 128;
-    _dataToSend[i + 2] = ((value >> 12) & 63) | 192;
+    _dataToSend[i + 2] = ((value >> 12) & 63) | 192;*/
+    _dataToSend[i] = value & 255;
+    _dataToSend[i + 1] = (value >> 8)  & 255;
+    _dataToSend[i + 2] = (value >> 16) & 255; 
   }  
 }
 
@@ -177,8 +180,8 @@ void bufferAlternateOneAndMinusOne()
     if(i % 2 == 0)
       value = -1;
 
-    _dataToSend[i] = (value & 63) | 64;
-    _dataToSend[i + 1] = ((value >> 6)  & 63) | 128;
-    _dataToSend[i + 2] = ((value >> 12) & 63) | 192;
+    _dataToSend[i] = value & 255;
+    _dataToSend[i + 1] = (value >> 8)  & 255;
+    _dataToSend[i + 2] = (value >> 16) & 255; 
   }  
 }
