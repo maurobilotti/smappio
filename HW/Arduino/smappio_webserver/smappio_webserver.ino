@@ -7,9 +7,11 @@ const char* ssid     = "Smappio 4.6KHz";
 const char* password = "123456789"; // El pass tiene que tener mas de 8 caracteres
 
 // CONSTANTES
-#define BYTES_TO_SEND  345 //57438 es aparentemente el max   // Tiene que ser multiplo de 3  
-#define MEDIA 13700   // I2S:  13700  | PCM:  6835   // valor para nivelar a 0 la señal media
-#define WIFI_CHANNEL 1  //  1  |  6  |  11
+#define TCP_NO_DELAY true 
+#define BYTES_TO_SEND  345                  // 57438 es aparentemente el max   // Tiene que ser multiplo de 3  
+#define MEDIA 13700                         // I2S:  13700  | PCM:  6835   // valor para nivelar a 0 la señal media
+#define WIFI_CHANNEL 1                      // 1  |  6  |  11
+#define CONTROL_ALGHORITM_ENABLED false     // Habilitar para enviar los bits de control
 
 // VARIABLES
 int32_t *_buffer;
@@ -30,7 +32,7 @@ void setup() {
   IPAddress NMask(255, 255, 255, 0);
   WiFi.softAPConfig(Ip, gateway, NMask);
   server.begin();
-  server.setNoDelay(true);
+  server.setNoDelay(TCP_NO_DELAY);
 }
 
 void loop() {
@@ -40,7 +42,7 @@ void loop() {
   // Si el cliente inicio el handshake
   if (client) 
   {
-    client.setNoDelay(true);  
+    client.setNoDelay(TCP_NO_DELAY);  
     int bufferSeqNum = 0;  
     while (client.connected()) 
     {      
@@ -59,21 +61,20 @@ void loop() {
   } 
 }
 
-// Metodo para bufferear sonido con bits de control
-void bufferSamplesToSendWithControlBits() 
+// Metodo para bufferear sonido sin bits de control
+void bufferSamplesToSend() 
 {
   int32_t value = 0;
+  int bytesReaded = 0;
 
   for(int i = 0; i < BYTES_TO_SEND; i += 3)
   {
-    // Se obtiene le valor de un sample.
+    // Se obtiene le valor de un sample. Al cambiar el nro del parámetro se modifica el sample rate.
     value = getOneSampleValueOfN(7); 
-    
-    // Se bufferean los 3 bytes del sample, con un desplazamiento y una numeracion
-    // 'a': bit del primer byte. 'b': bit del segundo byte. 'c': bit del tercer byte.
-    _dataToSend[i] = (value & 63) | 64;               // '64'   =  01|aaaaaa
-    _dataToSend[i + 1] = ((value >> 6)  & 63) | 128;  // '128'  =  10|bbbbaa
-    _dataToSend[i + 2] = ((value >> 12) & 63) | 192;  // '192'  =  11|ccbbbb
+
+    // Se bufferean los 3 bytes del sample
+    // OJO Con el flag CONTROL_ALGHORITM_ENABLED
+    addSampleToBuffer(i, value);
   }  
 }
 
@@ -94,23 +95,26 @@ int32_t getOneSampleValueOfN(int n)
   return smappioSound.getSampleValue();
 }
 
-// Metodo para bufferear sonido sin bits de control
-void bufferSamplesToSend() 
+void addSampleToBuffer(int index, int value)
 {
-  int32_t value = 0;
-  int bytesReaded = 0;
-
-  for(int i = 0; i < BYTES_TO_SEND; i += 3)
+  if(CONTROL_ALGHORITM_ENABLED)
   {
-    // Se obtiene le valor de un sample.
-    value = getOneSampleValueOfN(7); 
-
-    // Se bufferean los 3 bytes del sample
-    _dataToSend[i] = value & 255;
-    _dataToSend[i + 1] = (value >> 8)  & 255;
-    _dataToSend[i + 2] = (value >> 16) & 255; 
-  }  
+    // Se bufferean los 3 bytes del sample, con un desplazamiento y una numeracion
+    // 'a': bit del primer byte. 'b': bit del segundo byte. 'c': bit del tercer byte.
+    _dataToSend[index] = (value & 63) | 64;               // '64'   =  01|aaaaaa
+    _dataToSend[index + 1] = ((value >> 6)  & 63) | 128;  // '128'  =  10|bbbbaa
+    _dataToSend[index + 2] = ((value >> 12) & 63) | 192;  // '192'  =  11|ccbbbb
+  }
+  else
+  {
+    _dataToSend[index] = value & 255;
+    _dataToSend[index + 1] = (value >> 8)  & 255;
+    _dataToSend[index + 2] = (value >> 16) & 255; 
+  }
 }
+
+
+/////////////////////////////      REGION DE FUNCIONES DE PRUEBA DE TRANSMISION      /////////////////////////////
 
 // Metodo para enviar la siguiente secuencia invalida:
 // Bits de contol: [{1,2,3}, {1,2,2}, {3,1,2}, ..., {3,1,2}]
@@ -154,12 +158,9 @@ void bufferAlternateSignTest()
     if(i % 6 == 0)
       value = value * (-1);
 
-    /*_dataToSend[i] = (value & 63) | 64;
-    _dataToSend[i + 1] = ((value >> 6)  & 63) | 128;
-    _dataToSend[i + 2] = ((value >> 12) & 63) | 192;*/
-    _dataToSend[i] = value & 255;
-    _dataToSend[i + 1] = (value >> 8)  & 255;
-    _dataToSend[i + 2] = (value >> 16) & 255; 
+    // Se bufferean los 3 bytes del sample
+    // OJO Con el flag CONTROL_ALGHORITM_ENABLED
+    addSampleToBuffer(i, value);
   }  
 }
 
@@ -173,8 +174,10 @@ void bufferAlternateOneAndMinusOne()
     if(i % 2 == 0)
       value = -1;
 
-    _dataToSend[i] = value & 255;
-    _dataToSend[i + 1] = (value >> 8)  & 255;
-    _dataToSend[i + 2] = (value >> 16) & 255; 
+    // Se bufferean los 3 bytes del sample
+    // OJO Con el flag CONTROL_ALGHORITM_ENABLED
+    addSampleToBuffer(i, value);
   }  
 }
+
+/////////////////////////////      FIN REGION DE FUNCIONES DE PRUEBA DE TRANSMISION      /////////////////////////////
