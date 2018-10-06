@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -24,13 +23,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-
-    private static final int PERMISSIONS_REQUEST_CODE = 101;
 
     private WifiManager wifiManager;
 
@@ -115,9 +111,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_slideshow) {
+        if (id == R.id.nav_files) {
             openFileSystem(Constant.CODE_FILE_SYSTEM_PLAY);
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_configurations) {
 
         } else if (id == R.id.nav_share) {
             openFileSystem(Constant.CODE_FILE_SYSTEM_SHARE);
@@ -130,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == PERMISSIONS_REQUEST_CODE) {
+        if (requestCode == Constant.CODE_PERMISSIONS_REQUEST_CODE) {
             boolean grantedAllPermission = true;
             for(int i = 0; i < grantResults.length; i++) {
                 if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
@@ -184,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.INTERNET
-            }, PERMISSIONS_REQUEST_CODE);
+            }, Constant.CODE_PERMISSIONS_REQUEST_CODE);
 
         }
     }
@@ -244,11 +240,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     };
 
     private void updateDeviceConnected() {
-        TextView stateLbl = (TextView) findViewById(R.id.stateLbl);
-        ImageButton stateColor = (ImageButton) findViewById(R.id.colorState);
-        TextView deviceConnectedLbl = (TextView) findViewById(R.id.connectedDeviceLbl);
-        ImageButton auscultateBtn = findViewById(R.id.auscultateBtn);
-        TextView auscultateLbl = (TextView) findViewById(R.id.auscultateLbl);
+        TextView stateLbl = (TextView) findViewById(R.id.state_lbl);
+        ImageButton stateColor = (ImageButton) findViewById(R.id.state_icon);
+        TextView deviceConnectedLbl = (TextView) findViewById(R.id.connected_device_lbl);
+        ImageButton auscultateBtn = findViewById(R.id.auscultate_btn);
+        TextView auscultateLbl = (TextView) findViewById(R.id.auscultate_lbl);
         if (wifiManager.isWifiEnabled()) {
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
             if(wifiInfo.getNetworkId() != -1 ){

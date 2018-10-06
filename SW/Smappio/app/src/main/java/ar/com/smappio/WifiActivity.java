@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -58,11 +57,11 @@ public class WifiActivity extends AppCompatActivity {
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 
-        scanBtn = (Button) findViewById(R.id.scanBtn);
-        wifiBtn = (Switch) findViewById(R.id.wifiBtn);
+        scanBtn = (Button) findViewById(R.id.scan_btn);
+        wifiBtn = (Switch) findViewById(R.id.wifi_btn);
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, ssidLst);
-        ListView ssidListView = (ListView) findViewById(R.id.wifiList);
+        ListView ssidListView = (ListView) findViewById(R.id.wifi_list);
         ssidListView.setOnItemClickListener(onItemClickListener);
         ssidListView.setAdapter(adapter);
     }
@@ -213,9 +212,9 @@ public class WifiActivity extends AppCompatActivity {
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(WifiActivity.this);
                     alertDialogBuilder.setView(popupWifiView);
                     alertDialogBuilder.setTitle("Conectarse a " + ssid);
-                    EditText userInput = popupWifiView.findViewById(R.id.passwordEditText);
+                    EditText userInput = (EditText) popupWifiView.findViewById(R.id.password_input);
 
-                    CheckBox checkbox = popupWifiView.findViewById(R.id.showPasswordCheckbox);
+                    CheckBox checkbox = (CheckBox) popupWifiView.findViewById(R.id.password_ckb);
                     checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {

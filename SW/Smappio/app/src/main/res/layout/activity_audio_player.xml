@@ -41,7 +41,7 @@
             android:layout_weight="2">
 
             <SeekBar
-                android:id="@+id/positionBar"
+                android:id="@+id/position_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -50,32 +50,33 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/elapsedTimeLabel"
+                android:id="@+id/elapsed_time_lbl"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="0:00"
+                android:text="@string/init_time_lbl"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/positionBar" />
+                app:layout_constraintTop_toBottomOf="@+id/position_bar" />
 
             <TextView
-                android:id="@+id/remainingTimeLabel"
+                android:id="@+id/remaining_time_lbl"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                android:text="0:00"
+                android:text="@string/init_time_lbl"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/positionBar" />
+                app:layout_constraintTop_toBottomOf="@+id/position_bar" />
 
             <ImageButton
-                android:id="@+id/playBtn"
+                android:id="@+id/play_btn"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
+                android:contentDescription="@string/play_btn"
                 android:background="@drawable/ic_play_arrow_black_24dp"
                 android:onClick="playBtnClick"
                 app:layout_constraintBottom_toBottomOf="parent"

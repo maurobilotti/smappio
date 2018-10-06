@@ -3,6 +3,7 @@ package ar.com.smappio;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
 public class AscultateActivity extends AppCompatActivity {
@@ -24,12 +25,12 @@ public class AscultateActivity extends AppCompatActivity {
 
         pcmSocket = new PCMSocket();
 
-        streamButton = findViewById(R.id.stream);
+        streamButton = findViewById(R.id.stream_btn);
         streamButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //TODO: Esto es temporal, para el floating button
-                if(isAuscultating == true) {
+                if(isAuscultating) {
                     streamButton.setImageResource(R.drawable.ic_heart_red_24dp);
                     isAuscultating = false;
                     pcmSocket.stopAuscultate();
@@ -43,5 +44,13 @@ public class AscultateActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 }

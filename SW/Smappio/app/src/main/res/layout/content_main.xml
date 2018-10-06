@@ -9,38 +9,40 @@
     tools:showIn="@layout/app_bar_main">
 
     <ImageButton
-        android:id="@+id/colorState"
+        android:id="@+id/state_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/state_icon"
         android:layout_marginStart="16dp"
         android:background="#00000000"
-        app:layout_constraintBottom_toBottomOf="@+id/stateLbl"
+        app:layout_constraintBottom_toBottomOf="@+id/state_lbl"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/stateLbl" />
+        app:layout_constraintTop_toTopOf="@+id/state_lbl" />
 
     <TextView
-        android:id="@+id/stateLbl"
+        android:id="@+id/state_lbl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:textSize="18sp"
-        app:layout_constraintStart_toEndOf="@+id/colorState"
+        app:layout_constraintStart_toEndOf="@+id/state_icon"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/connectedDeviceLbl"
+        android:id="@+id/connected_device_lbl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="@+id/stateLbl"
-        app:layout_constraintTop_toBottomOf="@+id/stateLbl" />
+        app:layout_constraintStart_toStartOf="@+id/state_lbl"
+        app:layout_constraintTop_toBottomOf="@+id/state_lbl" />
 
     <ImageButton
-        android:id="@+id/auscultateBtn"
+        android:id="@+id/auscultate_btn"
         android:layout_width="90dp"
         android:layout_height="90dp"
+        android:contentDescription="@string/auscultate_btn"
         android:scaleType="fitXY"
         android:onClick="auscultate"
         android:background="#00000000"
@@ -52,14 +54,14 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/auscultateLbl"
+        android:id="@+id/auscultate_lbl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Auscultar"
+        android:text="@string/auscultate_lbl"
         android:textSize="18sp"
         android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="@+id/auscultateBtn"
-        app:layout_constraintStart_toStartOf="@+id/auscultateBtn"
-        app:layout_constraintTop_toBottomOf="@+id/auscultateBtn" />
+        app:layout_constraintEnd_toEndOf="@+id/auscultate_btn"
+        app:layout_constraintStart_toStartOf="@+id/auscultate_btn"
+        app:layout_constraintTop_toBottomOf="@+id/auscultate_btn" />
 
 </android.support.constraint.ConstraintLayout>

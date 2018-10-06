@@ -7,40 +7,40 @@
     tools:context=".WifiActivity">
 
     <Switch
-        android:id="@+id/wifiBtn"
+        android:id="@+id/wifi_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:onClick="wifiOnOff"
-        android:text="WiFi"
-        android:textSize="15sp"
+        android:text="@string/wifi_lbl"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
-        android:id="@+id/wifiList"
+        android:id="@+id/wifi_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/scanBtn"
+        app:layout_constraintBottom_toTopOf="@+id/scan_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/wifiBtn" />
+        app:layout_constraintTop_toBottomOf="@+id/wifi_btn" />
 
     <Button
-        android:id="@+id/scanBtn"
+        android:id="@+id/scan_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:background="@android:color/background_light"
         android:onClick="searchWifi"
-        android:text="Buscar"
+        android:text="@string/search_lbl"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

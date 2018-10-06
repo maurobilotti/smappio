@@ -5,17 +5,17 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_slideshow"
+            android:id="@+id/nav_files"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="Archivos" />
+            android:title="@string/files" />
         <item
-            android:id="@+id/nav_manage"
+            android:id="@+id/nav_configurations"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Configuración" />
+            android:title="@string/configurations" />
         <item
             android:id="@+id/nav_share"
             android:icon="@drawable/ic_menu_share"
-            android:title="Compartir" />
+            android:title="@string/share" />
     </group>
 
 </menu>

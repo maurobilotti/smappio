@@ -24,8 +24,8 @@ public class AudioPlayerActivity extends AppCompatActivity {
     //Variables del reproductor
     private ImageButton playBtn;
     private SeekBar positionBar;
-    private TextView elapsedTimeLabel;
-    private TextView remainingTimeLabel;
+    private TextView elapsedTimeLbl;
+    private TextView remainingTimeLbl;
     private MediaPlayer mediaPlayer;
     private int totalTime;
 
@@ -42,12 +42,12 @@ public class AudioPlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_player);
 
-        playBtn = findViewById(R.id.playBtn);
-        positionBar = findViewById(R.id.positionBar);
-        elapsedTimeLabel = findViewById(R.id.elapsedTimeLabel);
-        remainingTimeLabel = findViewById(R.id.remainingTimeLabel);
-        equalizerView = findViewById(R.id.equalizer);
-        waveformView = findViewById(R.id.waveform);
+        playBtn = (ImageButton) findViewById(R.id.play_btn);
+        positionBar = (SeekBar) findViewById(R.id.position_bar);
+        elapsedTimeLbl = (TextView) findViewById(R.id.elapsed_time_lbl);
+        remainingTimeLbl = (TextView) findViewById(R.id.remaining_time_lbl);
+        equalizerView = (EqualizerView) findViewById(R.id.equalizer);
+        waveformView = (WaveformView) findViewById(R.id.waveform);
 
         //Flecha de la toolbar para volver al activity anterior
         if (getSupportActionBar() != null){
@@ -163,9 +163,9 @@ public class AudioPlayerActivity extends AppCompatActivity {
             positionBar.setProgress(currentPosition);
             // Update Labels.
             String elapsedTime = createTimeLabel(currentPosition);
-            elapsedTimeLabel.setText(elapsedTime);
-            String remainingTime = createTimeLabel(totalTime-currentPosition);
-            remainingTimeLabel.setText("- " + remainingTime);
+            elapsedTimeLbl.setText(elapsedTime);
+            String remainingTime = createTimeLabel(totalTime - currentPosition);
+            remainingTimeLbl.setText("- " + remainingTime);
         }
     };
 
@@ -223,7 +223,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
 
     public void setupWaveform() {
         try {
-            String filePath = FileUtils.getFilePath(this,currentFileURI);
+            String filePath = FileUtils.getFilePath(this, currentFileURI);
             File file = new File(filePath);
             updateVisualizer(FileUtils.fileToBytes(file));
         } catch (URISyntaxException e) {
