@@ -8,45 +8,48 @@
     tools:context=".MainActivity"
     tools:showIn="@layout/app_bar_main">
 
+    <ImageButton
+        android:id="@+id/colorState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:background="#00000000"
+        app:layout_constraintBottom_toBottomOf="@+id/stateLbl"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/stateLbl" />
+
     <TextView
         android:id="@+id/stateLbl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:text="Desconectado"
         android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/colorState"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/connectedDeviceLbl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/stateLbl"
         app:layout_constraintTop_toBottomOf="@+id/stateLbl" />
 
-    <TextView
-        android:id="@+id/connectedDeviceMacLbl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/connectedDeviceLbl" />
-
-    <Button
+    <ImageButton
         android:id="@+id/auscultateBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:scaleType="fitXY"
         android:onClick="auscultate"
+        android:background="#00000000"
+        android:src="@mipmap/ic_launcher_round"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/connectedDeviceMacLbl" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

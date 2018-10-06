@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -24,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -39,10 +41,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         checkTotalPermission();
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -50,16 +52,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        updateDeviceConnected();
     }
 
     //Al presionar el botón físico "volver atrás (<)", si esta abierta la sidebar, se cierra
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onResume() {
         super.onResume();
         registerReceiver(wifiReceiver, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
+//        updateDeviceConnected();
     }
 
 //    @Override
@@ -121,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             openFileSystem(Constant.CODE_FILE_SYSTEM_SHARE);
         }
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -141,12 +143,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 View popupAlertPermissions = layoutInflater.inflate(R.layout.popup_alert_permissions, null);
                 alertDialogBuilder.setView(popupAlertPermissions);
                 alertDialogBuilder.setTitle("Alerta");
-                alertDialogBuilder.setCancelable(false).setPositiveButton("Aceptar",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                finish();
-                            }
-                        });
+                alertDialogBuilder
+                        .setCancelable(false)
+                        .setPositiveButton("Aceptar",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    finish();
+                                }
+                            });
                 AlertDialog alertDialog = alertDialogBuilder.create();
                 alertDialog.show();
             }
@@ -182,8 +186,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Manifest.permission.INTERNET
             }, PERMISSIONS_REQUEST_CODE);
 
-        } else {
-            return;
         }
     }
 
@@ -221,12 +223,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(Intent.createChooser(intent, "Compartir archivo de audio"));
         }
 
-        if(requestCode == Constant.CODE_WIFI_CONNECTED && data != null) {
+//        if(requestCode == Constant.CODE_WIFI_CONNECTED && data != null) {
 //            int networkId = (int) data.getExtras().get("networkId");
 //            String ssid = (String) data.getExtras().get("ssid");
 //            TextView deviceConnectedLbl = findViewById(R.id.connectedDeviceLbl);
 //            deviceConnectedLbl.setText("Conectado al dispositivo: " + ssid);
-        }
+//        }
     }
 
     private BroadcastReceiver wifiReceiver = new BroadcastReceiver() {
@@ -242,27 +244,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     };
 
     private void updateDeviceConnected() {
-        TextView stateLbl = findViewById(R.id.stateLbl);
-        TextView deviceConnectedLbl = findViewById(R.id.connectedDeviceLbl);
-        TextView deviceConnectedMacLbl = findViewById(R.id.connectedDeviceMacLbl);
-        Button auscultarBtn = findViewById(R.id.auscultateBtn);
+        TextView stateLbl = (TextView) findViewById(R.id.stateLbl);
+        ImageButton stateColor = (ImageButton) findViewById(R.id.colorState);
+        TextView deviceConnectedLbl = (TextView) findViewById(R.id.connectedDeviceLbl);
+        ImageButton auscultarBtn = findViewById(R.id.auscultateBtn);
         if (wifiManager.isWifiEnabled()) {
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
             if(wifiInfo.getNetworkId() != -1 ){
                 stateLbl.setText("Conectado");
+                stateColor.setBackgroundResource(android.R.drawable.presence_online);
                 deviceConnectedLbl.setText("Dispositivo: " + wifiInfo.getSSID());
-                deviceConnectedMacLbl.setText("MAC: " + wifiInfo.getMacAddress());
                 auscultarBtn.setVisibility(View.VISIBLE);
             } else {
                 stateLbl.setText("Desconectado");
+                stateColor.setBackgroundResource(android.R.drawable.presence_offline);
                 deviceConnectedLbl.setText("");
-                deviceConnectedMacLbl.setText("");
                 auscultarBtn.setVisibility(View.GONE);
             }
         } else {
             stateLbl.setText("Desconectado");
+            stateColor.setBackgroundResource(android.R.drawable.presence_offline);
             deviceConnectedLbl.setText("");
-            deviceConnectedMacLbl.setText("");
             auscultarBtn.setVisibility(View.GONE);
         }
     }
