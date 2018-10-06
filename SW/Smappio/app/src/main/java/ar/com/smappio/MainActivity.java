@@ -247,25 +247,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView stateLbl = (TextView) findViewById(R.id.stateLbl);
         ImageButton stateColor = (ImageButton) findViewById(R.id.colorState);
         TextView deviceConnectedLbl = (TextView) findViewById(R.id.connectedDeviceLbl);
-        ImageButton auscultarBtn = findViewById(R.id.auscultateBtn);
+        ImageButton auscultateBtn = findViewById(R.id.auscultateBtn);
+        TextView auscultateLbl = (TextView) findViewById(R.id.auscultateLbl);
         if (wifiManager.isWifiEnabled()) {
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
             if(wifiInfo.getNetworkId() != -1 ){
                 stateLbl.setText("Conectado");
                 stateColor.setBackgroundResource(android.R.drawable.presence_online);
                 deviceConnectedLbl.setText("Dispositivo: " + wifiInfo.getSSID());
-                auscultarBtn.setVisibility(View.VISIBLE);
+                auscultateBtn.setVisibility(View.VISIBLE);
+                auscultateLbl.setVisibility(View.VISIBLE);
             } else {
                 stateLbl.setText("Desconectado");
                 stateColor.setBackgroundResource(android.R.drawable.presence_offline);
                 deviceConnectedLbl.setText("");
-                auscultarBtn.setVisibility(View.GONE);
+                auscultateBtn.setVisibility(View.GONE);
+                auscultateLbl.setVisibility(View.GONE);
             }
         } else {
             stateLbl.setText("Desconectado");
             stateColor.setBackgroundResource(android.R.drawable.presence_offline);
             deviceConnectedLbl.setText("");
-            auscultarBtn.setVisibility(View.GONE);
+            auscultateBtn.setVisibility(View.GONE);
+            auscultateLbl.setVisibility(View.GONE);
         }
     }
 

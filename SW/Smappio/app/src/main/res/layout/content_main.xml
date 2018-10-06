@@ -24,7 +24,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="Desconectado"
         android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/colorState"
         app:layout_constraintTop_toTopOf="parent" />
@@ -51,5 +50,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/auscultateLbl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Auscultar"
+        android:textSize="18sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/auscultateBtn"
+        app:layout_constraintStart_toStartOf="@+id/auscultateBtn"
+        app:layout_constraintTop_toBottomOf="@+id/auscultateBtn" />
 
 </android.support.constraint.ConstraintLayout>
