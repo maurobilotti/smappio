@@ -1,16 +1,15 @@
 package ar.com.smappio;
 
-import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -37,6 +36,7 @@ import java.util.List;
 public class WifiActivity extends AppCompatActivity {
 
     private WifiManager wifiManager;
+    private LocationManager locationManager;
     private List<ScanResult> networkLst = new ArrayList<>();
     private ArrayList<String> ssidLst = new ArrayList<>();
     private ArrayAdapter adapter;
@@ -56,12 +56,13 @@ public class WifiActivity extends AppCompatActivity {
         }
 
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 
-        scanBtn = findViewById(R.id.scanBtn);
-        wifiBtn = findViewById(R.id.wifiBtn);
+        scanBtn = (Button) findViewById(R.id.scanBtn);
+        wifiBtn = (Switch) findViewById(R.id.wifiBtn);
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, ssidLst);
-        ListView ssidListView = findViewById(R.id.wifiList);
+        ListView ssidListView = (ListView) findViewById(R.id.wifiList);
         ssidListView.setOnItemClickListener(onItemClickListener);
         ssidListView.setAdapter(adapter);
     }
@@ -78,26 +79,61 @@ public class WifiActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(wifiReceiver);
+        unregisterReceiver(broadcastReceiver);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(wifiReceiver, new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION));
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+//        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+        intentFilter.addAction(LocationManager.PROVIDERS_CHANGED_ACTION);
+        registerReceiver(broadcastReceiver, intentFilter);
     }
 
-    public void updateWifi(View view) {
+    private void buildAlertMessageGPS() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Se debe activar el servicio de localización.")
+                .setCancelable(true)
+                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    public void clearWifiList() {
         ssidLst.clear();
         networkLst.clear();
-        if(wifiManager.isWifiEnabled()) {
-            Toast.makeText(this, "Buscando Dispositivo ...", Toast.LENGTH_SHORT).show();
-            networkLst = wifiManager.getScanResults();
-            for (ScanResult scanResult : networkLst) {
-                ssidLst.add(scanResult.SSID);//+ " - " + scanResult.capabilities);
-            }
+        adapter.notifyDataSetChanged();
+    }
+
+    public void loadWifiList() {
+        Toast.makeText(this, "Buscando Dispositivo ...", Toast.LENGTH_SHORT).show();
+        networkLst = wifiManager.getScanResults();
+        for (ScanResult scanResult : networkLst) {
+            ssidLst.add(scanResult.SSID);//+ " - " + scanResult.capabilities);
         }
         adapter.notifyDataSetChanged();
+    }
+
+    public void searchWifi(View view) {
+        clearWifiList();
+        if(wifiManager.isWifiEnabled()) {
+            if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                loadWifiList();
+            } else {
+                buildAlertMessageGPS();
+            }
+        }
     }
 
     public void wifiOnOff(View view) {
@@ -108,7 +144,7 @@ public class WifiActivity extends AppCompatActivity {
         }
     }
 
-    private BroadcastReceiver wifiReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -124,7 +160,18 @@ public class WifiActivity extends AppCompatActivity {
                         scanBtn.setEnabled(true);
                         wifiBtn.setChecked(true);
                     }
-                    updateWifi(scanBtn);
+                    clearWifiList();
+                }
+//                else if(action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
+//                    WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+//                    if(wifiInfo != null) {
+//                        searchWifi(scanBtn);
+//                    }
+//                }
+                else if(action.equals(LocationManager.PROVIDERS_CHANGED_ACTION)) {
+                    if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                        clearWifiList();
+                    }
                 }
             }
         }
