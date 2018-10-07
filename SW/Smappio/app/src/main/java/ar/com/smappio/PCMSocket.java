@@ -16,7 +16,7 @@ public class PCMSocket {
     private static final int CHANNEL_CONFIG = AudioFormat.CHANNEL_OUT_MONO;
     private static final int AUDIO_ENCODING = AudioFormat.ENCODING_PCM_FLOAT;
     private AudioTrack audioTrack;
-    private boolean isPlaying = true;
+    private boolean isPlaying;
     private int minBufferSize;
     private Socket socket;
     private int playingLength = 345;
@@ -84,12 +84,13 @@ public class PCMSocket {
     public void auscultate() {
         minBufferSize = AudioTrack.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_ENCODING);
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_ENCODING, minBufferSize * 3, AudioTrack.MODE_STREAM);
+        isPlaying = true;
         thread = new Thread(runnable);
         thread.start();
     }
 
     public void stopAuscultate() {
-        thread.interrupt();
+        isPlaying = false;
     }
 
 }

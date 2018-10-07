@@ -34,7 +34,7 @@ public class EqualizerView extends View {
         mBytes = null;
         mForePaint.setStrokeWidth(1f);
         mForePaint.setAntiAlias(true);
-        mForePaint.setColor(Color.rgb(26,188,156));
+        mForePaint.setColor(Color.rgb(51,181,229));
     }
 
     public void updateVisualizer(byte[] bytes) {

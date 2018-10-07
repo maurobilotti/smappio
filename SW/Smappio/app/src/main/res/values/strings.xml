@@ -15,16 +15,16 @@
     <string name="wifi_lbl">WiFi</string>
     <string name="search_lbl">Buscar</string>
     <string name="permisions_msg">Para usar esta aplicación debe conceder todos los permisos. Ingrese nuevamente.</string>
-
-    <!--Content Descriptions-->
-    <string name="state_icon">state_icon</string>
-    <string name="auscultate_btn">auscultate_btn</string>
-    <string name="auscultate_lbl">auscultate_lbl</string>
-    <string name="play_btn">play_btn</string>
     <string name="password_lbl">Contraseña:</string>
     <string name="show_lbl">Mostrar</string>
     <string name="files">Archivos</string>
     <string name="configurations">Configuración</string>
     <string name="share">Compartir</string>
+    <string name="auscultate_lbl">Auscultar</string>
+
+    <!--Content Descriptions-->
+    <string name="state_icon">state_icon</string>
+    <string name="play_btn">play_btn</string>
+    <string name="auscultate_btn">auscultate_btn</string>
 
 </resources>
