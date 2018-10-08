@@ -11,16 +11,17 @@ public class PCMSocket {
 
     private static final String HOST = "192.168.1.2";
     private static final int PORT = 80;
+    private Socket socket;
 
     private static final int SAMPLE_RATE = 4600;
     private static final int CHANNEL_CONFIG = AudioFormat.CHANNEL_OUT_MONO;
     private static final int AUDIO_ENCODING = AudioFormat.ENCODING_PCM_FLOAT;
+    private static final float MAX_SAMPLE_VALUE = 2^17; // 2^17 (el bit 18 se usa para el signo)
+
     private AudioTrack audioTrack;
-    private boolean isPlaying;
     private int minBufferSize;
-    private Socket socket;
+    private boolean isPlaying;
     private int playingLength = 345;
-    private static final float MAX_SAMPLE_VALUE = 131072; // 2^17 (el bit 18 se usa para el signo)
 
     Thread thread;
 
@@ -46,7 +47,7 @@ public class PCMSocket {
                     if(is.available() < playingLength) {
                         continue;
                     }
-                    socket.getInputStream().read(buffer,0, playingLength);
+                    is.read(buffer,0, playingLength);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -61,9 +62,6 @@ public class PCMSocket {
                             | (signBit == 1 ? 0xFF : 0x00) << 24; // Relleno 1s;
 
                     float floatValue = intValue / MAX_SAMPLE_VALUE;
-
-//                    if (floatValue > 1 || floatValue < -1)
-//                        throw new IndexOutOfRangeException("Fuera del margen -1 a 1");
 
                     fbuffer[i/3] = floatValue;
                 }
