@@ -112,9 +112,9 @@ public class PCMSocket {
         int acumDiscardedBytes = 0;
         while (i < readedAux - 2)
         {
-            int firstByteSeqNumber = bufferAux[i] >> 6;
-            int secondByteSeqNumber = bufferAux[i + 1] >> 6;
-            int thirdByteSeqNumber = bufferAux[i + 2] >> 6;
+            int firstByteSeqNumber = (bufferAux[i] >> 6)  & 3;
+            int secondByteSeqNumber = (bufferAux[i + 1] >> 6) & 3;
+            int thirdByteSeqNumber = (bufferAux[i + 2] >> 6) & 3;
             int discardedBytes = 0;
 
             // Si algun numero no no sigue la secuencia, se descartan bytes para atras, nunca para delante
