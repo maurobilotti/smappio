@@ -119,7 +119,9 @@ public class WifiActivity extends AppCompatActivity {
         Toast.makeText(this, "Buscando Dispositivo ...", Toast.LENGTH_SHORT).show();
         networkLst = wifiManager.getScanResults();
         for (ScanResult scanResult : networkLst) {
-            ssidLst.add(scanResult.SSID);//+ " - " + scanResult.capabilities);
+            if(scanResult.SSID.contains("Smappio")) {
+                ssidLst.add(scanResult.SSID);//+ " - " + scanResult.capabilities);
+            }
         }
         adapter.notifyDataSetChanged();
     }

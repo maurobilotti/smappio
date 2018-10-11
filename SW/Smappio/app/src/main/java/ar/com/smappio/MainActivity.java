@@ -247,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView auscultateLbl = (TextView) findViewById(R.id.auscultate_lbl);
         if (wifiManager.isWifiEnabled()) {
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-            if(wifiInfo.getNetworkId() != -1 ){
+            if(wifiInfo.getNetworkId() != -1 && wifiInfo.getSSID().contains("Smappio")){
                 stateLbl.setText("Conectado");
                 stateColor.setBackgroundResource(android.R.drawable.presence_online);
                 deviceConnectedLbl.setText("Dispositivo: " + wifiInfo.getSSID());
