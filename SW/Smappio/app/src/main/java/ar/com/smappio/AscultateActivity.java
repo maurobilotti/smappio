@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.location.LocationManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.support.design.widget.FloatingActionButton;
@@ -45,11 +44,11 @@ public class AscultateActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //TODO: Esto es temporal, para el floating button
                 if(isAuscultating) {
-                    streamButton.setImageResource(R.drawable.ic_heart_red_24dp);
+                    streamButton.setImageResource(R.drawable.ic_heart);
                     isAuscultating = false;
                     pcmSocket.stopAuscultate();
                 } else {
-                    streamButton.setImageResource(R.drawable.ic_stop_black_24dp);
+                    streamButton.setImageResource(R.drawable.ic_stop);
                     isAuscultating = true;
                     pcmSocket.auscultate();
                 }
@@ -71,7 +70,7 @@ public class AscultateActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         unregisterReceiver(broadcastReceiver);
-        streamButton.setImageResource(R.drawable.ic_heart_red_24dp);
+        streamButton.setImageResource(R.drawable.ic_heart);
         isAuscultating = false;
         pcmSocket.stopAuscultate();
     }

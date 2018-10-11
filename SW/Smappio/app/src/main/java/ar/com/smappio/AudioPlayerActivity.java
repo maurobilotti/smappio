@@ -90,7 +90,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
         super.onPause();
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
-            playBtn.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
+            playBtn.setBackgroundResource(R.drawable.ic_play);
         }
     }
 
@@ -99,7 +99,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
         super.onResume();
 //        if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
 //            mediaPlayer.start();
-//            playBtn.setBackgroundResource(R.drawable.ic_pause_black_24dp);
+//            playBtn.setBackgroundResource(R.drawable.ic_pause);
 //        }
     }
 
@@ -109,7 +109,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         mediaPlayer = MediaPlayer.create(this, currentFileURI);
-        mediaPlayer.setLooping(false);
+        mediaPlayer.setLooping(true);
         mediaPlayer.seekTo(0);
         mediaPlayer.setVolume(1,1);
 
@@ -137,7 +137,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
 
         mediaPlayer.start();
 
-        playBtn.setBackgroundResource(R.drawable.ic_pause_black_24dp);
+        playBtn.setBackgroundResource(R.drawable.ic_pause);
     }
 
     private Runnable runnable = new Runnable() {
@@ -184,10 +184,10 @@ public class AudioPlayerActivity extends AppCompatActivity {
     public void playBtnClick(View view) {
         if (!mediaPlayer.isPlaying()) {
             mediaPlayer.start();
-            playBtn.setBackgroundResource(R.drawable.ic_pause_black_24dp);
+            playBtn.setBackgroundResource(R.drawable.ic_pause);
         } else {
             mediaPlayer.pause();
-            playBtn.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
+            playBtn.setBackgroundResource(R.drawable.ic_play);
         }
     }
 
@@ -214,11 +214,11 @@ public class AudioPlayerActivity extends AppCompatActivity {
 
         visualizer.setEnabled(true);
 
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                visualizer.setEnabled(false);
-            }
-        });
+//        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//            public void onCompletion(MediaPlayer mediaPlayer) {
+//                visualizer.setEnabled(false);
+//            }
+//        });
     }
 
     public void setupWaveform() {
