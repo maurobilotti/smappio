@@ -288,7 +288,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void auscultate(View view) {
-        Intent intent = new Intent(this, AscultateActivity.class);
+        Intent intent = new Intent(this, AuscultateActivity.class);
         startActivity(intent);
     }
 }

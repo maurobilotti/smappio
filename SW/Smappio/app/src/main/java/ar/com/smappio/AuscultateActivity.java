@@ -14,7 +14,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 
-public class AscultateActivity extends AppCompatActivity {
+public class AuscultateActivity extends AppCompatActivity {
 
     private FloatingActionButton streamButton;
     private boolean isAuscultating = false;
