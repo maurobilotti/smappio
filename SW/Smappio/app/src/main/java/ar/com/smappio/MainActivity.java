@@ -12,6 +12,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,11 +21,14 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import java.io.File;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -36,6 +40,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
 
         checkTotalPermission();
+
+        createSmappioFolder();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -182,6 +188,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Manifest.permission.INTERNET
             }, Constant.CODE_PERMISSIONS_REQUEST_CODE);
 
+        }
+    }
+
+    public void createSmappioFolder() {
+        String path = Environment.getExternalStorageDirectory() + File.separator + "Smappio";
+        File f = new File(path);
+        if (!f.exists()) {
+            Log.d("FOLDER", "Folder doesn't exist, creating it...");
+            boolean rv = f.mkdir();
+            Log.d("FOLDER", "Folder creation " + ( rv ? "success" : "failed"));
+        } else {
+            Log.d("FOLDER", "Folder already exists.");
         }
     }
 
