@@ -11,7 +11,7 @@ const char* password = "123456789"; // El pass tiene que tener mas de 8 caracter
 #define BYTES_TO_SEND  345                  // 57438 es aparentemente el max   // Tiene que ser multiplo de 3  
 #define MEDIA 13700                         // I2S:  13700  | PCM:  6835   // valor para nivelar a 0 la señal media
 #define WIFI_CHANNEL 1                      // 1  |  6  |  11
-#define CONTROL_ALGHORITM_ENABLED false     // Habilitar para enviar los bits de control
+#define CONTROL_ALGHORITM_ENABLED true     // Habilitar para enviar los bits de control
 
 // VARIABLES
 int32_t *_buffer;
