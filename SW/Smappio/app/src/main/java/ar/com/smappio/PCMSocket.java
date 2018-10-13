@@ -190,7 +190,7 @@ public class PCMSocket {
 
     public void auscultate() {
         minBufferSize = AudioTrack.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_ENCODING);
-        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_ENCODING, minBufferSize * 3, AudioTrack.MODE_STREAM);
+        audioTrack = new AudioTrack(AudioManager.STREAM_VOICE_CALL, SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_ENCODING, minBufferSize * 3, AudioTrack.MODE_STREAM);
         isPlaying = true;
         thread = new Thread(runnable);
         thread.start();

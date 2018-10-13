@@ -7,6 +7,9 @@ const char* ssid     = "Smappio 4.6KHz";
 const char* password = "123456789"; // El pass tiene que tener mas de 8 caracteres
 
 // CONSTANTES
+#define MAX_SAMPLE_VALUE 131071
+#define MIN_SAMPLE_VALUE -131072
+
 #define TCP_NO_DELAY true 
 #define BYTES_TO_SEND  345                  // 57438 es aparentemente el max   // Tiene que ser multiplo de 3  
 #define MEDIA 13700                         // I2S:  13700  | PCM:  6835   // valor para nivelar a 0 la señal media
@@ -97,19 +100,26 @@ int32_t getOneSampleValueOfN(int n)
 
 void addSampleToBuffer(int index, int value)
 {
+  int inRangeValue = value;
+
+  if(inRangeValue > MAX_SAMPLE_VALUE)
+    inRangeValue = MAX_SAMPLE_VALUE;
+  else if(inRangeValue < MIN_SAMPLE_VALUE)
+    inRangeValue = MIN_SAMPLE_VALUE;
+
   if(CONTROL_ALGHORITM_ENABLED)
   {
     // Se bufferean los 3 bytes del sample, con un desplazamiento y una numeracion
     // 'a': bit del primer byte. 'b': bit del segundo byte. 'c': bit del tercer byte.
-    _dataToSend[index] = (value & 63) | 64;               // '64'   =  01|aaaaaa
-    _dataToSend[index + 1] = ((value >> 6)  & 63) | 128;  // '128'  =  10|bbbbaa
-    _dataToSend[index + 2] = ((value >> 12) & 63) | 192;  // '192'  =  11|ccbbbb
+    _dataToSend[index] = (inRangeValue & 63) | 64;               // '64'   =  01|aaaaaa
+    _dataToSend[index + 1] = ((inRangeValue >> 6)  & 63) | 128;  // '128'  =  10|bbbbaa
+    _dataToSend[index + 2] = ((inRangeValue >> 12) & 63) | 192;  // '192'  =  11|ccbbbb
   }
   else
   {
-    _dataToSend[index] = value & 255;
-    _dataToSend[index + 1] = (value >> 8)  & 255;
-    _dataToSend[index + 2] = (value >> 16) & 255; 
+    _dataToSend[index] = inRangeValue & 255;
+    _dataToSend[index + 1] = (inRangeValue >> 8)  & 255;
+    _dataToSend[index + 2] = (inRangeValue >> 16) & 255; 
   }
 }
 
