@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -88,6 +89,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
             playBtn.setBackgroundResource(R.drawable.ic_play);
@@ -97,6 +99,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 //        if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
 //            mediaPlayer.start();
 //            playBtn.setBackgroundResource(R.drawable.ic_pause);

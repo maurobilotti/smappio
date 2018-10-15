@@ -7,12 +7,15 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 
 public class AuscultateActivity extends AppCompatActivity {
 
@@ -21,6 +24,7 @@ public class AuscultateActivity extends AppCompatActivity {
     private PCMSocket pcmSocket;
     private WifiManager wifiManager;
     private WifiInfo wifiInfo;
+    private EqualizerView equalizerView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,6 +36,8 @@ public class AuscultateActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
+
+        equalizerView = (EqualizerView) findViewById(R.id.equalizer);
 
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         wifiInfo = wifiManager.getConnectionInfo();
@@ -69,6 +75,7 @@ public class AuscultateActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         unregisterReceiver(broadcastReceiver);
         streamButton.setImageResource(R.drawable.ic_heart);
         isAuscultating = false;
@@ -78,6 +85,7 @@ public class AuscultateActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         IntentFilter intentFilter = new IntentFilter();
 //        intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
         intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
@@ -121,4 +129,5 @@ public class AuscultateActivity extends AppCompatActivity {
         AlertDialog alert = builder.create();
         alert.show();
     }
+
 }
