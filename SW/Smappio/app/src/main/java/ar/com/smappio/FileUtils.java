@@ -10,11 +10,17 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
 import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 
 public class FileUtils {
 
@@ -93,5 +99,74 @@ public class FileUtils {
 
     public static boolean isMediaDocument(Uri uri) {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
+    }
+
+    private File rawToWave(final File rawFile, final String filePath) throws IOException {
+
+        File waveFile = new File(filePath);
+
+        byte[] rawData = new byte[(int) rawFile.length()];
+        DataInputStream input = null;
+        try {
+            input = new DataInputStream(new FileInputStream(rawFile));
+            input.read(rawData);
+        } finally {
+            if (input != null) {
+                input.close();
+            }
+        }
+
+        DataOutputStream output = null;
+        try {
+            output = new DataOutputStream(new FileOutputStream(waveFile));
+            // WAVE header
+            // see http://ccrma.stanford.edu/courses/422/projects/WaveFormat/
+            writeString(output, "RIFF"); // chunk id
+            writeInt(output, 36 + rawData.length); // chunk size
+            writeString(output, "WAVE"); // format
+            writeString(output, "fmt "); // subchunk 1 id
+            writeInt(output, 16); // subchunk 1 size
+            writeShort(output, (short) 1); // audio format (1 = PCM)
+            writeShort(output, (short) 1); // number of channels
+            writeInt(output, Constant.SAMPLE_RATE); // sample rate
+            writeInt(output, Constant.SAMPLE_RATE * 4); // byte rate
+            writeShort(output, (short) 4); // block align
+            writeShort(output, (short) 32); // bits per sample
+            writeString(output, "data"); // subchunk 2 id
+            writeInt(output, Constant.SAMPLE_RATE * 4); // subchunk 2 size
+            // Audio data (conversion big endian -> little endian)
+//            short[] shorts = new short[rawData.length / 2];
+//            ByteBuffer.wrap(rawData).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(shorts);
+//            ByteBuffer bytes = ByteBuffer.allocate(shorts.length * 2);
+//            for (short s : shorts) {
+//                bytes.putShort(s);
+//            }
+//            output.write(bytes.array());
+        } finally {
+            if (output != null) {
+                output.close();
+            }
+        }
+
+        return waveFile;
+
+    }
+
+    private void writeInt(final DataOutputStream output, final int value) throws IOException {
+        output.write(value >> 0);
+        output.write(value >> 8);
+        output.write(value >> 16);
+        output.write(value >> 24);
+    }
+
+    private void writeShort(final DataOutputStream output, final short value) throws IOException {
+        output.write(value >> 0);
+        output.write(value >> 8);
+    }
+
+    private void writeString(final DataOutputStream output, final String value) throws IOException {
+        for (int i = 0; i < value.length(); i++) {
+            output.write(value.charAt(i));
+        }
     }
 }
