@@ -101,20 +101,9 @@ public class FileUtils {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
     }
 
-    private File rawToWave(final File rawFile, final String filePath) throws IOException {
+    public static File rawToWave(byte[] rawData, final String filePath) throws IOException {
 
         File waveFile = new File(filePath);
-
-        byte[] rawData = new byte[(int) rawFile.length()];
-        DataInputStream input = null;
-        try {
-            input = new DataInputStream(new FileInputStream(rawFile));
-            input.read(rawData);
-        } finally {
-            if (input != null) {
-                input.close();
-            }
-        }
 
         DataOutputStream output = null;
         try {
@@ -142,6 +131,7 @@ public class FileUtils {
 //                bytes.putShort(s);
 //            }
 //            output.write(bytes.array());
+            output.write(rawData);
         } finally {
             if (output != null) {
                 output.close();
@@ -149,22 +139,21 @@ public class FileUtils {
         }
 
         return waveFile;
-
     }
 
-    private void writeInt(final DataOutputStream output, final int value) throws IOException {
+    private static void writeInt(final DataOutputStream output, final int value) throws IOException {
         output.write(value >> 0);
         output.write(value >> 8);
         output.write(value >> 16);
         output.write(value >> 24);
     }
 
-    private void writeShort(final DataOutputStream output, final short value) throws IOException {
+    private static void writeShort(final DataOutputStream output, final short value) throws IOException {
         output.write(value >> 0);
         output.write(value >> 8);
     }
 
-    private void writeString(final DataOutputStream output, final String value) throws IOException {
+    private static void writeString(final DataOutputStream output, final String value) throws IOException {
         for (int i = 0; i < value.length(); i++) {
             output.write(value.charAt(i));
         }

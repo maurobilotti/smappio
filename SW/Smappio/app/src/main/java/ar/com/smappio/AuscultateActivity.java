@@ -11,13 +11,18 @@ import android.media.audiofx.Visualizer;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.EditText;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.net.Socket;
 
@@ -39,6 +44,7 @@ public class AuscultateActivity extends AppCompatActivity {
     private int prebufferingCounter = 0; // Cantidad actual de "playingLength" bytes que hay en el buffer. "-1" si no esta en etapade prebuffereo
     private byte[] bufferAux = new byte[playingLength * 2]; // Buffer en el que se almacenan los bytes extraidos del socket
     private int readedAux = 0; // Bytes leidos del socket cargados en bufferAux
+    ByteArrayOutputStream bufferWav = new ByteArrayOutputStream();
 
     private FloatingActionButton streamButton;
     private boolean isAuscultating = false;
@@ -157,6 +163,57 @@ public class AuscultateActivity extends AppCompatActivity {
         streamButton.setImageResource(R.drawable.ic_heart);
         isAuscultating = false;
         isPlaying = false;
+        buildAlertMessageSaveWav();
+    }
+
+    private void buildAlertMessageSaveWav() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("¿Desea guardar el audio capturado?")
+                .setCancelable(true)
+                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        dialog.dismiss();
+                        buildAlertSaveWav();
+                    }
+                })
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        dialog.dismiss();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private void buildAlertSaveWav() {
+        LayoutInflater layoutInflater = LayoutInflater.from(AuscultateActivity.this);
+        View popupSaveFileView = layoutInflater.inflate(R.layout.popup_save_file, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(popupSaveFileView);
+        builder.setMessage("Ingrese el nombre del paciente.")
+                .setCancelable(true)
+                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        EditText userInput = (EditText) popupSaveFileView.findViewById(R.id.file_name);
+                        if(userInput.getText() != null && !userInput.getText().toString().isEmpty()) {
+                            String nameFile = userInput.getText().toString();
+                            String filePath = Environment.getExternalStorageDirectory() + File.separator + "Smappio" + File.separator + nameFile;
+                            try{
+                                FileUtils.rawToWave(bufferWav.toByteArray(), filePath);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            dialog.dismiss();
+                        }
+                    }
+                })
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        dialog.dismiss();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     private void setupEqualizer() {
@@ -204,6 +261,11 @@ public class AuscultateActivity extends AppCompatActivity {
 
                 byte[] errorFreeBuffer = controlAlgorithm();
 
+                try {
+                    bufferWav.write(errorFreeBuffer);
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
                 float[] bufferForPlaying = getBufferForPlaying(errorFreeBuffer);
 
                 audioTrack.write(bufferForPlaying, 0, bufferForPlaying.length, AudioTrack.WRITE_BLOCKING);
