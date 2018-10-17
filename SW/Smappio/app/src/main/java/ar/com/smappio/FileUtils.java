@@ -122,7 +122,7 @@ public class FileUtils {
             writeShort(output, (short) 4); // block align
             writeShort(output, (short) 32); // bits per sample
             writeString(output, "data"); // subchunk 2 id
-            writeInt(output, Constant.SAMPLE_RATE * 4); // subchunk 2 size
+            writeInt(output, rawData.length); // subchunk 2 size
             // Audio data (conversion big endian -> little endian)
 //            short[] shorts = new short[rawData.length / 2];
 //            ByteBuffer.wrap(rawData).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(shorts);

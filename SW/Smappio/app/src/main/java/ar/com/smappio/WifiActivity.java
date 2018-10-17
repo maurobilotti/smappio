@@ -12,6 +12,8 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
@@ -213,10 +215,28 @@ public class WifiActivity extends AppCompatActivity {
 
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(WifiActivity.this);
                     alertDialogBuilder.setView(popupWifiView);
-                    alertDialogBuilder.setTitle("Conectarse a " + ssid);
-                    EditText userInput = (EditText) popupWifiView.findViewById(R.id.password_input);
 
+                    EditText userInput = (EditText) popupWifiView.findViewById(R.id.password_input);
                     CheckBox checkbox = (CheckBox) popupWifiView.findViewById(R.id.password_ckb);
+
+                    AlertDialog alertDialog = alertDialogBuilder.setTitle("Conectarse a " + ssid)
+                            .setCancelable(true)
+                            .setPositiveButton("Aceptar",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            // get user input from user for password
+                                            password = userInput.getText().toString();
+                                            //Call the connectWiFi method to get connected the network
+                                            connectWiFi(ssid, password, capabilities);
+                                        }
+                                    }).setNegativeButton("Cancelar",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            dialog.cancel();
+                                        }
+                                    })
+                            .create();
+
                     checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
@@ -228,23 +248,25 @@ public class WifiActivity extends AppCompatActivity {
                         }
                     });
 
-                    alertDialogBuilder.setCancelable(false).setPositiveButton("Aceptar",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    // get user input from user for password
-                                    password = userInput.getText().toString();
-                                    //Call the connectWiFi method to get connected the network
-                                    connectWiFi(ssid, password, capabilities);
-                                }
-                            }).setNegativeButton("Cancelar",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                }
-                            });
+                    userInput.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                        }
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        }
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            if (userInput.getText() != null && !userInput.getText().toString().isEmpty()){
+                                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                            } else {
+                                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                            }
+                        }
+                    });
 
-                    AlertDialog alertDialog = alertDialogBuilder.create();
                     alertDialog.show();
+                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
                 }
             }
         }

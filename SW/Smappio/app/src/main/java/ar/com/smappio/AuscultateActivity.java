@@ -15,6 +15,8 @@ import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -79,7 +81,6 @@ public class AuscultateActivity extends AppCompatActivity {
                 } else {
                     auscultate();
                 }
-
             }
         });
     }
@@ -140,7 +141,6 @@ public class AuscultateActivity extends AppCompatActivity {
                 .setCancelable(false)
                 .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
-                        dialog.dismiss();
                         finish();
                     }
                 });
@@ -160,60 +160,81 @@ public class AuscultateActivity extends AppCompatActivity {
     }
 
     public void stopAuscultate() {
-        streamButton.setImageResource(R.drawable.ic_heart);
-        isAuscultating = false;
-        isPlaying = false;
         buildAlertMessageSaveWav();
+        streamButton.setImageResource(R.drawable.ic_heart);
+        isPlaying = false;
+        isAuscultating = false;
     }
 
     private void buildAlertMessageSaveWav() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("¿Desea guardar el audio capturado?")
-                .setCancelable(true)
-                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int id) {
-                        dialog.dismiss();
-                        buildAlertSaveWav();
-                    }
-                })
-                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int id) {
-                        dialog.dismiss();
-                    }
-                });
-        AlertDialog alert = builder.create();
-        alert.show();
+        if(isAuscultating) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("¡Alerta!")
+                    .setMessage("¿Desea guardar el audio capturado?")
+                    .setCancelable(true)
+                    .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, final int id) {
+                            buildAlertSaveWav();
+                        }
+                    })
+                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, final int id) {
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
     }
 
     private void buildAlertSaveWav() {
         LayoutInflater layoutInflater = LayoutInflater.from(AuscultateActivity.this);
         View popupSaveFileView = layoutInflater.inflate(R.layout.popup_save_file, null);
+        EditText userInput = (EditText) popupSaveFileView.findViewById(R.id.file_name);;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(popupSaveFileView);
-        builder.setMessage("Ingrese el nombre del paciente.")
+        AlertDialog dialog = builder.setTitle("Guardar audio")
+                .setMessage("Ingrese el nombre del paciente.")
                 .setCancelable(true)
                 .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
-                        EditText userInput = (EditText) popupSaveFileView.findViewById(R.id.file_name);
-                        if(userInput.getText() != null && !userInput.getText().toString().isEmpty()) {
+                        if (userInput.getText() != null && !userInput.getText().toString().isEmpty()) {
                             String nameFile = userInput.getText().toString();
-                            String filePath = Environment.getExternalStorageDirectory() + File.separator + "Smappio" + File.separator + nameFile;
-                            try{
+                            String filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString() + File.separator + "Smappio" + File.separator + nameFile + ".wav";
+                            try {
                                 FileUtils.rawToWave(bufferWav.toByteArray(), filePath);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            dialog.dismiss();
                         }
                     }
                 })
                 .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
-                        dialog.dismiss();
+                        dialog.cancel();
                     }
-                });
-        AlertDialog alert = builder.create();
-        alert.show();
+                })
+                .create();
+
+        userInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (userInput.getText() != null && !userInput.getText().toString().isEmpty()){
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                } else {
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                }
+            }
+        });
+
+        dialog.show();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
     }
 
     private void setupEqualizer() {
@@ -223,6 +244,7 @@ public class AuscultateActivity extends AppCompatActivity {
             public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
                 equalizerView.updateVisualizer(bytes);
             }
+
             public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
 
             }

@@ -192,7 +192,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void createSmappioFolder() {
-        String path = Environment.getExternalStorageDirectory() + File.separator + "Smappio";
+//        String path = Environment.getExternalStorageDirectory() + File.separator + "Smappio";
+        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString() + File.separator + "Smappio";
         File f = new File(path);
         if (!f.exists()) {
             Log.d("FOLDER", "Folder doesn't exist, creating it...");
