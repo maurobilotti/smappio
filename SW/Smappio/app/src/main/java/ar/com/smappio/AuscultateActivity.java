@@ -22,11 +22,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.ShortBuffer;
 
 public class AuscultateActivity extends AppCompatActivity {
 
@@ -46,7 +49,7 @@ public class AuscultateActivity extends AppCompatActivity {
     private int prebufferingCounter = 0; // Cantidad actual de "playingLength" bytes que hay en el buffer. "-1" si no esta en etapade prebuffereo
     private byte[] bufferAux = new byte[playingLength * 2]; // Buffer en el que se almacenan los bytes extraidos del socket
     private int readedAux = 0; // Bytes leidos del socket cargados en bufferAux
-    ByteArrayOutputStream bufferWav = new ByteArrayOutputStream();
+    private ByteArrayOutputStream bufferWav = new ByteArrayOutputStream();
 
     private FloatingActionButton streamButton;
     private boolean isAuscultating = false;
@@ -202,7 +205,10 @@ public class AuscultateActivity extends AppCompatActivity {
                             String nameFile = userInput.getText().toString();
                             String filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString() + File.separator + "Smappio" + File.separator + nameFile + ".wav";
                             try {
-                                FileUtils.rawToWave(bufferWav.toByteArray(), filePath);
+                                File savedWav = FileUtils.rawToWave(bufferWav.toByteArray(), filePath);
+                                if(savedWav != null) {
+                                    Toast.makeText(AuscultateActivity.this, "Se guardó el archivo correctamente", Toast.LENGTH_LONG).show();
+                                }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -251,12 +257,6 @@ public class AuscultateActivity extends AppCompatActivity {
         }, Visualizer.getMaxCaptureRate() / 2, true, false);
 
         visualizer.setEnabled(true);
-
-//        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//            public void onCompletion(MediaPlayer mediaPlayer) {
-//                visualizer.setEnabled(false);
-//            }
-//        });
     }
 
     Runnable runnable = new Runnable() {
@@ -283,11 +283,6 @@ public class AuscultateActivity extends AppCompatActivity {
 
                 byte[] errorFreeBuffer = controlAlgorithm();
 
-                try {
-                    bufferWav.write(errorFreeBuffer);
-                } catch(Exception e) {
-                    e.printStackTrace();
-                }
                 float[] bufferForPlaying = getBufferForPlaying(errorFreeBuffer);
 
                 audioTrack.write(bufferForPlaying, 0, bufferForPlaying.length, AudioTrack.WRITE_NON_BLOCKING);
@@ -328,11 +323,22 @@ public class AuscultateActivity extends AppCompatActivity {
                     | ((buffer[i + 2] & 0xFF) << 16)
                     | (signBit == 1 ? 0xFF : 0x00) << 24; // Relleno 1s;
 
+            loadWavBuffer(intValue);
+
             float floatValue = intValue / maxSampleValue;
 
             returnedArray[i / 3] = floatValue;
         }
         return returnedArray;
+    }
+
+    private void loadWavBuffer(int intValue) {
+        short shortValue = (short) (intValue / 4);
+        try {
+            bufferWav.write(ByteBuffer.allocate(2).putShort(shortValue).array());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private byte[] controlAlgorithm() {

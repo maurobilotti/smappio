@@ -118,9 +118,9 @@ public class FileUtils {
             writeShort(output, (short) 1); // audio format (1 = PCM)
             writeShort(output, (short) 1); // number of channels
             writeInt(output, Constant.SAMPLE_RATE); // sample rate
-            writeInt(output, Constant.SAMPLE_RATE * 4); // byte rate
-            writeShort(output, (short) 4); // block align
-            writeShort(output, (short) 32); // bits per sample
+            writeInt(output, Constant.SAMPLE_RATE * 2); // byte rate
+            writeShort(output, (short) 2); // block align
+            writeShort(output, (short) 16); // bits per sample
             writeString(output, "data"); // subchunk 2 id
             writeInt(output, rawData.length); // subchunk 2 size
             // Audio data (conversion big endian -> little endian)
