@@ -81,10 +81,12 @@ namespace Smappio_SEAR
 
         private void OnPostVolumeMeter(object sender, StreamVolumeEventArgs e)
         {
-            var value = Math.Exp((_soundMultiplier * e.MaxSampleValues[0]) - (_soundMultiplier * _silenceAverage)) - 1;
-            if (value < 0.005f)
-                value = 0.001f;
-            UI.WavePainter.AddMax((float)value);
+            //dependiendo el microfono, es necesario utilizar esta funcion para mejorar la imagen
+            //var value = Math.Exp((_soundMultiplier * e.MaxSampleValues[0]) - (_soundMultiplier * _silenceAverage)) - 1;
+            //if (value < 0.005f)
+            //    value = 0.001f;
+            //UI.WavePainter.AddMax((float)value);
+            UI.WavePainter.AddMax(e.MaxSampleValues[0] * 5);
         }
 
         private void OnPreVolumeMeter(object sender, StreamVolumeEventArgs e)
@@ -107,7 +109,7 @@ namespace Smappio_SEAR
             string absolutePath = Path.GetFullPath(_filePath);
             string fileName = $"{DateTime.Now.ToString("yyyy-MM-dd_hhmmss")}.wav";
             string fullPath = Path.Combine(absolutePath, fileName);
-            var bytes = ReceivedBytes.ToArray();
+            var bytes = pcmHelper.GetBufferForPlaying(ReceivedBytes.ToArray());            
             RawSourceWaveStream source = new RawSourceWaveStream(bytes, 0, bytes.Length, _waveFormat);
             WaveFileWriter.CreateWaveFile(fullPath, source);            
         }

@@ -51,7 +51,7 @@ namespace Smappio_SEAR
 
                 var intResult = BitConverter.GetBytes(asInt);
 
-                int value = asInt / 4; //https://en.wikipedia.org/wiki/Single-precision_floating-point_format
+                int value = asInt / 4;
                 
                 var numBytes = BitConverter.GetBytes(value);
                 //var hexValue = value.ToHexString();
