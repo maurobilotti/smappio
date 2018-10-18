@@ -207,7 +207,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void openFileSystem(int code){
         Intent intent = new Intent();
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("audio/*");
+//        intent.setType("*/*");
+        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString() + File.separator + "Smappio";
+        File smappioFolder = new File(path);
+        intent.setDataAndType(Uri.fromFile(smappioFolder), "*/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Seleccionar archivo"), code);
     }
