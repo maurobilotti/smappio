@@ -290,7 +290,7 @@ public class AuscultateActivity extends AppCompatActivity {
                 }
                 float[] bufferForPlaying = getBufferForPlaying(errorFreeBuffer);
 
-                audioTrack.write(bufferForPlaying, 0, bufferForPlaying.length, AudioTrack.WRITE_BLOCKING);
+                audioTrack.write(bufferForPlaying, 0, bufferForPlaying.length, AudioTrack.WRITE_NON_BLOCKING);
 
                 playIfNeccesary();
             }
