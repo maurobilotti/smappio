@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
 public class AuscultateActivity extends AppCompatActivity {
@@ -156,7 +157,7 @@ public class AuscultateActivity extends AppCompatActivity {
         isAuscultating = true;
         isPlaying = true;
         minBufferSize = AudioTrack.getMinBufferSize(Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING);
-        audioTrack = new AudioTrack(AudioManager.STREAM_VOICE_CALL, Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING, minBufferSize * 3, AudioTrack.MODE_STREAM);
+        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING, minBufferSize * 3, AudioTrack.MODE_STREAM);
         setupEqualizer();
         thread = new Thread(runnable);
         thread.start();
@@ -335,7 +336,11 @@ public class AuscultateActivity extends AppCompatActivity {
     private void loadWavBuffer(int intValue) {
         short shortValue = (short) (intValue / 4);
         try {
-            bufferWav.write(ByteBuffer.allocate(2).putShort(shortValue).array());
+            ByteBuffer byteBuffer = ByteBuffer.allocate(2);
+            byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+            byteBuffer.putShort(shortValue);
+            byte[] result = byteBuffer.array();
+            bufferWav.write(result);
         } catch (Exception e) {
             e.printStackTrace();
         }
