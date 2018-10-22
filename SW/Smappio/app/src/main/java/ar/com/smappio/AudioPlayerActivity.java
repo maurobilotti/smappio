@@ -1,10 +1,12 @@
 package ar.com.smappio;
 
 import android.content.Intent;
+import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.audiofx.Visualizer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -17,12 +19,29 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.nio.ShortBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import me.relex.widget.waveform.WaveFormInfo;
+import me.relex.widget.waveform.WaveFormListener;
+import me.relex.widget.waveform.WaveFormThumbView;
+import me.relex.widget.waveform.WaveFormView;
 
 public class AudioPlayerActivity extends AppCompatActivity {
 
-    //Variables del reproductor
+    // Variables del reproductor
     private ImageButton playBtn;
     private SeekBar positionBar;
     private TextView elapsedTimeLbl;
@@ -30,13 +49,14 @@ public class AudioPlayerActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
     private int totalTime;
 
-    //Variables del file system
+    // Variables del file system
     private Uri currentFileURI;
 
-    //Variables del fonocardiograma
-    private EqualizerView equalizerView;
-    private Visualizer visualizer;
-    private WaveformView waveformView;
+    // Variables del fonocardiograma
+//    private EqualizerView equalizerView;
+//    private Visualizer visualizer;
+    private WaveFormView mWaveFormView;
+    private WaveFormThumbView mWaveFormThumbView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +67,9 @@ public class AudioPlayerActivity extends AppCompatActivity {
         positionBar = (SeekBar) findViewById(R.id.position_bar);
         elapsedTimeLbl = (TextView) findViewById(R.id.elapsed_time_lbl);
         remainingTimeLbl = (TextView) findViewById(R.id.remaining_time_lbl);
-        equalizerView = (EqualizerView) findViewById(R.id.equalizer);
-        waveformView = (WaveformView) findViewById(R.id.waveform);
+//        equalizerView = (EqualizerView) findViewById(R.id.equalizer);
+        mWaveFormView = (WaveFormView) findViewById(R.id.wave_form_view);
+        mWaveFormThumbView = (WaveFormThumbView) findViewById(R.id.wave_form_thumb_view);
 
         //Flecha de la toolbar para volver al activity anterior
         if (getSupportActionBar() != null){
@@ -61,8 +82,8 @@ public class AudioPlayerActivity extends AppCompatActivity {
         if(extras != null) {
             currentFileURI = (Uri) extras.get("currentFileURI");
             setupAudioPlayer();
-            setupEqualizer();
-            //setupWaveform();
+//            setupEqualizer();
+            setupWaveForm();
         }
 
     }
@@ -203,41 +224,97 @@ public class AudioPlayerActivity extends AppCompatActivity {
         }
     }
 
-    private void setupEqualizer() {
-        visualizer = new Visualizer(mediaPlayer.getAudioSessionId());
-        visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
-        visualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
-            public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
-                equalizerView.updateVisualizer(bytes);
-            }
-            public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
-
-            }
-        }, Visualizer.getMaxCaptureRate() / 2, true, false);
-
-        visualizer.setEnabled(true);
+//    private void setupEqualizer() {
+//        visualizer = new Visualizer(mediaPlayer.getAudioSessionId());
+//        visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+//        visualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
+//            public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
+//                equalizerView.updateVisualizer(bytes);
+//            }
+//            public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
+//
+//            }
+//        }, Visualizer.getMaxCaptureRate() / 2, true, false);
+//
+//        visualizer.setEnabled(true);
 
 //        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 //            public void onCompletion(MediaPlayer mediaPlayer) {
 //                visualizer.setEnabled(false);
 //            }
 //        });
+//    }
+
+    private void setupWaveForm() {
+        mWaveFormView.setWaveFormListener(new WaveFormListener() {
+            @Override public void onScrollChanged(double startTime, double endTime) {
+                mWaveFormThumbView.updateThumb(startTime, endTime);
+            }
+        });
+        mWaveFormThumbView.setOnDragThumbListener(new WaveFormThumbView.OnDragThumbListener() {
+            @Override public void onDrag(double startTime) {
+                mWaveFormView.setStartTime(startTime);
+            }
+        });
+
+        new ReaderTask() {
+            @Override protected void onPostExecute(WaveFormInfo waveFormInfo) {
+                mWaveFormThumbView.setWave(waveFormInfo); // Must be first.
+                mWaveFormView.setWave(waveFormInfo);
+            }
+        }.execute();
     }
 
-    public void setupWaveform() {
-        try {
-            String filePath = FileUtils.getFilePath(this, currentFileURI);
-            File file = new File(filePath);
-            updateVisualizer(FileUtils.fileToBytes(file));
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
+    public class ReaderTask extends AsyncTask<Void, Void, WaveFormInfo> {
+
+        @Override protected WaveFormInfo doInBackground(Void... params) {
+            InputStream inputStream = null;
+            try {
+//                inputStream = getResources().openRawResource(R.raw.waveform);
+//                byte[] data = new byte[inputStream.available()];
+//                inputStream.read(data);
+//                return JSON.parseObject(data, WaveFormInfo.class);
+
+                String path = FileUtils.getFilePath(AudioPlayerActivity.this, currentFileURI);
+                File file = new File(path);
+                byte[] dataFile = FileUtils.fileToBytes(file);
+                WaveFormInfo waveFormInfo = createWaveFormInfo(dataFile);
+
+                return waveFormInfo;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            finally {
+                try {
+                    if (inputStream != null) {
+                        inputStream.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
         }
     }
 
-    public void updateVisualizer(byte[] bytes) {
-        waveformView.updateVisualizer(bytes);
+    private WaveFormInfo createWaveFormInfo(byte[] dataFile) {
+        WaveFormInfo waveFormInfo = new WaveFormInfo();
+        int sampleRate = ((dataFile[24] & 0xFF) << 0) | ((dataFile[25] & 0xFF) << 8) | ((dataFile[26] & 0xFF) << 16) | (dataFile[27] & 0xFF ) << 24;
+        int bits = dataFile[34];
+        int length = ((dataFile[40] & 0xFF) << 0) | ((dataFile[41] & 0xFF) << 8) | ((dataFile[42] & 0xFF) << 16) | (dataFile[43] & 0xFF ) << 24;
+
+        sampleRate = 44100;
+        bits = 8;
+        length = 5651;
+
+        waveFormInfo.setSample_rate(sampleRate);
+        waveFormInfo.setSamples_per_pixel(256);
+        waveFormInfo.setBits(bits);
+        waveFormInfo.setLength(length);
+        List<Integer> integerList = new ArrayList<Integer>();
+        // TODO: Datos..
+        waveFormInfo.setData(integerList);
+        return waveFormInfo;
     }
-    public void updatePlayerProgress(float percent) {
-        waveformView.updatePlayerPercent(percent);
-    }
+
 }
