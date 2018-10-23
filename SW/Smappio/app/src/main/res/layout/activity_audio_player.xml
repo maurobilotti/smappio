@@ -29,10 +29,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:layout_weight="1">
-                    <ar.com.smappio.WaveformView
-                        android:id="@+id/waveform"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
+
                 </LinearLayout>
         </LinearLayout>
         <android.support.constraint.ConstraintLayout

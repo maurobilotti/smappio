@@ -36,7 +36,6 @@ public class AudioPlayerActivity extends AppCompatActivity {
     //Variables del fonocardiograma
     private EqualizerView equalizerView;
     private Visualizer visualizer;
-    private WaveformView waveformView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +47,6 @@ public class AudioPlayerActivity extends AppCompatActivity {
         elapsedTimeLbl = (TextView) findViewById(R.id.elapsed_time_lbl);
         remainingTimeLbl = (TextView) findViewById(R.id.remaining_time_lbl);
         equalizerView = (EqualizerView) findViewById(R.id.equalizer);
-        waveformView = (WaveformView) findViewById(R.id.waveform);
 
         //Flecha de la toolbar para volver al activity anterior
         if (getSupportActionBar() != null){
@@ -224,20 +222,4 @@ public class AudioPlayerActivity extends AppCompatActivity {
 //        });
     }
 
-    public void setupWaveform() {
-        try {
-            String filePath = FileUtils.getFilePath(this, currentFileURI);
-            File file = new File(filePath);
-            updateVisualizer(FileUtils.fileToBytes(file));
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void updateVisualizer(byte[] bytes) {
-        waveformView.updateVisualizer(bytes);
-    }
-    public void updatePlayerProgress(float percent) {
-        waveformView.updatePlayerPercent(percent);
-    }
 }
