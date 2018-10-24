@@ -43,6 +43,12 @@ public class AuscultateActivity extends AppCompatActivity {
     private AudioTrack audioTrack;
     private int minBufferSize;
     private boolean isPlaying;
+    private boolean isAuscultating = false;
+    private FloatingActionButton streamButton;
+    private WifiManager wifiManager;
+    private WifiInfo wifiInfo;
+    private Visualizer visualizer;
+    private EqualizerView equalizerView;
 
     private static final float maxSampleValue = 131072; // 2^17 (el bit 18 se usa para el signo)
     private static int playingLength = 345; // Cantidad de bytes en PCM24 a pasar al reproductor por vez
@@ -52,12 +58,6 @@ public class AuscultateActivity extends AppCompatActivity {
     private int readedAux = 0; // Bytes leidos del socket cargados en bufferAux
     private ByteArrayOutputStream bufferWav = new ByteArrayOutputStream();
 
-    private FloatingActionButton streamButton;
-    private boolean isAuscultating = false;
-    private WifiManager wifiManager;
-    private WifiInfo wifiInfo;
-    private Visualizer visualizer;
-    private EqualizerView equalizerView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,10 +70,15 @@ public class AuscultateActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        equalizerView = (EqualizerView) findViewById(R.id.equalizer);
-
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         wifiInfo = wifiManager.getConnectionInfo();
+
+        minBufferSize = AudioTrack.getMinBufferSize(Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING);
+        audioTrack = new AudioTrack(AudioManager.STREAM_VOICE_CALL, Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING, minBufferSize * 3, AudioTrack.MODE_STREAM);
+        audioTrack.setVolume(1.0f);
+
+        equalizerView = (EqualizerView) findViewById(R.id.equalizer);
+        setupEqualizer();
 
         streamButton = findViewById(R.id.stream_btn);
         streamButton.setOnClickListener(new View.OnClickListener() {
@@ -156,9 +161,6 @@ public class AuscultateActivity extends AppCompatActivity {
         streamButton.setImageResource(R.drawable.ic_stop);
         isAuscultating = true;
         isPlaying = true;
-        minBufferSize = AudioTrack.getMinBufferSize(Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING);
-        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING, minBufferSize * 3, AudioTrack.MODE_STREAM);
-        setupEqualizer();
         thread = new Thread(runnable);
         thread.start();
     }
@@ -291,8 +293,9 @@ public class AuscultateActivity extends AppCompatActivity {
                 playIfNeccesary();
             }
 
-            audioTrack.stop();
+            audioTrack.pause();
             audioTrack.flush();
+            prebufferingCounter = 0;
 
             try {
                 socket.close();
