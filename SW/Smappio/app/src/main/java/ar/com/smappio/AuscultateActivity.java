@@ -74,7 +74,7 @@ public class AuscultateActivity extends AppCompatActivity {
         wifiInfo = wifiManager.getConnectionInfo();
 
         minBufferSize = AudioTrack.getMinBufferSize(Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING);
-        audioTrack = new AudioTrack(AudioManager.STREAM_VOICE_CALL, Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING, minBufferSize * 3, AudioTrack.MODE_STREAM);
+        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING, minBufferSize * 3, AudioTrack.MODE_STREAM);
         audioTrack.setVolume(1.0f);
 
         equalizerView = (EqualizerView) findViewById(R.id.equalizer);
@@ -286,9 +286,11 @@ public class AuscultateActivity extends AppCompatActivity {
 
                 byte[] errorFreeBuffer = controlAlgorithm();
 
-                float[] bufferForPlaying = getBufferForPlaying(errorFreeBuffer);
-
+                float[] bufferForPlaying = getBufferForPlayingPCMFloat(errorFreeBuffer);
                 audioTrack.write(bufferForPlaying, 0, bufferForPlaying.length, AudioTrack.WRITE_NON_BLOCKING);
+
+//                short[] bufferForPlaying = getBufferForPlayingPCM16(errorFreeBuffer);
+//                audioTrack.write(bufferForPlaying, 0, bufferForPlaying.length);
 
                 playIfNeccesary();
             }
@@ -317,7 +319,7 @@ public class AuscultateActivity extends AppCompatActivity {
         }
     }
 
-    private float[] getBufferForPlaying(byte[] buffer) {
+    private float[] getBufferForPlayingPCMFloat(byte[] buffer) {
         float[] returnedArray = new float[playingLength / 3];
         for (int i = 0; i < buffer.length; i = i + 3) {
             byte signBit = (byte) ((buffer[i + 2] >> 1) & 1);
@@ -332,6 +334,26 @@ public class AuscultateActivity extends AppCompatActivity {
             float floatValue = intValue / maxSampleValue;
 
             returnedArray[i / 3] = floatValue;
+        }
+        return returnedArray;
+    }
+
+    private short[] getBufferForPlayingPCM16(byte[] buffer) {
+        short[] returnedArray = new short[playingLength / 3];
+        for (int i = 0; i < buffer.length; i = i + 3) {
+            byte signBit = (byte) ((buffer[i + 2] >> 1) & 1);
+
+            int intValue = ((buffer[i] & 0xFF) << 0)
+                    | ((buffer[i + 1] & 0xFF) << 8)
+                    | ((buffer[i + 2] & 0xFF) << 16)
+                    | (signBit == 1 ? 0xFF : 0x00) << 24; // Relleno 1s;
+
+
+            short shortValue = (short) (intValue / 4);
+
+            loadWavBuffer(shortValue);
+
+            returnedArray[i / 3] = shortValue;
         }
         return returnedArray;
     }
