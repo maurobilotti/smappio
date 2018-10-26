@@ -13,7 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -32,6 +35,9 @@ public class FileChooserActivity extends AppCompatActivity {
     private File currentPath;
     private File smappioFile;
     private String extension = ".wav";
+
+    private FileListAdapter fileListAdapter;
+    private ListView listViewFiles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,13 +129,12 @@ public class FileChooserActivity extends AppCompatActivity {
 
             TextView currentPathLbl = (TextView) findViewById(R.id.currentPathLbl);
             currentPathLbl.setText(currentPath.getPath());
-            FileListAdapter fileListAdapter = new FileListAdapter(this, filenames, filepaths, true);
-            ListView listViewFiles = (ListView) findViewById(R.id.list_view_files);
+            fileListAdapter = new FileListAdapter(this, filenames, filepaths, true);
+            listViewFiles = (ListView) findViewById(R.id.list_view_files);
             listViewFiles.setAdapter(fileListAdapter);
             listViewFiles.setOnItemClickListener(onItemClickListener);
-//            listViewFiles.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-//            listViewFiles.setItemsCanFocus(false);
-//            listViewFiles.setOnItemLongClickListener(onItemLongClickListener);
+            listViewFiles.setOnItemLongClickListener(onItemLongClickListener);
+            listViewFiles.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         }
     }
 
@@ -149,8 +154,10 @@ public class FileChooserActivity extends AppCompatActivity {
     private AdapterView.OnItemLongClickListener onItemLongClickListener = new AdapterView.OnItemLongClickListener() {
         @Override
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            listViewFiles.setItemChecked(position, true);
+            listViewFiles.setSelector(R.color.colorSelected);
             return true;
-        }
+}
     };
 
     private File getChosenFile(String fileChosen) {
@@ -210,18 +217,15 @@ public class FileChooserActivity extends AppCompatActivity {
                 m_viewHolder = new FileListAdapter.ViewHolder();
                 m_viewHolder.m_tvFileName = (TextView) m_view.findViewById(R.id.lr_tvFileName);
                 m_viewHolder.m_ivIcon = (ImageView) m_view.findViewById(R.id.lr_ivFileIcon);
+//                m_viewHolder.m_cbCheck = (CheckBox) m_view.findViewById(R.id.lr_cbCheck);
                 m_view.setTag(m_viewHolder);
             } else {
                 m_view = p_convertView;
                 m_viewHolder = ((FileListAdapter.ViewHolder) m_view.getTag());
             }
-//            if (!m_isRoot && p_position == 0) {
-//                m_viewHolder.m_cbCheck.setVisibility(View.INVISIBLE);
-//            }
 
             m_viewHolder.m_tvFileName.setText(m_item.get(p_position));
             m_viewHolder.m_ivIcon.setImageResource(setFileImageType(new File(m_path.get(p_position))));
-//            m_viewHolder.m_tvDate.setText(getLastDate(p_position));
 //            m_viewHolder.m_cbCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 //                @Override
 //                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -237,9 +241,9 @@ public class FileChooserActivity extends AppCompatActivity {
         }
 
         class ViewHolder {
-//            CheckBox m_cbCheck;
             ImageView m_ivIcon;
             TextView m_tvFileName;
+//            CheckBox m_cbCheck;
 //            TextView m_tvDate;
         }
 
