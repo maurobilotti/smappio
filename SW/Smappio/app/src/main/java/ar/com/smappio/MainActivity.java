@@ -192,12 +192,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void createSmappioFolder() {
-//        String path = Environment.getExternalStorageDirectory() + File.separator + "Smappio";
-        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString() + File.separator + "Smappio";
-        File f = new File(path);
-        if (!f.exists()) {
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Smappio");
+        if (!file.exists()) {
             Log.d("FOLDER", "Folder doesn't exist, creating it...");
-            boolean rv = f.mkdir();
+            boolean rv = file.mkdir();
             Log.d("FOLDER", "Folder creation " + ( rv ? "success" : "failed"));
         } else {
             Log.d("FOLDER", "Folder already exists.");
@@ -205,13 +203,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void openFileSystem(int code){
-        Intent intent = new Intent();
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Smappio");
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-//        intent.setType("*/*");
-        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString() + File.separator + "Smappio";
-        File smappioFolder = new File(path);
-        intent.setDataAndType(Uri.fromFile(smappioFolder), "*/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
+        intent.setDataAndType(Uri.fromFile(file), "*/*");
         startActivityForResult(Intent.createChooser(intent, "Seleccionar archivo"), code);
     }
 
