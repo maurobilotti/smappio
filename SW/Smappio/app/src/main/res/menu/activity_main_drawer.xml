@@ -9,13 +9,9 @@
             android:icon="@drawable/ic_menu_slideshow"
             android:title="@string/files" />
         <item
-            android:id="@+id/nav_configurations"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="@string/configurations" />
-        <item
-            android:id="@+id/nav_share"
-            android:icon="@drawable/ic_menu_share"
-            android:title="@string/share" />
+            android:id="@+id/nav_help"
+            android:icon="@drawable/ic_help"
+            android:title="@string/helps" />
     </group>
 
 </menu>

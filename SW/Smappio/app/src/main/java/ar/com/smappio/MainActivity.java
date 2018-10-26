@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -119,10 +118,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.nav_files) {
             openFileSystem(Constant.CODE_FILE_SYSTEM_PLAY);
-        } else if (id == R.id.nav_configurations) {
-
-        } else if (id == R.id.nav_share) {
-            openFileSystem(Constant.CODE_FILE_SYSTEM_SHARE);
+        } else if (id == R.id.nav_help) {
+            // Abrir popup de ayuda
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -203,45 +200,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void openFileSystem(int code){
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Smappio");
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setDataAndType(Uri.fromFile(file), "*/*");
-        startActivityForResult(Intent.createChooser(intent, "Seleccionar archivo"), code);
+        Intent intent = new Intent(this, FileChooserActivity.class);
+        startActivity(intent);
     }
 
     public void openWifiScanActivity() {
         Intent intent = new Intent(this, WifiActivity.class);
-        startActivityForResult(intent, Constant.CODE_WIFI_CONNECTED);
+        startActivity(intent);
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == Constant.CODE_FILE_SYSTEM_PLAY && data != null) {
-            Uri currentFileURI = data.getData();
-
-            Intent intent = new Intent(this, AudioPlayerActivity.class);
-            intent.putExtra("currentFileURI", currentFileURI);
-            startActivity(intent);
-        }
-
-        if (requestCode == Constant.CODE_FILE_SYSTEM_SHARE && data != null) {
-            Uri currentFileURI = data.getData();
-
-            Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setType("audio/*");
-            intent.putExtra(Intent.EXTRA_STREAM, currentFileURI);
-            startActivity(Intent.createChooser(intent, "Compartir archivo de audio"));
-        }
-
-//        if(requestCode == Constant.CODE_WIFI_CONNECTED && data != null) {
-//            int networkId = (int) data.getExtras().get("networkId");
-//            String ssid = (String) data.getExtras().get("ssid");
-//            TextView deviceConnectedLbl = findViewById(R.id.connectedDeviceLbl);
-//            deviceConnectedLbl.setText("Conectado al dispositivo: " + ssid);
-//        }
+    public void auscultate(View view) {
+        Intent intent = new Intent(this, AuscultateActivity.class);
+        startActivity(intent);
     }
 
     private BroadcastReceiver wifiReceiver = new BroadcastReceiver() {
@@ -284,10 +254,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             auscultateBtn.setVisibility(View.GONE);
             auscultateLbl.setVisibility(View.GONE);
         }
-    }
-
-    public void auscultate(View view) {
-        Intent intent = new Intent(this, AuscultateActivity.class);
-        startActivity(intent);
     }
 }
