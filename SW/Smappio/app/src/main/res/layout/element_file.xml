@@ -1,47 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="48dp"
     android:orientation="horizontal">
 
     <!--<CheckBox-->
-        <!--android:id="@+id/lr_cbCheck"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_alignBaseline="@+id/lr_ivFileIcon"-->
-        <!--android:layout_alignParentLeft="true"-->
-        <!--android:layout_alignParentTop="true"-->
-        <!--android:focusable="false" />-->
+    <!--android:id="@+id/lr_cbCheck"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_alignBaseline="@+id/lr_ivFileIcon"-->
+    <!--android:layout_alignParentLeft="true"-->
+    <!--android:layout_alignParentTop="true"-->
+    <!--android:focusable="false" />-->
 
     <ImageView
         android:id="@+id/lr_ivFileIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/lr_cbCheck"
-        android:src="@drawable/ic_folder"
+        android:minHeight="32dp"
+        android:minWidth="32dp"
+        android:layout_gravity="center"
         android:clickable="false"
-        android:focusable="false" />
+        android:focusable="false"
+        android:src="@drawable/ic_folder" />
 
     <TextView
         android:id="@+id/lr_tvFileName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@+id/lr_ivFileIcon"
-        android:text="TextView"
+        android:textSize="14dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="8dp"
         android:clickable="false"
         android:focusable="false" />
-
-    <!--<TextView-->
-        <!--android:id="@+id/lr_tvdate"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_below="@+id/lr_tvFileName"-->
-        <!--android:layout_marginLeft="10dp"-->
-        <!--android:layout_toRightOf="@+id/lr_ivFileIcon"-->
-        <!--android:text="TextView"-->
-        <!--android:focusable="false"-->
-        <!--android:clickable="false" />-->
 
 </LinearLayout>
