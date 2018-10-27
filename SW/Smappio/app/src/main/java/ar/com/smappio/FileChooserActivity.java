@@ -2,10 +2,12 @@ package ar.com.smappio;
 
 import android.content.ClipData;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -83,6 +85,12 @@ public class FileChooserActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        refresh(currentPath);
     }
 
     private void refresh(File path) {
@@ -211,6 +219,38 @@ public class FileChooserActivity extends AppCompatActivity {
     }
 
     public void deleteFile(MenuItem item) {
+        buildAlertMessageDeleteFile();
+    }
+
+    private void buildAlertMessageDeleteFile() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("¿Está seguro que desea eliminar el archivo?")
+                .setCancelable(true)
+                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        deleteRecursive(currentFile);
+                        refresh(currentPath);
+                        deleteBtn.setVisible(false);
+                        shareBtn.setVisible(false);
+                        currentFile = null;
+                    }
+                })
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private void deleteRecursive(File file) {
+        if (file.isDirectory()) {
+            for (File child : file.listFiles()) {
+                deleteRecursive(child);
+            }
+        }
+        file.delete();
     }
 
     // Adaptador
