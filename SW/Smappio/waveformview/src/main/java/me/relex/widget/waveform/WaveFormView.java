@@ -189,7 +189,8 @@ public class WaveFormView extends View implements OnScaleDragGestureListener {
         mScale = verifyScale(mScale);
     }
 
-    // 计算 缩放的时间间距。 根据 sampleRate 和 samplesPerPixel 计算合适的区间内，选择最小秒(1s ,2s,5s,10s,20s,30s)
+    // Calcula el intervalo de tiempo del zoom. Calcule el intervalo apropiado de acuerdo con sampleRate y samplesPerPixel,
+    // seleccione los segundos mínimos (1s, 2s, 5s, 10s, 20s, 30s)
     private int getSecondScale(int sampleRate, int samplesPerPixel) {
         int baseSecs = 1; // seconds
         int index = 0;
@@ -410,7 +411,7 @@ public class WaveFormView extends View implements OnScaleDragGestureListener {
         int dataLength = info.getLength();
         boolean is8Bit = info.getBits() == 8;
 
-        // 改变 x 的 叠加值，放大或缩小波形
+        // Cambia el valor superpuesto de x para acercar o alejar
 
         int startTimePixel = (int) (mStartSecond * sampleRate / samplesPerPixel);
 
@@ -451,13 +452,13 @@ public class WaveFormView extends View implements OnScaleDragGestureListener {
 
         int intervalSecond = getSecondScale(sampleRate, samplesPerPixel);
 
-        //  第一轴标时间戳
+        // marca de tiempo del primer eje
         int firstAxisLabelSecond = WaveUtil.roundUpToNearest(mStartSecond, intervalSecond);
 
-        //  第一轴标时间戳与起始时间戳的时间差
+        // La diferencia de tiempo entre la marca de tiempo del primer eje y la marca de tiempo de inicio
         double firstAxisLabelOffsetSecond = firstAxisLabelSecond - mStartSecond;
 
-        // 起始点到第一轴标时间戳的距离
+        // la distancia desde el punto de inicio hasta la marca de tiempo del primer eje
         int firstAxisLabelOffsetWidth =
                 WaveUtil.secondsToPixels(firstAxisLabelOffsetSecond, sampleRate, samplesPerPixel,
                         mScale);

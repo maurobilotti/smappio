@@ -259,9 +259,16 @@ public class AudioPlayerActivity extends AppCompatActivity {
 
         new ReaderTask() {
             @Override protected void onPostExecute(WaveFormInfo waveFormInfo) {
-                mWaveFormThumbView.setWave(waveFormInfo); // Must be first.
-                mWaveFormView.setWave(waveFormInfo);
-            }
+                try{
+                    mWaveFormThumbView.setWave(waveFormInfo); // Must be first.
+                    mWaveFormView.setWave(waveFormInfo);
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+           }
         }.execute();
     }
 
@@ -270,16 +277,15 @@ public class AudioPlayerActivity extends AppCompatActivity {
         @Override protected WaveFormInfo doInBackground(Void... params) {
             InputStream inputStream = null;
             try {
-//                inputStream = getResources().openRawResource(R.raw.waveform);
-//                byte[] data = new byte[inputStream.available()];
-//                inputStream.read(data);
-//                return JSON.parseObject(data, WaveFormInfo.class);
+                /*inputStream = getResources().openRawResource(R.raw.waveform);
+                byte[] data = new byte[inputStream.available()];
+                inputStream.read(data);
+                return JSON.parseObject(data, WaveFormInfo.class);*/
 
                 String path = FileUtils.getFilePath(AudioPlayerActivity.this, currentFileURI);
                 File file = new File(path);
                 byte[] dataFile = FileUtils.fileToBytes(file);
                 WaveFormInfo waveFormInfo = createWaveFormInfo(dataFile);
-
                 return waveFormInfo;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -301,18 +307,38 @@ public class AudioPlayerActivity extends AppCompatActivity {
         WaveFormInfo waveFormInfo = new WaveFormInfo();
         int sampleRate = ((dataFile[24] & 0xFF) << 0) | ((dataFile[25] & 0xFF) << 8) | ((dataFile[26] & 0xFF) << 16) | (dataFile[27] & 0xFF ) << 24;
         int bits = dataFile[34];
-        int length = ((dataFile[40] & 0xFF) << 0) | ((dataFile[41] & 0xFF) << 8) | ((dataFile[42] & 0xFF) << 16) | (dataFile[43] & 0xFF ) << 24;
+        //int fileLength = (dataFile[41] & 0xFF) << 0) | (dataFile[42] & 0xFF) << 8 | (dataFile[43] & 0xFF) << 16;
+        int length = (dataFile.length - 44) / 2;
 
-        sampleRate = 44100;
-        bits = 8;
-        length = 5651;
+        List<Integer> integerList = new ArrayList<Integer>();
+
+        bits = 16;
+        //indica la densidad de pixeles que tiene la imagen, a menor valor, más datos mostrados
+        int samples_per_pixel = 24;
+        //amplificador de la imagen en el eje Y
+        int scaleY = 120;
+
 
         waveFormInfo.setSample_rate(sampleRate);
-        waveFormInfo.setSamples_per_pixel(256);
+        waveFormInfo.setSamples_per_pixel(samples_per_pixel);
         waveFormInfo.setBits(bits);
-        waveFormInfo.setLength(length);
-        List<Integer> integerList = new ArrayList<Integer>();
-        // TODO: Datos..
+        waveFormInfo.setLength(length / samples_per_pixel);
+
+        int base = 45;
+        int index = 0;
+        int samples_for_waveForm = (dataFile.length/samples_per_pixel) - 1;
+        for(int i = 0; i < samples_for_waveForm; i++ )
+        {
+            if(base + index + i + 1 > dataFile.length)
+                break;
+
+            int min = (int)dataFile[base + index + i] ;
+            int max = (int)dataFile[base + index + i + 1] ;
+            integerList.add(min * scaleY);
+            integerList.add(max * scaleY);
+            index += samples_per_pixel;
+        }
+
         waveFormInfo.setData(integerList);
         return waveFormInfo;
     }
