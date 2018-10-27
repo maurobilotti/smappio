@@ -161,15 +161,19 @@ public class FileChooserActivity extends AppCompatActivity {
         @Override
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
             clearSelection();
-            CheckBox checkBox = (CheckBox) view.findViewById(R.id.lr_cbCheck);
-            checkBox.setChecked(true);
-            checkBox.setVisibility(View.VISIBLE);
 
             String fileChosen = (String) filenames.get(position);
             File chosenFile = getChosenFile(fileChosen);
-            deleteBtn.setVisible(true);
-            if (!chosenFile.isDirectory()) {
-                shareBtn.setVisible(true);
+
+            if(!fileChosen.equals(PARENT_DIR)) {
+                CheckBox checkBox = (CheckBox) view.findViewById(R.id.lr_cbCheck);
+                checkBox.setChecked(true);
+                checkBox.setVisibility(View.VISIBLE);
+
+                deleteBtn.setVisible(true);
+                if (!chosenFile.isDirectory()) {
+                    shareBtn.setVisible(true);
+                }
             }
 
             return true;
@@ -177,13 +181,13 @@ public class FileChooserActivity extends AppCompatActivity {
     };
 
     private void clearSelection() {
+        deleteBtn.setVisible(false);
+        shareBtn.setVisible(false);
         for (int i = 0; i < listViewFiles.getCount(); i++) {
             CheckBox checkBox = (CheckBox)  listViewFiles.getChildAt(i).findViewById(R.id.lr_cbCheck);
             checkBox.setVisibility(View.INVISIBLE);
             checkBox.setChecked(false);
         }
-        deleteBtn.setVisible(false);
-        shareBtn.setVisible(false);
     }
 
     private File getChosenFile(String fileChosen) {
