@@ -6,7 +6,7 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_files"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_menu_folder"
             android:title="@string/files" />
         <item
             android:id="@+id/nav_help"

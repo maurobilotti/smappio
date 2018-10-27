@@ -1,5 +1,6 @@
 package ar.com.smappio;
 
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -14,9 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -39,6 +38,9 @@ public class FileChooserActivity extends AppCompatActivity {
     private FileListAdapter fileListAdapter;
     private ListView listViewFiles;
 
+    private MenuItem deleteBtn;
+    private MenuItem shareBtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +61,8 @@ public class FileChooserActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_file_chooser, menu);
+        deleteBtn = (MenuItem) menu.findItem(R.id.action_delete);
+        shareBtn = (MenuItem) menu.findItem(R.id.action_share);
         return true;
     }
 
@@ -129,7 +133,7 @@ public class FileChooserActivity extends AppCompatActivity {
 
             TextView currentPathLbl = (TextView) findViewById(R.id.currentPathLbl);
             currentPathLbl.setText(currentPath.getPath());
-            fileListAdapter = new FileListAdapter(this, filenames, filepaths, true);
+            fileListAdapter = new FileListAdapter(this, filenames, filepaths);
             listViewFiles = (ListView) findViewById(R.id.list_view_files);
             listViewFiles.setAdapter(fileListAdapter);
             listViewFiles.setOnItemClickListener(onItemClickListener);
@@ -141,6 +145,8 @@ public class FileChooserActivity extends AppCompatActivity {
     private AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            clearSelection();
+
             String fileChosen = (String) filenames.get(position);
             File chosenFile = getChosenFile(fileChosen);
             if (chosenFile.isDirectory()) {
@@ -154,11 +160,31 @@ public class FileChooserActivity extends AppCompatActivity {
     private AdapterView.OnItemLongClickListener onItemLongClickListener = new AdapterView.OnItemLongClickListener() {
         @Override
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-            listViewFiles.setItemChecked(position, true);
-            listViewFiles.setSelector(R.color.colorSelected);
+            clearSelection();
+            CheckBox checkBox = (CheckBox) view.findViewById(R.id.lr_cbCheck);
+            checkBox.setChecked(true);
+            checkBox.setVisibility(View.VISIBLE);
+
+            String fileChosen = (String) filenames.get(position);
+            File chosenFile = getChosenFile(fileChosen);
+            deleteBtn.setVisible(true);
+            if (!chosenFile.isDirectory()) {
+                shareBtn.setVisible(true);
+            }
+
             return true;
-}
+        }
     };
+
+    private void clearSelection() {
+        for (int i = 0; i < listViewFiles.getCount(); i++) {
+            CheckBox checkBox = (CheckBox)  listViewFiles.getChildAt(i).findViewById(R.id.lr_cbCheck);
+            checkBox.setVisibility(View.INVISIBLE);
+            checkBox.setChecked(false);
+        }
+        deleteBtn.setVisible(false);
+        shareBtn.setVisible(false);
+    }
 
     private File getChosenFile(String fileChosen) {
         if (fileChosen.equals(PARENT_DIR)) {
@@ -180,16 +206,12 @@ public class FileChooserActivity extends AppCompatActivity {
 
         private List<String> m_item;
         private List<String> m_path;
-        public ArrayList<Integer> m_selectedItem;
         Context m_context;
-        Boolean m_isRoot;
 
-        public FileListAdapter(Context p_context, List<String> p_item, List<String> p_path, Boolean p_isRoot) {
+        public FileListAdapter(Context p_context, List<String> p_item, List<String> p_path) {
             m_context = p_context;
             m_item = p_item;
             m_path = p_path;
-            m_selectedItem = new ArrayList<Integer>();
-            m_isRoot = p_isRoot;
         }
 
         @Override
@@ -217,7 +239,7 @@ public class FileChooserActivity extends AppCompatActivity {
                 m_viewHolder = new FileListAdapter.ViewHolder();
                 m_viewHolder.m_tvFileName = (TextView) m_view.findViewById(R.id.lr_tvFileName);
                 m_viewHolder.m_ivIcon = (ImageView) m_view.findViewById(R.id.lr_ivFileIcon);
-//                m_viewHolder.m_cbCheck = (CheckBox) m_view.findViewById(R.id.lr_cbCheck);
+                m_viewHolder.m_cbCheck = (CheckBox) m_view.findViewById(R.id.lr_cbCheck);
                 m_view.setTag(m_viewHolder);
             } else {
                 m_view = p_convertView;
@@ -243,8 +265,7 @@ public class FileChooserActivity extends AppCompatActivity {
         class ViewHolder {
             ImageView m_ivIcon;
             TextView m_tvFileName;
-//            CheckBox m_cbCheck;
-//            TextView m_tvDate;
+            CheckBox m_cbCheck;
         }
 
         private int setFileImageType(File m_file) {
@@ -255,10 +276,8 @@ public class FileChooserActivity extends AppCompatActivity {
             }
         }
 
-//        String getLastDate(int p_pos) {
-//            File m_file = new File(m_path.get(p_pos));
-//            SimpleDateFormat m_dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-//            return m_dateFormat.format(m_file.lastModified());
-//        }
+        public Object getPath(int position) {
+            return m_path.get(position);
+        }
     }
 }
