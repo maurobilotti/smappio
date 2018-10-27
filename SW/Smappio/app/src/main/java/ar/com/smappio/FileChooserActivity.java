@@ -32,6 +32,7 @@ public class FileChooserActivity extends AppCompatActivity {
     private ArrayList<String> filenames = new ArrayList<>();
     private ArrayList<String> filepaths = new ArrayList<>();
     private File currentPath;
+    private File currentFile;
     private File smappioFile;
     private String extension = ".wav";
 
@@ -146,7 +147,6 @@ public class FileChooserActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             clearSelection();
-
             String fileChosen = (String) filenames.get(position);
             File chosenFile = getChosenFile(fileChosen);
             if (chosenFile.isDirectory()) {
@@ -161,21 +161,18 @@ public class FileChooserActivity extends AppCompatActivity {
         @Override
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
             clearSelection();
-
             String fileChosen = (String) filenames.get(position);
             File chosenFile = getChosenFile(fileChosen);
-
             if(!fileChosen.equals(PARENT_DIR)) {
                 CheckBox checkBox = (CheckBox) view.findViewById(R.id.lr_cbCheck);
                 checkBox.setChecked(true);
                 checkBox.setVisibility(View.VISIBLE);
-
+                currentFile = chosenFile;
                 deleteBtn.setVisible(true);
                 if (!chosenFile.isDirectory()) {
                     shareBtn.setVisible(true);
                 }
             }
-
             return true;
         }
     };
@@ -183,6 +180,7 @@ public class FileChooserActivity extends AppCompatActivity {
     private void clearSelection() {
         deleteBtn.setVisible(false);
         shareBtn.setVisible(false);
+        currentFile = null;
         for (int i = 0; i < listViewFiles.getCount(); i++) {
             CheckBox checkBox = (CheckBox)  listViewFiles.getChildAt(i).findViewById(R.id.lr_cbCheck);
             checkBox.setVisibility(View.INVISIBLE);
@@ -203,6 +201,16 @@ public class FileChooserActivity extends AppCompatActivity {
         Intent intent = new Intent(this, AudioPlayerActivity.class);
         intent.putExtra("currentFileURI", currentFileURI);
         startActivity(intent);
+    }
+
+    public void shareFile(MenuItem view) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(currentFile));
+        intent.setType("audio/*");
+        startActivity(intent);
+    }
+
+    public void deleteFile(MenuItem item) {
     }
 
     // Adaptador

@@ -195,9 +195,9 @@ public class AudioPlayerActivity extends AppCompatActivity {
     public void shareFile() {
         if(currentFileURI != null){
             Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setType("audio/*");
             intent.putExtra(Intent.EXTRA_STREAM, currentFileURI);
-            startActivity(Intent.createChooser(intent, "Compartir archivo de audio"));
+            intent.setType("audio/*");
+            startActivity(intent);
         }
     }
 

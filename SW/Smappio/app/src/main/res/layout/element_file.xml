@@ -31,6 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center|end"
         android:layout_weight="1"
+        android:clickable="false"
         android:visibility="invisible" />
 
 </LinearLayout>
