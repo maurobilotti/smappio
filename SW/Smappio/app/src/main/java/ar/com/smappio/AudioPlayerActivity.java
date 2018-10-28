@@ -307,39 +307,51 @@ public class AudioPlayerActivity extends AppCompatActivity {
         WaveFormInfo waveFormInfo = new WaveFormInfo();
         int sampleRate = ((dataFile[24] & 0xFF) << 0) | ((dataFile[25] & 0xFF) << 8) | ((dataFile[26] & 0xFF) << 16) | (dataFile[27] & 0xFF ) << 24;
         int bits = dataFile[34];
-        //int fileLength = (dataFile[41] & 0xFF) << 0) | (dataFile[42] & 0xFF) << 8 | (dataFile[43] & 0xFF) << 16;
-        int length = (dataFile.length - 44) / 2;
+        int fileLength = ((dataFile[41] & 0xFF) << 8) | ((dataFile[42] & 0xFF) << 16) | ((dataFile[43] & 0xFF) << 24);
+        int samplesLength = (fileLength) / 2;
 
         List<Integer> integerList = new ArrayList<Integer>();
 
         bits = 16;
         //indica la densidad de pixeles que tiene la imagen, a menor valor, más datos mostrados
-        int samples_per_pixel = 24;
+        int samples_per_pixel = 32;
         //amplificador de la imagen en el eje Y
-        int scaleY = 120;
+        int scaleY = 200;
 
 
-        waveFormInfo.setSample_rate(sampleRate);
+        int samples_for_waveForm = (fileLength / samples_per_pixel);
+        waveFormInfo.setSample_rate(sampleRate * 2);
         waveFormInfo.setSamples_per_pixel(samples_per_pixel);
         waveFormInfo.setBits(bits);
-        waveFormInfo.setLength(length / samples_per_pixel);
 
-        int base = 45;
+
+        int base = 44;
         int index = 0;
-        int samples_for_waveForm = (dataFile.length/samples_per_pixel) - 1;
+
         for(int i = 0; i < samples_for_waveForm; i++ )
         {
+            //validación para que no supere el tamaño del archivo
             if(base + index + i + 1 > dataFile.length)
                 break;
 
             int min = (int)dataFile[base + index + i] ;
             int max = (int)dataFile[base + index + i + 1] ;
+
+            if(max == 0 && min < 3 && min > -3)
+            {
+                integerList.add(0);
+                integerList.add(0);
+                index += samples_per_pixel;
+                continue;
+            }
+
             integerList.add(min * scaleY);
             integerList.add(max * scaleY);
             index += samples_per_pixel;
         }
 
         waveFormInfo.setData(integerList);
+        waveFormInfo.setLength(integerList.size() / 2);
         return waveFormInfo;
     }
 
