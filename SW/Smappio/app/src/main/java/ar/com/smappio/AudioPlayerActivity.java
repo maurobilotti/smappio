@@ -312,7 +312,6 @@ public class AudioPlayerActivity extends AppCompatActivity {
 
         List<Integer> integerList = new ArrayList<Integer>();
 
-        bits = 16;
         //indica la densidad de pixeles que tiene la imagen, a menor valor, más datos mostrados
         int samples_per_pixel = 32;
         //amplificador de la imagen en el eje Y
