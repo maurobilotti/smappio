@@ -11,17 +11,21 @@ import android.media.audiofx.Visualizer;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
@@ -31,6 +35,8 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class AuscultateActivity extends AppCompatActivity {
 
@@ -49,6 +55,8 @@ public class AuscultateActivity extends AppCompatActivity {
     private WifiInfo wifiInfo;
     private Visualizer visualizer;
     private EqualizerView equalizerView;
+    private ProgressBar progressBarTimer;
+    private TextView countUpTimer;
 
     private static final float maxSampleValue = 131072; // 2^17 (el bit 18 se usa para el signo)
     private static int playingLength = 345; // Cantidad de bytes en PCM24 a pasar al reproductor por vez
@@ -80,7 +88,9 @@ public class AuscultateActivity extends AppCompatActivity {
         equalizerView = (EqualizerView) findViewById(R.id.equalizer);
         setupEqualizer();
 
-        streamButton = findViewById(R.id.stream_btn);
+        progressBarTimer = (ProgressBar) findViewById(R.id.progress_bar_timer);
+        countUpTimer = (TextView) findViewById(R.id.count_up_timer);
+        streamButton = (FloatingActionButton) findViewById(R.id.stream_btn);
         streamButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -163,13 +173,44 @@ public class AuscultateActivity extends AppCompatActivity {
         isPlaying = true;
         thread = new Thread(runnable);
         thread.start();
+        startCountUp();
     }
 
     public void stopAuscultate() {
+        stopCountUp();
         buildAlertMessageSaveWav();
         streamButton.setImageResource(R.drawable.ic_heart);
         isPlaying = false;
         isAuscultating = false;
+    }
+
+    long intervalSeconds = 1;
+    CountDownTimer timer = new CountDownTimer(Constant.AUSCULTATE_MAX_TIME * 1000, intervalSeconds * 1000) {
+        public void onTick(long millisUntilFinished) {
+            SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
+            Date date = new Date();
+            date.setTime((Constant.AUSCULTATE_MAX_TIME * 1000) - millisUntilFinished);
+            countUpTimer.setText(sdf.format(date));
+            long progress = date.getTime() / 1000;
+            progressBarTimer.setProgress((int) progress);
+        }
+        public void onFinish() {
+            stopAuscultate();
+        }
+    };
+
+    private void startCountUp() {
+        countUpTimer.setVisibility(View.VISIBLE);
+        progressBarTimer.setVisibility(View.VISIBLE);
+        timer.start();
+    }
+
+    private void stopCountUp() {
+        timer.cancel();
+        countUpTimer.setText("00:00");
+        countUpTimer.setVisibility(View.INVISIBLE);
+        progressBarTimer.setProgress(0);
+        progressBarTimer.setVisibility(View.INVISIBLE);
     }
 
     private void buildAlertMessageSaveWav() {
