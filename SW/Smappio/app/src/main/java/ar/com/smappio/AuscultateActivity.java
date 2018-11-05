@@ -12,13 +12,11 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,7 +32,6 @@ import java.io.InputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.ShortBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -235,56 +232,60 @@ public class AuscultateActivity extends AppCompatActivity {
     }
 
     private void buildAlertSaveWav() {
-        LayoutInflater layoutInflater = LayoutInflater.from(AuscultateActivity.this);
-        View popupSaveFileView = layoutInflater.inflate(R.layout.popup_save_file, null);
-        EditText userInput = (EditText) popupSaveFileView.findViewById(R.id.file_name);;
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setView(popupSaveFileView);
-        AlertDialog dialog = builder.setTitle("Guardar audio")
-                .setMessage("Ingrese el nombre del paciente.")
-                .setCancelable(true)
-                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int id) {
-                        if (userInput.getText() != null && !userInput.getText().toString().isEmpty()) {
-                            String nameFile = userInput.getText().toString();
-                            String filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString() + File.separator + "Smappio" + File.separator + nameFile + ".wav";
-                            try {
-                                File savedWav = FileUtils.rawToWave(bufferWav.toByteArray(), filePath);
-                                if(savedWav != null) {
-                                    Toast.makeText(AuscultateActivity.this, "Se guardó el archivo correctamente", Toast.LENGTH_LONG).show();
+        new FileChooserDialog(this).setFileListener(new FileChooserDialog.FileSelectedListener() {
+            @Override public void fileSelected(final File file) {
+                LayoutInflater layoutInflater = LayoutInflater.from(AuscultateActivity.this);
+                View popupSaveFileView = layoutInflater.inflate(R.layout.popup_save_file, null);
+                EditText userInput = (EditText) popupSaveFileView.findViewById(R.id.file_name);
+                AlertDialog.Builder builder = new AlertDialog.Builder(AuscultateActivity.this);
+                builder.setView(popupSaveFileView);
+                AlertDialog dialog = builder.setTitle("Guardar audio")
+                        .setMessage("Ingrese el nombre del paciente.")
+                        .setCancelable(true)
+                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                            public void onClick(final DialogInterface dialog, final int id) {
+                                if (userInput.getText() != null && !userInput.getText().toString().isEmpty()) {
+                                    String nameFile = userInput.getText().toString();
+                                    String filePath = file.getPath() + File.separator + nameFile + ".wav";
+                                    try {
+                                        File savedWav = FileUtils.rawToWave(bufferWav.toByteArray(), filePath);
+                                        if(savedWav != null) {
+                                            Toast.makeText(AuscultateActivity.this, "Se guardó el archivo correctamente", Toast.LENGTH_LONG).show();
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
                                 }
-                            } catch (Exception e) {
-                                e.printStackTrace();
                             }
+                        })
+                        .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                            public void onClick(final DialogInterface dialog, final int id) {
+                                dialog.cancel();
+                            }
+                        })
+                        .create();
+
+                userInput.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    }
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (userInput.getText() != null && !userInput.getText().toString().isEmpty()){
+                            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                        } else {
+                            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
                         }
                     }
-                })
-                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int id) {
-                        dialog.cancel();
-                    }
-                })
-                .create();
+                });
 
-        userInput.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                dialog.show();
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
             }
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (userInput.getText() != null && !userInput.getText().toString().isEmpty()){
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
-                } else {
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-                }
-            }
-        });
-
-        dialog.show();
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+        }).showDialog();
     }
 
     private void setupEqualizer() {
