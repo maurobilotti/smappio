@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Colors appTheme -->
     <color name="colorPrimary">#34495E</color>
     <color name="colorPrimaryDark">#17202A</color>
-    <color name="colorAccent">#33B5E5</color>
+    <color name="colorAccent">@android:color/holo_blue_dark</color>
 
+    <!-- Custom Colors -->
     <color name="colorCenter">#283747</color>
-
-    <color name="ic_launcher_background">#FFFFFF</color>
-
-    <color name="colorSelected">#D8DFE5</color>
+    <color name="ic_launcher_background">@android:color/white</color>
 </resources>
