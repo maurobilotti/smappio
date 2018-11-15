@@ -3,7 +3,7 @@
     <!-- Colors appTheme -->
     <color name="colorPrimary">#34495E</color>
     <color name="colorPrimaryDark">#17202A</color>
-    <color name="colorAccent">@android:color/holo_blue_dark</color>
+    <color name="colorAccent">@android:color/holo_blue_light</color>
 
     <!-- Custom Colors -->
     <color name="colorCenter">#283747</color>
