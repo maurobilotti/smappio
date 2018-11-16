@@ -308,14 +308,20 @@ public class AudioPlayerActivity extends AppCompatActivity {
         int sampleRate = ((dataFile[24] & 0xFF) << 0) | ((dataFile[25] & 0xFF) << 8) | ((dataFile[26] & 0xFF) << 16) | (dataFile[27] & 0xFF ) << 24;
         int bits = dataFile[34];
         int fileLength = ((dataFile[41] & 0xFF) << 8) | ((dataFile[42] & 0xFF) << 16) | ((dataFile[43] & 0xFF) << 24);
+        if(fileLength == 0)
+        {
+            fileLength = dataFile.length - 44;
+        }
+
         int samplesLength = (fileLength) / 2;
+
 
         List<Integer> integerList = new ArrayList<Integer>();
 
         //indica la densidad de pixeles que tiene la imagen, a menor valor, más datos mostrados
         int samples_per_pixel = 16;
         //amplificador de la imagen en el eje Y
-        int scaleY = 300;
+        int scaleY = 200;
 
         int samples_for_waveForm = (fileLength / samples_per_pixel);
         waveFormInfo.setSample_rate(sampleRate * 2);
