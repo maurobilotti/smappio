@@ -33,5 +33,6 @@
     <string name="msg_buscando_dispositivo">Buscando Dispositivo ...</string>
     <string name="msg_conectarse_a">Conectarse a %1$s</string>
     <string name="msg_conecto_a_dispositivo">Se conectó al dispositivo</string>
+    <string name="msg_desea_eliminar_archivo">¿Está seguro que desea eliminar el archivo?</string>
 
 </resources>

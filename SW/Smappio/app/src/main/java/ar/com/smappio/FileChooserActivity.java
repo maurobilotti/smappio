@@ -1,6 +1,5 @@
 package ar.com.smappio;
 
-import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -64,8 +63,8 @@ public class FileChooserActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_file_chooser, menu);
-        deleteBtn = (MenuItem) menu.findItem(R.id.action_delete);
-        shareBtn = (MenuItem) menu.findItem(R.id.action_share);
+        deleteBtn = menu.findItem(R.id.action_delete);
+        shareBtn = menu.findItem(R.id.action_share);
         return true;
     }
 
@@ -140,10 +139,10 @@ public class FileChooserActivity extends AppCompatActivity {
                 filepaths.add(file.getPath());
             }
 
-            TextView currentPathLbl = (TextView) findViewById(R.id.currentPathLbl);
+            TextView currentPathLbl = findViewById(R.id.currentPathLbl);
             currentPathLbl.setText(currentPath.getPath());
             fileListAdapter = new FileListAdapter(this, filenames, filepaths);
-            listViewFiles = (ListView) findViewById(R.id.list_view_files);
+            listViewFiles = findViewById(R.id.list_view_files);
             listViewFiles.setAdapter(fileListAdapter);
             listViewFiles.setOnItemClickListener(onItemClickListener);
             listViewFiles.setOnItemLongClickListener(onItemLongClickListener);
@@ -155,7 +154,7 @@ public class FileChooserActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             clearSelection();
-            String fileChosen = (String) filenames.get(position);
+            String fileChosen = filenames.get(position);
             File chosenFile = getChosenFile(fileChosen);
             if (chosenFile.isDirectory()) {
                 refresh(chosenFile);
@@ -169,10 +168,10 @@ public class FileChooserActivity extends AppCompatActivity {
         @Override
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
             clearSelection();
-            String fileChosen = (String) filenames.get(position);
+            String fileChosen = filenames.get(position);
             File chosenFile = getChosenFile(fileChosen);
             if(!fileChosen.equals(PARENT_DIR)) {
-                CheckBox checkBox = (CheckBox) view.findViewById(R.id.lr_cbCheck);
+                CheckBox checkBox = view.findViewById(R.id.lr_cbCheck);
                 checkBox.setChecked(true);
                 checkBox.setVisibility(View.VISIBLE);
                 currentFile = chosenFile;
@@ -190,7 +189,7 @@ public class FileChooserActivity extends AppCompatActivity {
         shareBtn.setVisible(false);
         currentFile = null;
         for (int i = 0; i < listViewFiles.getCount(); i++) {
-            CheckBox checkBox = (CheckBox)  listViewFiles.getChildAt(i).findViewById(R.id.lr_cbCheck);
+            CheckBox checkBox = listViewFiles.getChildAt(i).findViewById(R.id.lr_cbCheck);
             checkBox.setVisibility(View.INVISIBLE);
             checkBox.setChecked(false);
         }
@@ -224,9 +223,9 @@ public class FileChooserActivity extends AppCompatActivity {
 
     private void buildAlertMessageDeleteFile() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("¿Está seguro que desea eliminar el archivo?")
-                .setCancelable(true)
-                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+        builder.setMessage(R.string.msg_desea_eliminar_archivo)
+                .setCancelable(false)
+                .setPositiveButton(R.string.str_aceptar, new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
                         deleteRecursive(currentFile);
                         refresh(currentPath);
@@ -235,7 +234,7 @@ public class FileChooserActivity extends AppCompatActivity {
                         currentFile = null;
                     }
                 })
-                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.str_cancelar, new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
                         dialog.cancel();
                     }
@@ -283,15 +282,15 @@ public class FileChooserActivity extends AppCompatActivity {
 
         @Override
         public View getView(final int p_position, View p_convertView, ViewGroup p_parent) {
-            View m_view = null;
-            FileListAdapter.ViewHolder m_viewHolder = null;
+            View m_view;
+            FileListAdapter.ViewHolder m_viewHolder;
             if (p_convertView == null) {
                 LayoutInflater m_inflater = LayoutInflater.from(m_context);
                 m_view = m_inflater.inflate(R.layout.element_file, null);
                 m_viewHolder = new FileListAdapter.ViewHolder();
-                m_viewHolder.m_tvFileName = (TextView) m_view.findViewById(R.id.lr_tvFileName);
-                m_viewHolder.m_ivIcon = (ImageView) m_view.findViewById(R.id.lr_ivFileIcon);
-                m_viewHolder.m_cbCheck = (CheckBox) m_view.findViewById(R.id.lr_cbCheck);
+                m_viewHolder.m_tvFileName = m_view.findViewById(R.id.lr_tvFileName);
+                m_viewHolder.m_ivIcon = m_view.findViewById(R.id.lr_ivFileIcon);
+                m_viewHolder.m_cbCheck = m_view.findViewById(R.id.lr_cbCheck);
                 m_view.setTag(m_viewHolder);
             } else {
                 m_view = p_convertView;
