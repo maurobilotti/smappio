@@ -47,14 +47,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openWifiScanActivity();
-            }
-        });
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -183,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivity(intent);
     }
 
-    public void openWifiScanActivity() {
+    public void openWifiScanActivity(View view) {
         Intent intent = new Intent(this, WifiActivity.class);
         startActivity(intent);
     }
@@ -206,32 +198,44 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     };
 
     private void updateDeviceConnected() {
-        TextView stateLbl = (TextView) findViewById(R.id.state_lbl);
-        ImageButton stateColor = (ImageButton) findViewById(R.id.state_icon);
-        TextView deviceConnectedLbl = (TextView) findViewById(R.id.connected_device_lbl);
-        ImageButton auscultateBtn = findViewById(R.id.auscultate_btn);
-        TextView auscultateLbl = (TextView) findViewById(R.id.auscultate_lbl);
+
         if (wifiManager.isWifiEnabled()) {
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
             if(wifiInfo.getNetworkId() != -1 && wifiInfo.getSSID().contains("Smappio")){
-                stateLbl.setText("Conectado");
-                stateColor.setBackgroundResource(android.R.drawable.presence_online);
-                deviceConnectedLbl.setText("Dispositivo: " + wifiInfo.getSSID());
-                auscultateBtn.setVisibility(View.VISIBLE);
-                auscultateLbl.setVisibility(View.VISIBLE);
+                updateConnectInfo(true, wifiInfo.getSSID());
             } else {
-                stateLbl.setText("Desconectado");
-                stateColor.setBackgroundResource(android.R.drawable.presence_offline);
-                deviceConnectedLbl.setText("");
-                auscultateBtn.setVisibility(View.GONE);
-                auscultateLbl.setVisibility(View.GONE);
+                updateConnectInfo(false, null);
             }
+        } else {
+            updateConnectInfo(false, null);
+        }
+    }
+
+    private void updateConnectInfo(Boolean connected, String ssid) {
+        TextView stateLbl = (TextView) findViewById(R.id.state_lbl);
+        ImageButton stateColor = (ImageButton) findViewById(R.id.state_icon);
+        TextView deviceConnectedLbl = (TextView) findViewById(R.id.connected_device_lbl);
+        ImageButton connectBtn = findViewById(R.id.connect_btn);
+        TextView connectLbl = (TextView) findViewById(R.id.connect_lbl);
+        ImageButton auscultateBtn = findViewById(R.id.auscultate_btn);
+        TextView auscultateLbl = (TextView) findViewById(R.id.auscultate_lbl);
+
+        if(connected) {
+            stateLbl.setText("Conectado");
+            stateColor.setBackgroundResource(android.R.drawable.presence_online);
+            deviceConnectedLbl.setText("Vinculado a " + ssid);
+            auscultateBtn.setVisibility(View.VISIBLE);
+            auscultateLbl.setVisibility(View.VISIBLE);
+            connectBtn.setVisibility(View.GONE);
+            connectLbl.setVisibility(View.GONE);
         } else {
             stateLbl.setText("Desconectado");
             stateColor.setBackgroundResource(android.R.drawable.presence_offline);
             deviceConnectedLbl.setText("");
             auscultateBtn.setVisibility(View.GONE);
             auscultateLbl.setVisibility(View.GONE);
+            connectBtn.setVisibility(View.VISIBLE);
+            connectLbl.setVisibility(View.VISIBLE);
         }
     }
 }

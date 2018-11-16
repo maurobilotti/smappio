@@ -21,6 +21,7 @@
     <string name="helps">Ayuda</string>
     <string name="share">Compartir</string>
     <string name="auscultate_lbl">Auscultar</string>
+    <string name="connect_lbl">Conectar</string>
 
     <!--Content Descriptions-->
     <string name="state_icon">state_icon</string>

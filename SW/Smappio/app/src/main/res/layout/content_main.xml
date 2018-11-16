@@ -39,19 +39,37 @@
         app:layout_constraintTop_toBottomOf="@+id/state_lbl" />
 
     <ImageButton
-        android:id="@+id/auscultate_btn"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
-        android:contentDescription="@string/auscultate_btn"
-        android:scaleType="fitXY"
-        android:onClick="auscultate"
-        android:background="#00000000"
-        android:src="@mipmap/ic_launcher_round"
-        android:visibility="gone"
+        android:id="@+id/connect_btn"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/ic_link_device"
+        android:onClick="openWifiScanActivity"/>
+
+    <TextView
+        android:id="@+id/connect_lbl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/connect_lbl"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/connect_btn"
+        app:layout_constraintStart_toStartOf="@+id/connect_btn"
+        app:layout_constraintTop_toBottomOf="@+id/connect_btn" />
+
+    <ImageButton
+        android:id="@+id/auscultate_btn"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/ic_auscultate"
+        android:visibility="gone"
+        android:onClick="auscultate"/>
 
     <TextView
         android:id="@+id/auscultate_lbl"
