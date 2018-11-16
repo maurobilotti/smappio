@@ -28,4 +28,12 @@
     <string name="play_btn">play_btn</string>
     <string name="auscultate_btn">auscultate_btn</string>
 
+
+    <string name="str_alerta">Alerta</string>
+    <string name="str_aceptar">Aceptar</string>
+    <string name="str_smappio">Smappio</string>
+    <string name="str_conectado">Conectado</string>
+    <string name="str_vinculado_a">Vinculado a %1$s</string>
+    <string name="str_desconectado">Desconectado</string>
+
 </resources>

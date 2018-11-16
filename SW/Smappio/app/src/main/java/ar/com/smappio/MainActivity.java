@@ -12,7 +12,6 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -44,15 +43,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Crear carpeta por primera vez de smappio - ../DCIM/Smappio
         createSmappioFolder();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -84,16 +83,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_files) {
-            openFileSystem(Constant.CODE_FILE_SYSTEM_PLAY);
+            openFileSystem();
         } else if (id == R.id.nav_help) {
             // Abrir popup de ayuda
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -102,8 +100,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == Constant.CODE_PERMISSIONS_REQUEST_CODE) {
             boolean grantedAllPermission = true;
-            for(int i = 0; i < grantResults.length; i++) {
-                if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+            for (int grantResult : grantResults) {
+                if (grantResult != PackageManager.PERMISSION_GRANTED) {
                     grantedAllPermission = false;
                 }
             }
@@ -112,10 +110,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
                 View popupAlertPermissions = layoutInflater.inflate(R.layout.popup_alert_permissions, null);
                 alertDialogBuilder.setView(popupAlertPermissions);
-                alertDialogBuilder.setTitle("Alerta");
+                alertDialogBuilder.setTitle(R.string.str_alerta);
                 alertDialogBuilder
                         .setCancelable(false)
-                        .setPositiveButton("Aceptar",
+                        .setPositiveButton(R.string.str_aceptar,
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     finish();
@@ -127,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    // Metodo para chequear y solicitar permisos que necesita la aplicacion
     public void checkTotalPermission() {
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
@@ -159,8 +158,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    // Metodo para crear carpeta de smappio al iniciar la app por primera vez. "../DCIM/Smappio"
     public void createSmappioFolder() {
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Smappio");
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), getString(R.string.str_smappio));
         if (!file.exists()) {
             Log.d("FOLDER", "Folder doesn't exist, creating it...");
             boolean rv = file.mkdir();
@@ -170,16 +170,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public void openFileSystem(int code){
+    // Metodo para abrir la FileChooserActivity
+    public void openFileSystem(){
         Intent intent = new Intent(this, FileChooserActivity.class);
         startActivity(intent);
     }
 
+    // Metodo para abrir la WifiActivity
     public void openWifiScanActivity(View view) {
         Intent intent = new Intent(this, WifiActivity.class);
         startActivity(intent);
     }
 
+    // Metodo para abrir la AuscultateActivity
     public void auscultate(View view) {
         Intent intent = new Intent(this, AuscultateActivity.class);
         startActivity(intent);
@@ -198,7 +201,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     };
 
     private void updateDeviceConnected() {
-
         if (wifiManager.isWifiEnabled()) {
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
             if(wifiInfo.getNetworkId() != -1 && wifiInfo.getSSID().contains("Smappio")){
@@ -212,24 +214,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void updateConnectInfo(Boolean connected, String ssid) {
-        TextView stateLbl = (TextView) findViewById(R.id.state_lbl);
-        ImageButton stateColor = (ImageButton) findViewById(R.id.state_icon);
-        TextView deviceConnectedLbl = (TextView) findViewById(R.id.connected_device_lbl);
+        TextView stateLbl = findViewById(R.id.state_lbl);
+        ImageButton stateColor = findViewById(R.id.state_icon);
+        TextView deviceConnectedLbl = findViewById(R.id.connected_device_lbl);
         ImageButton connectBtn = findViewById(R.id.connect_btn);
-        TextView connectLbl = (TextView) findViewById(R.id.connect_lbl);
+        TextView connectLbl = findViewById(R.id.connect_lbl);
         ImageButton auscultateBtn = findViewById(R.id.auscultate_btn);
-        TextView auscultateLbl = (TextView) findViewById(R.id.auscultate_lbl);
+        TextView auscultateLbl = findViewById(R.id.auscultate_lbl);
 
         if(connected) {
-            stateLbl.setText("Conectado");
+            stateLbl.setText(R.string.str_conectado);
             stateColor.setBackgroundResource(android.R.drawable.presence_online);
-            deviceConnectedLbl.setText("Vinculado a " + ssid);
+            deviceConnectedLbl.setText(getString(R.string.str_vinculado_a, ssid));
             auscultateBtn.setVisibility(View.VISIBLE);
             auscultateLbl.setVisibility(View.VISIBLE);
             connectBtn.setVisibility(View.GONE);
             connectLbl.setVisibility(View.GONE);
         } else {
-            stateLbl.setText("Desconectado");
+            stateLbl.setText(R.string.str_desconectado);
             stateColor.setBackgroundResource(android.R.drawable.presence_offline);
             deviceConnectedLbl.setText("");
             auscultateBtn.setVisibility(View.GONE);
