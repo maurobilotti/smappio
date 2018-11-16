@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,9 +10,8 @@
     <ar.com.smappio.EqualizerView
         android:id="@+id/equalizer"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/count_up_timer"
+        android:layout_height="220dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -21,44 +21,51 @@
         android:id="@+id/count_up_timer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
         android:text="00:00"
         android:textSize="64sp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/progress_bar_timer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/equalizer" />
 
-    <ProgressBar
+    <ProgressBar style="?android:attr/progressBarStyleHorizontal"
         android:id="@+id/progress_bar_timer"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="128dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
         android:max="30"
         android:progress="0"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/stream_btn"
-        app:layout_constraintEnd_toEndOf="@+id/count_up_timer"
-        app:layout_constraintStart_toStartOf="@+id/count_up_timer" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/count_up_timer" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/stream_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:scaleType="center"
-        app:backgroundTint="@android:color/holo_blue_light"
-        app:fabSize="normal"
+    <ImageButton
+        android:id="@+id/start_auscultate_btn"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/ic_auscultate"
+        android:onClick="auscultate"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/ic_heart"
-        tools:ignore="VectorDrawableCompat" />
+        app:layout_constraintTop_toBottomOf="@+id/progress_bar_timer" />
 
+    <ImageButton
+        android:id="@+id/stop_auscultate_btn"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/ic_auscultate"
+        android:visibility="gone"
+        android:onClick="stopAuscultate"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progress_bar_timer" />
 
 </android.support.constraint.ConstraintLayout>

@@ -12,7 +12,6 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -22,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,14 +46,14 @@ public class AuscultateActivity extends AppCompatActivity {
     private AudioTrack audioTrack;
     private int minBufferSize;
     private boolean isPlaying;
-    private boolean isAuscultating = false;
-    private FloatingActionButton streamButton;
     private WifiManager wifiManager;
     private WifiInfo wifiInfo;
     private Visualizer visualizer;
     private EqualizerView equalizerView;
     private ProgressBar progressBarTimer;
     private TextView countUpTimer;
+    private ImageButton startAuscultateBtn;
+    private ImageButton stopAuscultateBtn;
 
     private static final float maxSampleValue = 131072; // 2^17 (el bit 18 se usa para el signo)
     private static int playingLength = 345; // Cantidad de bytes en PCM24 a pasar al reproductor por vez
@@ -87,18 +87,10 @@ public class AuscultateActivity extends AppCompatActivity {
 
         progressBarTimer = (ProgressBar) findViewById(R.id.progress_bar_timer);
         countUpTimer = (TextView) findViewById(R.id.count_up_timer);
-        streamButton = (FloatingActionButton) findViewById(R.id.stream_btn);
-        streamButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //TODO: Esto es temporal, para el floating button
-                if(isAuscultating) {
-                    stopAuscultate();
-                } else {
-                    auscultate();
-                }
-            }
-        });
+        startAuscultateBtn = (ImageButton) findViewById(R.id.start_auscultate_btn);
+        stopAuscultateBtn = (ImageButton) findViewById(R.id.stop_auscultate_btn);
+
+        auscultate(null);
     }
 
     @Override
@@ -115,7 +107,7 @@ public class AuscultateActivity extends AppCompatActivity {
         super.onPause();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         unregisterReceiver(broadcastReceiver);
-        stopAuscultate();
+        stopAuscultate(null);
     }
 
     @Override
@@ -164,21 +156,21 @@ public class AuscultateActivity extends AppCompatActivity {
         alert.show();
     }
 
-    public void auscultate() {
-        streamButton.setImageResource(R.drawable.ic_stop);
-        isAuscultating = true;
+    public void auscultate(View view) {
+        stopAuscultateBtn.setVisibility(View.VISIBLE);
+        startAuscultateBtn.setVisibility(View.GONE);
         isPlaying = true;
         thread = new Thread(runnable);
         thread.start();
         startCountUp();
     }
 
-    public void stopAuscultate() {
+    public void stopAuscultate(View view) {
         stopCountUp();
         buildAlertMessageSaveWav();
-        streamButton.setImageResource(R.drawable.ic_heart);
+        startAuscultateBtn.setVisibility(View.VISIBLE);
+        stopAuscultateBtn.setVisibility(View.GONE);
         isPlaying = false;
-        isAuscultating = false;
     }
 
     long intervalSeconds = 1;
@@ -192,7 +184,7 @@ public class AuscultateActivity extends AppCompatActivity {
             progressBarTimer.setProgress((int) progress);
         }
         public void onFinish() {
-            stopAuscultate();
+            stopAuscultate(null);
         }
     };
 
@@ -211,24 +203,22 @@ public class AuscultateActivity extends AppCompatActivity {
     }
 
     private void buildAlertMessageSaveWav() {
-        if(isAuscultating) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("¡Alerta!")
-                    .setMessage("¿Desea guardar el audio capturado?")
-                    .setCancelable(true)
-                    .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                        public void onClick(final DialogInterface dialog, final int id) {
-                            buildAlertSaveWav();
-                        }
-                    })
-                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                        public void onClick(final DialogInterface dialog, final int id) {
-                            dialog.cancel();
-                        }
-                    });
-            AlertDialog alert = builder.create();
-            alert.show();
-        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("¡Alerta!")
+                .setMessage("¿Desea guardar el audio capturado?")
+                .setCancelable(false)
+                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        buildAlertSaveWav();
+                    }
+                })
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     private void buildAlertSaveWav() {
@@ -241,7 +231,7 @@ public class AuscultateActivity extends AppCompatActivity {
                 builder.setView(popupSaveFileView);
                 AlertDialog dialog = builder.setTitle("Guardar audio")
                         .setMessage("Ingrese el nombre del paciente.")
-                        .setCancelable(true)
+                        .setCancelable(false)
                         .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                             public void onClick(final DialogInterface dialog, final int id) {
                                 if (userInput.getText() != null && !userInput.getText().toString().isEmpty()) {
