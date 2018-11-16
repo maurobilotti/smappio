@@ -10,6 +10,7 @@
 
     <!-- Labels -->
     <string name="str_0_00">0:00</string>
+    <string name="str_00_00">00:00</string>
     <string name="str_alerta">Alerta</string>
     <string name="str_aceptar">Aceptar</string>
     <string name="str_archivos">Archivos</string>
@@ -30,9 +31,14 @@
     <string name="msg_permisos">Para usar esta aplicación debe conceder todos los permisos. Ingrese nuevamente.</string>
     <string name="msg_vinculado_a">Vinculado a %1$s</string>
     <string name="msg_activar_servicio_localizacion">Se debe activar el servicio de localización.</string>
-    <string name="msg_buscando_dispositivo">Buscando Dispositivo ...</string>
+    <string name="msg_buscando_dispositivo">Buscando Dispositivo …</string>
     <string name="msg_conectarse_a">Conectarse a %1$s</string>
     <string name="msg_conecto_a_dispositivo">Se conectó al dispositivo</string>
     <string name="msg_desea_eliminar_archivo">¿Está seguro que desea eliminar el archivo?</string>
+    <string name="msg_desconecto_dispositivo_conectelo">Se desconectó el dispositivo. Por favor, conéctelo nuevamente.</string>
+    <string name="msg_guardar_audio_capturado">¿Desea guardar el audio capturado?</string>
+    <string name="msg_guardar_audio">Guardar audio</string>
+    <string name="msg_ingrese_nombre_archivo">Por favor, ingrese el nombre del archivo.</string>
+    <string name="msg_guardo_archivo_correctamente">Se guardó el archivo correctamente</string>
 
 </resources>

@@ -37,18 +37,11 @@ import java.util.Date;
 
 public class AuscultateActivity extends AppCompatActivity {
 
-    // TODO: Cambiar por la ip obtenida del dispositivo
-    private static final String HOST = "192.168.1.2";
-    private static final int PORT = 80;
     private Socket socket;
-
-    private Thread thread;
     private AudioTrack audioTrack;
-    private int minBufferSize;
     private boolean isPlaying;
     private WifiManager wifiManager;
     private WifiInfo wifiInfo;
-    private Visualizer visualizer;
     private EqualizerView equalizerView;
     private ProgressBar progressBarTimer;
     private TextView countUpTimer;
@@ -78,17 +71,17 @@ public class AuscultateActivity extends AppCompatActivity {
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         wifiInfo = wifiManager.getConnectionInfo();
 
-        minBufferSize = AudioTrack.getMinBufferSize(Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING);
+        int minBufferSize = AudioTrack.getMinBufferSize(Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING);
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING, minBufferSize * 3, AudioTrack.MODE_STREAM);
         audioTrack.setVolume(1.0f);
 
-        equalizerView = (EqualizerView) findViewById(R.id.equalizer);
+        equalizerView = findViewById(R.id.equalizer);
         setupEqualizer();
 
-        progressBarTimer = (ProgressBar) findViewById(R.id.progress_bar_timer);
-        countUpTimer = (TextView) findViewById(R.id.count_up_timer);
-        startAuscultateBtn = (ImageButton) findViewById(R.id.start_auscultate_btn);
-        stopAuscultateBtn = (ImageButton) findViewById(R.id.stop_auscultate_btn);
+        progressBarTimer = findViewById(R.id.progress_bar_timer);
+        countUpTimer = findViewById(R.id.count_up_timer);
+        startAuscultateBtn = findViewById(R.id.start_auscultate_btn);
+        stopAuscultateBtn = findViewById(R.id.stop_auscultate_btn);
 
         auscultate(null);
     }
@@ -145,9 +138,9 @@ public class AuscultateActivity extends AppCompatActivity {
 
     private void buildAlertMessageDisconnected() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Se desconectó el dispositivo. Por favor, conéctelo nuevamente.")
+        builder.setMessage(R.string.msg_desconecto_dispositivo_conectelo)
                 .setCancelable(false)
-                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.str_aceptar, new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
                         finish();
                     }
@@ -160,7 +153,7 @@ public class AuscultateActivity extends AppCompatActivity {
         stopAuscultateBtn.setVisibility(View.VISIBLE);
         startAuscultateBtn.setVisibility(View.GONE);
         isPlaying = true;
-        thread = new Thread(runnable);
+        Thread thread = new Thread(runnable);
         thread.start();
         startCountUp();
     }
@@ -176,7 +169,7 @@ public class AuscultateActivity extends AppCompatActivity {
     long intervalSeconds = 1;
     CountDownTimer timer = new CountDownTimer(Constant.AUSCULTATE_MAX_TIME * 1000, intervalSeconds * 1000) {
         public void onTick(long millisUntilFinished) {
-            SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat(Constant.FORMAT_MMSS);
             Date date = new Date();
             date.setTime((Constant.AUSCULTATE_MAX_TIME * 1000) - millisUntilFinished);
             countUpTimer.setText(sdf.format(date));
@@ -196,7 +189,7 @@ public class AuscultateActivity extends AppCompatActivity {
 
     private void stopCountUp() {
         timer.cancel();
-        countUpTimer.setText("00:00");
+        countUpTimer.setText(R.string.str_00_00);
         countUpTimer.setVisibility(View.INVISIBLE);
         progressBarTimer.setProgress(0);
         progressBarTimer.setVisibility(View.INVISIBLE);
@@ -204,15 +197,15 @@ public class AuscultateActivity extends AppCompatActivity {
 
     private void buildAlertMessageSaveWav() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("¡Alerta!")
-                .setMessage("¿Desea guardar el audio capturado?")
+        builder.setTitle(R.string.str_alerta)
+                .setMessage(R.string.msg_guardar_audio_capturado)
                 .setCancelable(false)
-                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.str_aceptar, new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
                         buildAlertSaveWav();
                     }
                 })
-                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.str_cancelar, new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
                         dialog.cancel();
                     }
@@ -226,13 +219,13 @@ public class AuscultateActivity extends AppCompatActivity {
             @Override public void fileSelected(final File file) {
                 LayoutInflater layoutInflater = LayoutInflater.from(AuscultateActivity.this);
                 View popupSaveFileView = layoutInflater.inflate(R.layout.popup_save_file, null);
-                EditText userInput = (EditText) popupSaveFileView.findViewById(R.id.file_name);
+                EditText userInput = popupSaveFileView.findViewById(R.id.file_name);
                 AlertDialog.Builder builder = new AlertDialog.Builder(AuscultateActivity.this);
                 builder.setView(popupSaveFileView);
-                AlertDialog dialog = builder.setTitle("Guardar audio")
-                        .setMessage("Ingrese el nombre del paciente.")
+                AlertDialog dialog = builder.setTitle(R.string.msg_guardar_audio)
+                        .setMessage(R.string.msg_ingrese_nombre_archivo)
                         .setCancelable(false)
-                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                        .setPositiveButton(R.string.str_aceptar, new DialogInterface.OnClickListener() {
                             public void onClick(final DialogInterface dialog, final int id) {
                                 if (userInput.getText() != null && !userInput.getText().toString().isEmpty()) {
                                     String nameFile = userInput.getText().toString();
@@ -240,7 +233,7 @@ public class AuscultateActivity extends AppCompatActivity {
                                     try {
                                         File savedWav = FileUtils.rawToWave(bufferWav.toByteArray(), filePath);
                                         if(savedWav != null) {
-                                            Toast.makeText(AuscultateActivity.this, "Se guardó el archivo correctamente", Toast.LENGTH_LONG).show();
+                                            Toast.makeText(AuscultateActivity.this, R.string.msg_guardo_archivo_correctamente, Toast.LENGTH_LONG).show();
                                         }
                                     } catch (Exception e) {
                                         e.printStackTrace();
@@ -248,7 +241,7 @@ public class AuscultateActivity extends AppCompatActivity {
                                 }
                             }
                         })
-                        .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(R.string.str_cancelar, new DialogInterface.OnClickListener() {
                             public void onClick(final DialogInterface dialog, final int id) {
                                 dialog.cancel();
                             }
@@ -279,7 +272,7 @@ public class AuscultateActivity extends AppCompatActivity {
     }
 
     private void setupEqualizer() {
-        visualizer = new Visualizer(audioTrack.getAudioSessionId());
+        Visualizer visualizer = new Visualizer(audioTrack.getAudioSessionId());
         visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
         visualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
             public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
@@ -298,7 +291,7 @@ public class AuscultateActivity extends AppCompatActivity {
         @Override
         public void run() {
             try {
-                socket = new Socket(HOST, PORT);
+                socket = new Socket(Constant.HOST, Constant.PORT);
                 socket.setTcpNoDelay(true);
             } catch (Exception e) {
                 e.printStackTrace();
