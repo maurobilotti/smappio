@@ -313,16 +313,14 @@ public class AudioPlayerActivity extends AppCompatActivity {
         List<Integer> integerList = new ArrayList<Integer>();
 
         //indica la densidad de pixeles que tiene la imagen, a menor valor, más datos mostrados
-        int samples_per_pixel = 32;
+        int samples_per_pixel = 16;
         //amplificador de la imagen en el eje Y
-        int scaleY = 200;
-
+        int scaleY = 300;
 
         int samples_for_waveForm = (fileLength / samples_per_pixel);
         waveFormInfo.setSample_rate(sampleRate * 2);
         waveFormInfo.setSamples_per_pixel(samples_per_pixel);
         waveFormInfo.setBits(bits);
-
 
         int base = 44;
         int index = 0;
@@ -333,19 +331,13 @@ public class AudioPlayerActivity extends AppCompatActivity {
             if(base + index + i + 1 > dataFile.length)
                 break;
 
-            int min = (int)dataFile[base + index + i] ;
-            int max = (int)dataFile[base + index + i + 1] ;
+            int min = (int)dataFile[base + index + i] *scaleY;
+            int max = (int)dataFile[base + index + i + 1] * scaleY;
 
-            if(max == 0 && min < 3 && min > -3)
-            {
-                integerList.add(0);
-                integerList.add(0);
-                index += samples_per_pixel;
-                continue;
-            }
+            //short val = (short)(((min & 0xFF) << 8) | (max & 0xFF));
 
-            integerList.add(min * scaleY);
-            integerList.add(max * scaleY);
+            integerList.add(min);
+            integerList.add(max);
             index += samples_per_pixel;
         }
 
