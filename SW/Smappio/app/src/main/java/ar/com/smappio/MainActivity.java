@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if(connected) {
             stateLbl.setText(R.string.str_conectado);
             stateColor.setBackgroundResource(android.R.drawable.presence_online);
-            deviceConnectedLbl.setText(getString(R.string.str_vinculado_a, ssid));
+            deviceConnectedLbl.setText(getString(R.string.msg_vinculado_a, ssid));
             auscultateBtn.setVisibility(View.VISIBLE);
             auscultateLbl.setVisibility(View.VISIBLE);
             connectBtn.setVisibility(View.GONE);

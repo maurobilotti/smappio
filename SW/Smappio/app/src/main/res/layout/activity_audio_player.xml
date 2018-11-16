@@ -75,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="@string/init_time_lbl"
+                android:text="@string/str_0_00"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/position_bar" />
 
@@ -85,7 +85,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                android:text="@string/init_time_lbl"
+                android:text="@string/str_0_00"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/position_bar" />
 
@@ -96,7 +96,6 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:contentDescription="@string/play_btn"
                 android:background="@drawable/ic_play"
                 android:onClick="playBtnClick"
                 app:layout_constraintBottom_toBottomOf="parent"
