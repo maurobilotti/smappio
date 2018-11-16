@@ -38,15 +38,19 @@ import java.util.Date;
 public class AuscultateActivity extends AppCompatActivity {
 
     private Socket socket;
+    private Thread thread;
     private AudioTrack audioTrack;
+    private int minBufferSize;
     private boolean isPlaying;
     private WifiManager wifiManager;
     private WifiInfo wifiInfo;
+    private Visualizer visualizer;
     private EqualizerView equalizerView;
     private ProgressBar progressBarTimer;
     private TextView countUpTimer;
     private ImageButton startAuscultateBtn;
     private ImageButton stopAuscultateBtn;
+    private boolean firstAuscultate = true;
 
     private static final float maxSampleValue = 131072; // 2^17 (el bit 18 se usa para el signo)
     private static int playingLength = 345; // Cantidad de bytes en PCM24 a pasar al reproductor por vez
@@ -71,7 +75,7 @@ public class AuscultateActivity extends AppCompatActivity {
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         wifiInfo = wifiManager.getConnectionInfo();
 
-        int minBufferSize = AudioTrack.getMinBufferSize(Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING);
+        minBufferSize = AudioTrack.getMinBufferSize(Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING);
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING, minBufferSize * 3, AudioTrack.MODE_STREAM);
         audioTrack.setVolume(1.0f);
 
@@ -83,13 +87,14 @@ public class AuscultateActivity extends AppCompatActivity {
         startAuscultateBtn = findViewById(R.id.start_auscultate_btn);
         stopAuscultateBtn = findViewById(R.id.stop_auscultate_btn);
 
-        auscultate(null);
+
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
+            isPlaying = false;
             finish();
         }
         return super.onOptionsItemSelected(item);
@@ -101,6 +106,15 @@ public class AuscultateActivity extends AppCompatActivity {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         unregisterReceiver(broadcastReceiver);
         stopAuscultate(null);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(firstAuscultate) {
+            firstAuscultate = false;
+            auscultate(null);
+        }
     }
 
     @Override
@@ -153,23 +167,25 @@ public class AuscultateActivity extends AppCompatActivity {
         stopAuscultateBtn.setVisibility(View.VISIBLE);
         startAuscultateBtn.setVisibility(View.GONE);
         isPlaying = true;
-        Thread thread = new Thread(runnable);
+        thread = new Thread(runnable);
         thread.start();
         startCountUp();
     }
 
     public void stopAuscultate(View view) {
-        stopCountUp();
-        buildAlertMessageSaveWav();
-        startAuscultateBtn.setVisibility(View.VISIBLE);
-        stopAuscultateBtn.setVisibility(View.GONE);
-        isPlaying = false;
+        if(isPlaying) {
+            stopCountUp();
+            buildAlertMessageSaveWav();
+            startAuscultateBtn.setVisibility(View.VISIBLE);
+            stopAuscultateBtn.setVisibility(View.GONE);
+            isPlaying = false;
+        }
     }
 
     long intervalSeconds = 1;
     CountDownTimer timer = new CountDownTimer(Constant.AUSCULTATE_MAX_TIME * 1000, intervalSeconds * 1000) {
         public void onTick(long millisUntilFinished) {
-            SimpleDateFormat sdf = new SimpleDateFormat(Constant.FORMAT_MMSS);
+            SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
             Date date = new Date();
             date.setTime((Constant.AUSCULTATE_MAX_TIME * 1000) - millisUntilFinished);
             countUpTimer.setText(sdf.format(date));
@@ -219,7 +235,7 @@ public class AuscultateActivity extends AppCompatActivity {
             @Override public void fileSelected(final File file) {
                 LayoutInflater layoutInflater = LayoutInflater.from(AuscultateActivity.this);
                 View popupSaveFileView = layoutInflater.inflate(R.layout.popup_save_file, null);
-                EditText userInput = popupSaveFileView.findViewById(R.id.file_name);
+                EditText userInput = (EditText) popupSaveFileView.findViewById(R.id.file_name);
                 AlertDialog.Builder builder = new AlertDialog.Builder(AuscultateActivity.this);
                 builder.setView(popupSaveFileView);
                 AlertDialog dialog = builder.setTitle(R.string.msg_guardar_audio)
@@ -272,7 +288,7 @@ public class AuscultateActivity extends AppCompatActivity {
     }
 
     private void setupEqualizer() {
-        Visualizer visualizer = new Visualizer(audioTrack.getAudioSessionId());
+        visualizer = new Visualizer(audioTrack.getAudioSessionId());
         visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
         visualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
             public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
