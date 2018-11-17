@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.media.audiofx.Visualizer;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -40,17 +39,19 @@ public class AuscultateActivity extends AppCompatActivity {
     private Socket socket;
     private Thread thread;
     private AudioTrack audioTrack;
-    private int minBufferSize;
     private boolean isPlaying;
     private WifiManager wifiManager;
     private String bssid;
+    private boolean firstAuscultate = true;
+    private boolean fixBroadcastReceiver = true;
+
+    // Views
     private Visualizer visualizer;
     private EqualizerView equalizerView;
     private ProgressBar progressBarTimer;
     private TextView countUpTimer;
     private ImageButton startAuscultateBtn;
     private ImageButton stopAuscultateBtn;
-    private boolean firstAuscultate = true;
 
     private static final float maxSampleValue = 131072; // 2^17 (el bit 18 se usa para el signo)
     private static int playingLength = 345; // Cantidad de bytes en PCM24 a pasar al reproductor por vez
@@ -75,7 +76,7 @@ public class AuscultateActivity extends AppCompatActivity {
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         bssid = wifiManager.getConnectionInfo().getBSSID();
 
-        minBufferSize = AudioTrack.getMinBufferSize(Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING);
+        int minBufferSize = AudioTrack.getMinBufferSize(Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING);
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING, minBufferSize * 3, AudioTrack.MODE_STREAM);
         audioTrack.setVolume(1.0f);
 
@@ -121,7 +122,6 @@ public class AuscultateActivity extends AppCompatActivity {
         super.onResume();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         IntentFilter intentFilter = new IntentFilter();
-//        intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
         intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         registerReceiver(broadcastReceiver, intentFilter);
     }
@@ -134,13 +134,9 @@ public class AuscultateActivity extends AppCompatActivity {
             String action = intent.getAction();
 
             if (action != null && !action.isEmpty()) {
-//                if(action.equals(WifiManager.WIFI_STATE_CHANGED_ACTION)) {
-//                    if(!wifiManager.isWifiEnabled()) {
-//                        buildAlertMessageDisconnected();
-//                    }
-//                }
                 if(action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
-                    if(!bssid.equals(wifiManager.getConnectionInfo().getBSSID())) {
+                    if(!bssid.equals(wifiManager.getConnectionInfo().getBSSID()) && fixBroadcastReceiver) {
+                        fixBroadcastReceiver = false;
                         isPlaying = false;
                         stopAuscultate(stopAuscultateBtn);
                         buildAlertMessageDisconnected();
@@ -154,9 +150,15 @@ public class AuscultateActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.msg_desconecto_dispositivo_conectelo)
                 .setCancelable(false)
+                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        finish();
+                    }
+                })
                 .setPositiveButton(R.string.str_aceptar, new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
-                        finish();
+                        dialog.dismiss();
                     }
                 });
         AlertDialog alert = builder.create();
@@ -313,37 +315,37 @@ public class AuscultateActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            while (isPlaying) {
+            if(socket != null) {
+                while (isPlaying) {
+                    try {
+                        InputStream is = socket.getInputStream();
+                        if (is.available() < playingLength) {
+                            continue;
+                        }
+                        readedAux = is.read(bufferAux, 0, playingLength);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    byte[] errorFreeBuffer = controlAlgorithm();
+
+                    float[] bufferForPlaying = getBufferForPlayingPCMFloat(errorFreeBuffer);
+                    audioTrack.write(bufferForPlaying, 0, bufferForPlaying.length, AudioTrack.WRITE_NON_BLOCKING);
+//                    short[] bufferForPlaying = getBufferForPlayingPCM16(errorFreeBuffer);
+//                    audioTrack.write(bufferForPlaying, 0, bufferForPlaying.length);
+
+                    playIfNeccesary();
+                }
+
+                audioTrack.pause();
+                audioTrack.flush();
+                prebufferingCounter = 0;
 
                 try {
-                    InputStream is = socket.getInputStream();
-                    if (is.available() < playingLength) {
-                        continue;
-                    }
-                    readedAux = is.read(bufferAux, 0, playingLength);
+                    socket.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
-                byte[] errorFreeBuffer = controlAlgorithm();
-
-                float[] bufferForPlaying = getBufferForPlayingPCMFloat(errorFreeBuffer);
-                audioTrack.write(bufferForPlaying, 0, bufferForPlaying.length, AudioTrack.WRITE_NON_BLOCKING);
-
-//                short[] bufferForPlaying = getBufferForPlayingPCM16(errorFreeBuffer);
-//                audioTrack.write(bufferForPlaying, 0, bufferForPlaying.length);
-
-                playIfNeccesary();
-            }
-
-            audioTrack.pause();
-            audioTrack.flush();
-            prebufferingCounter = 0;
-
-            try {
-                socket.close();
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }
     };
