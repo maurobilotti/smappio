@@ -43,7 +43,7 @@ public class AuscultateActivity extends AppCompatActivity {
     private int minBufferSize;
     private boolean isPlaying;
     private WifiManager wifiManager;
-    private WifiInfo wifiInfo;
+    private String bssid;
     private Visualizer visualizer;
     private EqualizerView equalizerView;
     private ProgressBar progressBarTimer;
@@ -73,7 +73,7 @@ public class AuscultateActivity extends AppCompatActivity {
         }
 
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        wifiInfo = wifiManager.getConnectionInfo();
+        bssid = wifiManager.getConnectionInfo().getBSSID();
 
         minBufferSize = AudioTrack.getMinBufferSize(Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING);
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING, minBufferSize * 3, AudioTrack.MODE_STREAM);
@@ -86,7 +86,6 @@ public class AuscultateActivity extends AppCompatActivity {
         countUpTimer = findViewById(R.id.count_up_timer);
         startAuscultateBtn = findViewById(R.id.start_auscultate_btn);
         stopAuscultateBtn = findViewById(R.id.stop_auscultate_btn);
-
 
     }
 
@@ -105,7 +104,7 @@ public class AuscultateActivity extends AppCompatActivity {
         super.onPause();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         unregisterReceiver(broadcastReceiver);
-        stopAuscultate(null);
+        stopAuscultate(stopAuscultateBtn);
     }
 
     @Override
@@ -113,7 +112,7 @@ public class AuscultateActivity extends AppCompatActivity {
         super.onStart();
         if(firstAuscultate) {
             firstAuscultate = false;
-            auscultate(null);
+            auscultate(startAuscultateBtn);
         }
     }
 
@@ -141,8 +140,9 @@ public class AuscultateActivity extends AppCompatActivity {
 //                    }
 //                }
                 if(action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
-                    WifiInfo newWifiInfo = wifiManager.getConnectionInfo();
-                    if(!wifiInfo.getBSSID().equals(newWifiInfo.getBSSID())) {
+                    if(!bssid.equals(wifiManager.getConnectionInfo().getBSSID())) {
+                        isPlaying = false;
+                        stopAuscultate(stopAuscultateBtn);
                         buildAlertMessageDisconnected();
                     }
                 }
@@ -173,11 +173,11 @@ public class AuscultateActivity extends AppCompatActivity {
     }
 
     public void stopAuscultate(View view) {
+        stopCountUp();
+        startAuscultateBtn.setVisibility(View.VISIBLE);
+        stopAuscultateBtn.setVisibility(View.GONE);
         if(isPlaying) {
-            stopCountUp();
             buildAlertMessageSaveWav();
-            startAuscultateBtn.setVisibility(View.VISIBLE);
-            stopAuscultateBtn.setVisibility(View.GONE);
             isPlaying = false;
         }
     }
