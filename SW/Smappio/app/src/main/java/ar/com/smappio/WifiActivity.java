@@ -89,9 +89,16 @@ public class WifiActivity extends AppCompatActivity {
         super.onResume();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
-//        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         intentFilter.addAction(LocationManager.PROVIDERS_CHANGED_ACTION);
         registerReceiver(broadcastReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        wifiManager = null;
+        locationManager = null;
+        broadcastReceiver = null;
     }
 
     private void buildAlertMessageGPS() {
@@ -105,7 +112,7 @@ public class WifiActivity extends AppCompatActivity {
                 })
                 .setNegativeButton(R.string.str_cancelar, new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
-                        dialog.cancel();
+                        dialog.dismiss();
                     }
                 });
         AlertDialog alert = builder.create();
@@ -166,12 +173,6 @@ public class WifiActivity extends AppCompatActivity {
                     }
                     clearWifiList();
                 }
-//                else if(action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
-//                    WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-//                    if(wifiInfo != null) {
-//                        searchWifi(scanBtn);
-//                    }
-//                }
                 else if(action.equals(LocationManager.PROVIDERS_CHANGED_ACTION)) {
                     if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                         clearWifiList();

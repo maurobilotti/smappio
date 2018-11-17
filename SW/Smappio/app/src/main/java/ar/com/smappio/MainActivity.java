@@ -80,6 +80,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         registerReceiver(wifiReceiver, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        wifiManager = null;
+        wifiReceiver = null;
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {

@@ -126,6 +126,16 @@ public class AuscultateActivity extends AppCompatActivity {
         registerReceiver(broadcastReceiver, intentFilter);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        audioTrack = null;
+        thread.interrupt();
+        thread = null;
+        runnable = null;
+        broadcastReceiver = null;
+    }
+
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
         @Override
