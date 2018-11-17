@@ -59,7 +59,7 @@ public class AuscultateActivity extends AppCompatActivity {
     private int prebufferingCounter = 0; // Cantidad actual de "playingLength" bytes que hay en el buffer. "-1" si no esta en etapade prebuffereo
     private byte[] bufferAux = new byte[playingLength * 2]; // Buffer en el que se almacenan los bytes extraidos del socket
     private int readedAux = 0; // Bytes leidos del socket cargados en bufferAux
-    private ByteArrayOutputStream bufferWav = new ByteArrayOutputStream();
+    private ByteArrayOutputStream bufferWav;
 
 
     @Override
@@ -237,7 +237,7 @@ public class AuscultateActivity extends AppCompatActivity {
             @Override public void fileSelected(final File file) {
                 LayoutInflater layoutInflater = LayoutInflater.from(AuscultateActivity.this);
                 View popupSaveFileView = layoutInflater.inflate(R.layout.popup_save_file, null);
-                EditText userInput = (EditText) popupSaveFileView.findViewById(R.id.file_name);
+                EditText userInput = popupSaveFileView.findViewById(R.id.file_name);
                 AlertDialog.Builder builder = new AlertDialog.Builder(AuscultateActivity.this);
                 builder.setView(popupSaveFileView);
                 AlertDialog dialog = builder.setTitle(R.string.msg_guardar_audio)
@@ -311,6 +311,7 @@ public class AuscultateActivity extends AppCompatActivity {
             try {
                 socket = new Socket(Constant.HOST, Constant.PORT);
                 socket.setTcpNoDelay(true);
+                bufferWav = new ByteArrayOutputStream();
             } catch (Exception e) {
                 e.printStackTrace();
             }
