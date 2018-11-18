@@ -20,6 +20,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_files) {
             openFileSystem();
         } else if (id == R.id.nav_help) {
-            // Abrir popup de ayuda
+            openHelpDialog();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -247,5 +248,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             connectBtn.setVisibility(View.VISIBLE);
             connectLbl.setVisibility(View.VISIBLE);
         }
+    }
+
+    public void openHelpDialog() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
+        View popupHelp = layoutInflater.inflate(R.layout.popup_help, null);
+        alertDialogBuilder.setView(popupHelp);
+        alertDialogBuilder.setTitle(R.string.str_manual_usuario);
+        alertDialogBuilder
+                .setCancelable(true)
+                .setPositiveButton(R.string.str_cerrar,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 }
