@@ -621,13 +621,6 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
         mWaveformView.setParameters(mStartPos, mEndPos, mOffset);
         mWaveformView.invalidate();
 
-        mStartMarker.setContentDescription(
-            getResources().getText(R.string.start_marker) + " " +
-            formatTime(mStartPos));
-        mEndMarker.setContentDescription(
-            getResources().getText(R.string.end_marker) + " " +
-            formatTime(mEndPos));
-
         int startX = mStartPos - mOffset - mMarkerLeftInset;
         if (startX + mStartMarker.getWidth() >= 0) {
             if (!mStartVisible) {

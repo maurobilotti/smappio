@@ -129,18 +129,6 @@
     <string name="progress_dialog_cancel">Cancel</string>
     <string name="progress_dialog_stop">Stop</string>
 
-    <!-- Image button descriptions for accessibility -->
-
-    <string name="start_marker">Start marker</string>
-    <string name="end_marker">End marker</string>
-    <string name="rewind">Rewind</string>
-    <string name="play">Play</string>
-    <string name="stop">Stop</string>
-    <string name="ffwd">Fast forward</string>
-    <string name="zoom_in">Zoom In</string>
-    <string name="zoom_out">Zoom Out</string>
-    <string name="save_button">Save</string>
-
     <!--
      Menu items
      -->

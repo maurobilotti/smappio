@@ -26,7 +26,6 @@
                 android:id="@+id/startmarker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/start_marker"
                 android:nextFocusDown="@+id/endmarker"
                 android:src="@drawable/marker_left" />
 
@@ -34,7 +33,6 @@
                 android:id="@+id/endmarker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/end_marker"
                 android:nextFocusUp="@+id/startmarker"
                 android:nextFocusDown="@+id/info"
                 android:src="@drawable/marker_right" />
