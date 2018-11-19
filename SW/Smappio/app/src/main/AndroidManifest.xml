@@ -63,7 +63,7 @@
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".WaveFormSmappio.AudioWavePlayerActivity"
+            android:name=".player.AudioWavePlayerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:windowSoftInputMode="adjustResize"
             android:hardwareAccelerated="true">

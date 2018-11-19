@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ar.com.smappio.WaveFormSmappio.soundfile;
+package ar.com.smappio.player.soundfile;
 
 import java.io.BufferedWriter;
 import java.io.File;

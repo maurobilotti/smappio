@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ar.com.smappio.WaveFormSmappio;
+package ar.com.smappio.player;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -29,7 +29,7 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import ar.com.smappio.R;
-import ar.com.smappio.WaveFormSmappio.soundfile.SoundFile;
+import ar.com.smappio.player.soundfile.SoundFile;
 
 /**
  * WaveformView is an Android view that displays a visual representation

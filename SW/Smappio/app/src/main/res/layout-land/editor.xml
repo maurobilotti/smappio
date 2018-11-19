@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".WaveFormSmappio.AudioWavePlayerActivity">
+    tools:context=".player.AudioWavePlayerActivity">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -17,19 +17,19 @@
             android:layout_height="0px"
             android:layout_weight="1">
 
-            <ar.com.smappio.WaveFormSmappio.WaveformView
+            <ar.com.smappio.player.WaveformView
                 android:id="@+id/waveform"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <ar.com.smappio.WaveFormSmappio.MarkerView
+            <ar.com.smappio.player.MarkerView
                 android:id="@+id/startmarker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:nextFocusDown="@+id/endmarker"
                 android:src="@drawable/marker_left" />
 
-            <ar.com.smappio.WaveFormSmappio.MarkerView
+            <ar.com.smappio.player.MarkerView
                 android:id="@+id/endmarker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

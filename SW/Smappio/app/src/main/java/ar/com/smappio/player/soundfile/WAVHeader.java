@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ar.com.smappio.WaveFormSmappio.soundfile;
+package ar.com.smappio.player.soundfile;
 
 public class WAVHeader {
     private byte[] mHeader;          // the complete header.

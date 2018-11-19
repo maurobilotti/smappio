@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ar.com.smappio.WaveFormSmappio;
+package ar.com.smappio.player;
 
 import java.nio.ShortBuffer;
 
@@ -22,7 +22,7 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 
-import ar.com.smappio.WaveFormSmappio.soundfile.SoundFile;
+import ar.com.smappio.player.soundfile.SoundFile;
 
 class SamplePlayer {
     public interface OnCompletionListener {

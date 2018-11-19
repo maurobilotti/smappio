@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ar.com.smappio.WaveFormSmappio.AudioWavePlayerActivity;
+import ar.com.smappio.player.AudioWavePlayerActivity;
 
 public class FileChooserActivity extends AppCompatActivity {
 

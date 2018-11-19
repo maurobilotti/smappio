@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ar.com.smappio.WaveFormSmappio;
+package ar.com.smappio.player;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -41,7 +41,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import ar.com.smappio.R;
-import ar.com.smappio.WaveFormSmappio.soundfile.SoundFile;
+import ar.com.smappio.player.soundfile.SoundFile;
 
 public class AudioWavePlayerActivity extends AppCompatActivity implements MarkerView.MarkerListener, WaveformView.WaveformListener {
 
@@ -782,7 +782,6 @@ public class AudioWavePlayerActivity extends AppCompatActivity implements Marker
         }
 
         if (mPlayer == null) {
-            // Not initialized yet
             return;
         }
 
@@ -813,13 +812,6 @@ public class AudioWavePlayerActivity extends AppCompatActivity implements Marker
         }
     }
 
-    /**
-     * Show a "final" alert dialog that will exit the activity
-     * after the user clicks on the OK button.  If an exception
-     * is passed, it's assumed to be an error condition, and the
-     * dialog is presented as an error, and the stack trace is
-     * logged.  If there's no exception, it's a success message.
-     */
     private void showFinalAlert(Exception e, CharSequence message) {
         CharSequence title;
         if (e != null) {
