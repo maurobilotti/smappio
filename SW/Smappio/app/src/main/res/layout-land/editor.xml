@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".WaveFormSmappio.RingdroidEditActivity">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="0px"
+            android:layout_weight="1">
+
+            <ar.com.smappio.WaveFormSmappio.WaveformView
+                android:id="@+id/waveform"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <ar.com.smappio.WaveFormSmappio.MarkerView
+                android:id="@+id/startmarker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:nextFocusDown="@+id/endmarker"
+                android:src="@drawable/marker_left" />
+
+            <ar.com.smappio.WaveFormSmappio.MarkerView
+                android:id="@+id/endmarker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:nextFocusUp="@+id/startmarker"
+                android:nextFocusDown="@+id/info"
+                android:src="@drawable/marker_right" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/info"
+            style="@style/AudioFileInfoOverlayText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:nextFocusUp="@+id/endmarker"
+            android:nextFocusDown="@+id/play" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="68dip"
+            android:gravity="center">
+
+            <ImageButton
+                android:id="@+id/rew"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="6dip"
+                android:layout_marginBottom="6dip"
+                android:nextFocusUp="@+id/info"
+                android:background="@drawable/ic_skip_previous" />
+
+            <ImageButton
+                android:id="@+id/play"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="6dip"
+                android:layout_marginBottom="6dip"
+                android:nextFocusUp="@+id/info"
+                android:background="@drawable/ic_play" />
+
+            <ImageButton
+                android:id="@+id/ffwd"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="6dip"
+                android:layout_marginBottom="6dip"
+                android:nextFocusUp="@+id/info"
+                android:background="@drawable/ic_skip_next" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>
