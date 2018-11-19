@@ -1,16 +1,14 @@
 package ar.com.smappio;
 
 import android.content.Intent;
-import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.audiofx.Visualizer;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,19 +17,10 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
-import java.nio.ShortBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import me.relex.widget.waveform.WaveFormInfo;
@@ -48,6 +37,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
     private TextView remainingTimeLbl;
     private MediaPlayer mediaPlayer;
     private int totalTime;
+    private Thread thread;
 
     // Variables del file system
     private Uri currentFileURI;
@@ -63,13 +53,13 @@ public class AudioPlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_player);
 
-        playBtn = (ImageButton) findViewById(R.id.play_btn);
-        positionBar = (SeekBar) findViewById(R.id.position_bar);
-        elapsedTimeLbl = (TextView) findViewById(R.id.elapsed_time_lbl);
-        remainingTimeLbl = (TextView) findViewById(R.id.remaining_time_lbl);
-//        equalizerView = (EqualizerView) findViewById(R.id.equalizer);
-        mWaveFormView = (WaveFormView) findViewById(R.id.wave_form_view);
-        mWaveFormThumbView = (WaveFormThumbView) findViewById(R.id.wave_form_thumb_view);
+        playBtn = findViewById(R.id.play_btn);
+        positionBar = findViewById(R.id.position_bar);
+        elapsedTimeLbl = findViewById(R.id.elapsed_time_lbl);
+        remainingTimeLbl = findViewById(R.id.remaining_time_lbl);
+//        equalizerView = findViewById(R.id.equalizer);
+        mWaveFormView = findViewById(R.id.wave_form_view);
+        mWaveFormThumbView = findViewById(R.id.wave_form_thumb_view);
 
         //Flecha de la toolbar para volver al activity anterior
         if (getSupportActionBar() != null){
@@ -121,10 +111,17 @@ public class AudioPlayerActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-//        if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
-//            mediaPlayer.start();
-//            playBtn.setBackgroundResource(R.drawable.ic_pause);
-//        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        thread.interrupt();
+        handler.removeCallbacks(runnable);
+        mediaPlayer = null;
+        handler = null;
+        thread = null;
+        runnable = null;
     }
 
     public void setupAudioPlayer() {
@@ -157,8 +154,8 @@ public class AudioPlayerActivity extends AppCompatActivity {
         );
 
         //Actualiza el tiempo de reproduccion
-        new Thread(runnable).start();
-
+        thread = new Thread(runnable);
+        thread.start();
         mediaPlayer.start();
 
         playBtn.setBackgroundResource(R.drawable.ic_pause);

@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.media.audiofx.Visualizer;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -37,17 +36,16 @@ import java.util.Date;
 
 public class AuscultateActivity extends AppCompatActivity {
 
-    // TODO: Cambiar por la ip obtenida del dispositivo
-    private static final String HOST = "192.168.1.2";
-    private static final int PORT = 80;
     private Socket socket;
-
     private Thread thread;
     private AudioTrack audioTrack;
-    private int minBufferSize;
     private boolean isPlaying;
     private WifiManager wifiManager;
-    private WifiInfo wifiInfo;
+    private String bssid;
+    private boolean firstAuscultate = true;
+    private boolean fixBroadcastReceiver = true;
+
+    // Views
     private Visualizer visualizer;
     private EqualizerView equalizerView;
     private ProgressBar progressBarTimer;
@@ -61,7 +59,7 @@ public class AuscultateActivity extends AppCompatActivity {
     private int prebufferingCounter = 0; // Cantidad actual de "playingLength" bytes que hay en el buffer. "-1" si no esta en etapade prebuffereo
     private byte[] bufferAux = new byte[playingLength * 2]; // Buffer en el que se almacenan los bytes extraidos del socket
     private int readedAux = 0; // Bytes leidos del socket cargados en bufferAux
-    private ByteArrayOutputStream bufferWav = new ByteArrayOutputStream();
+    private ByteArrayOutputStream bufferWav;
 
 
     @Override
@@ -76,27 +74,27 @@ public class AuscultateActivity extends AppCompatActivity {
         }
 
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        wifiInfo = wifiManager.getConnectionInfo();
+        bssid = wifiManager.getConnectionInfo().getBSSID();
 
-        minBufferSize = AudioTrack.getMinBufferSize(Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING);
+        int minBufferSize = AudioTrack.getMinBufferSize(Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING);
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING, minBufferSize * 3, AudioTrack.MODE_STREAM);
         audioTrack.setVolume(1.0f);
 
-        equalizerView = (EqualizerView) findViewById(R.id.equalizer);
+        equalizerView = findViewById(R.id.equalizer);
         setupEqualizer();
 
-        progressBarTimer = (ProgressBar) findViewById(R.id.progress_bar_timer);
-        countUpTimer = (TextView) findViewById(R.id.count_up_timer);
-        startAuscultateBtn = (ImageButton) findViewById(R.id.start_auscultate_btn);
-        stopAuscultateBtn = (ImageButton) findViewById(R.id.stop_auscultate_btn);
+        progressBarTimer = findViewById(R.id.progress_bar_timer);
+        countUpTimer = findViewById(R.id.count_up_timer);
+        startAuscultateBtn = findViewById(R.id.start_auscultate_btn);
+        stopAuscultateBtn = findViewById(R.id.stop_auscultate_btn);
 
-        auscultate(null);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
+            isPlaying = false;
             finish();
         }
         return super.onOptionsItemSelected(item);
@@ -107,7 +105,16 @@ public class AuscultateActivity extends AppCompatActivity {
         super.onPause();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         unregisterReceiver(broadcastReceiver);
-        stopAuscultate(null);
+        stopAuscultate(stopAuscultateBtn);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(firstAuscultate) {
+            firstAuscultate = false;
+            auscultate(startAuscultateBtn);
+        }
     }
 
     @Override
@@ -115,9 +122,18 @@ public class AuscultateActivity extends AppCompatActivity {
         super.onResume();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         IntentFilter intentFilter = new IntentFilter();
-//        intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
         intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         registerReceiver(broadcastReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        audioTrack = null;
+        thread.interrupt();
+        thread = null;
+        runnable = null;
+        broadcastReceiver = null;
     }
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -128,14 +144,11 @@ public class AuscultateActivity extends AppCompatActivity {
             String action = intent.getAction();
 
             if (action != null && !action.isEmpty()) {
-//                if(action.equals(WifiManager.WIFI_STATE_CHANGED_ACTION)) {
-//                    if(!wifiManager.isWifiEnabled()) {
-//                        buildAlertMessageDisconnected();
-//                    }
-//                }
                 if(action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
-                    WifiInfo newWifiInfo = wifiManager.getConnectionInfo();
-                    if(!wifiInfo.getBSSID().equals(newWifiInfo.getBSSID())) {
+                    if(!bssid.equals(wifiManager.getConnectionInfo().getBSSID()) && fixBroadcastReceiver) {
+                        fixBroadcastReceiver = false;
+                        isPlaying = false;
+                        stopAuscultate(stopAuscultateBtn);
                         buildAlertMessageDisconnected();
                     }
                 }
@@ -145,11 +158,17 @@ public class AuscultateActivity extends AppCompatActivity {
 
     private void buildAlertMessageDisconnected() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Se desconectó el dispositivo. Por favor, conéctelo nuevamente.")
+        builder.setMessage(R.string.msg_desconecto_dispositivo_conectelo)
                 .setCancelable(false)
-                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int id) {
+                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
                         finish();
+                    }
+                })
+                .setPositiveButton(R.string.str_aceptar, new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        dialog.dismiss();
                     }
                 });
         AlertDialog alert = builder.create();
@@ -167,10 +186,12 @@ public class AuscultateActivity extends AppCompatActivity {
 
     public void stopAuscultate(View view) {
         stopCountUp();
-        buildAlertMessageSaveWav();
         startAuscultateBtn.setVisibility(View.VISIBLE);
         stopAuscultateBtn.setVisibility(View.GONE);
-        isPlaying = false;
+        if(isPlaying) {
+            buildAlertMessageSaveWav();
+            isPlaying = false;
+        }
     }
 
     long intervalSeconds = 1;
@@ -196,7 +217,7 @@ public class AuscultateActivity extends AppCompatActivity {
 
     private void stopCountUp() {
         timer.cancel();
-        countUpTimer.setText("00:00");
+        countUpTimer.setText(R.string.str_00_00);
         countUpTimer.setVisibility(View.INVISIBLE);
         progressBarTimer.setProgress(0);
         progressBarTimer.setVisibility(View.INVISIBLE);
@@ -204,15 +225,15 @@ public class AuscultateActivity extends AppCompatActivity {
 
     private void buildAlertMessageSaveWav() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("¡Alerta!")
-                .setMessage("¿Desea guardar el audio capturado?")
+        builder.setTitle(R.string.str_alerta)
+                .setMessage(R.string.msg_guardar_audio_capturado)
                 .setCancelable(false)
-                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.str_aceptar, new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
                         buildAlertSaveWav();
                     }
                 })
-                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.str_cancelar, new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
                         dialog.cancel();
                     }
@@ -226,13 +247,13 @@ public class AuscultateActivity extends AppCompatActivity {
             @Override public void fileSelected(final File file) {
                 LayoutInflater layoutInflater = LayoutInflater.from(AuscultateActivity.this);
                 View popupSaveFileView = layoutInflater.inflate(R.layout.popup_save_file, null);
-                EditText userInput = (EditText) popupSaveFileView.findViewById(R.id.file_name);
+                EditText userInput = popupSaveFileView.findViewById(R.id.file_name);
                 AlertDialog.Builder builder = new AlertDialog.Builder(AuscultateActivity.this);
                 builder.setView(popupSaveFileView);
-                AlertDialog dialog = builder.setTitle("Guardar audio")
-                        .setMessage("Ingrese el nombre del paciente.")
+                AlertDialog dialog = builder.setTitle(R.string.msg_guardar_audio)
+                        .setMessage(R.string.msg_ingrese_nombre_archivo)
                         .setCancelable(false)
-                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                        .setPositiveButton(R.string.str_aceptar, new DialogInterface.OnClickListener() {
                             public void onClick(final DialogInterface dialog, final int id) {
                                 if (userInput.getText() != null && !userInput.getText().toString().isEmpty()) {
                                     String nameFile = userInput.getText().toString();
@@ -240,7 +261,7 @@ public class AuscultateActivity extends AppCompatActivity {
                                     try {
                                         File savedWav = FileUtils.rawToWave(bufferWav.toByteArray(), filePath);
                                         if(savedWav != null) {
-                                            Toast.makeText(AuscultateActivity.this, "Se guardó el archivo correctamente", Toast.LENGTH_LONG).show();
+                                            Toast.makeText(AuscultateActivity.this, R.string.msg_guardo_archivo_correctamente, Toast.LENGTH_LONG).show();
                                         }
                                     } catch (Exception e) {
                                         e.printStackTrace();
@@ -248,7 +269,7 @@ public class AuscultateActivity extends AppCompatActivity {
                                 }
                             }
                         })
-                        .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(R.string.str_cancelar, new DialogInterface.OnClickListener() {
                             public void onClick(final DialogInterface dialog, final int id) {
                                 dialog.cancel();
                             }
@@ -298,43 +319,44 @@ public class AuscultateActivity extends AppCompatActivity {
         @Override
         public void run() {
             try {
-                socket = new Socket(HOST, PORT);
+                socket = new Socket(Constant.HOST, Constant.PORT);
                 socket.setTcpNoDelay(true);
+                bufferWav = new ByteArrayOutputStream();
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            while (isPlaying) {
+            if(socket != null) {
+                while (isPlaying) {
+                    try {
+                        InputStream is = socket.getInputStream();
+                        if (is.available() < playingLength) {
+                            continue;
+                        }
+                        readedAux = is.read(bufferAux, 0, playingLength);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    byte[] errorFreeBuffer = controlAlgorithm();
+
+                    float[] bufferForPlaying = getBufferForPlayingPCMFloat(errorFreeBuffer);
+                    audioTrack.write(bufferForPlaying, 0, bufferForPlaying.length, AudioTrack.WRITE_NON_BLOCKING);
+//                    short[] bufferForPlaying = getBufferForPlayingPCM16(errorFreeBuffer);
+//                    audioTrack.write(bufferForPlaying, 0, bufferForPlaying.length);
+
+                    playIfNeccesary();
+                }
+
+                audioTrack.pause();
+                audioTrack.flush();
+                prebufferingCounter = 0;
 
                 try {
-                    InputStream is = socket.getInputStream();
-                    if (is.available() < playingLength) {
-                        continue;
-                    }
-                    readedAux = is.read(bufferAux, 0, playingLength);
+                    socket.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
-                byte[] errorFreeBuffer = controlAlgorithm();
-
-                float[] bufferForPlaying = getBufferForPlayingPCMFloat(errorFreeBuffer);
-                audioTrack.write(bufferForPlaying, 0, bufferForPlaying.length, AudioTrack.WRITE_NON_BLOCKING);
-
-//                short[] bufferForPlaying = getBufferForPlayingPCM16(errorFreeBuffer);
-//                audioTrack.write(bufferForPlaying, 0, bufferForPlaying.length);
-
-                playIfNeccesary();
-            }
-
-            audioTrack.pause();
-            audioTrack.flush();
-            prebufferingCounter = 0;
-
-            try {
-                socket.close();
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }
     };

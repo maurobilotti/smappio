@@ -10,6 +10,7 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -59,11 +60,11 @@ public class WifiActivity extends AppCompatActivity {
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 
-        scanBtn = (Button) findViewById(R.id.scan_btn);
-        wifiBtn = (Switch) findViewById(R.id.wifi_btn);
+        scanBtn = findViewById(R.id.scan_btn);
+        wifiBtn = findViewById(R.id.wifi_btn);
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, ssidLst);
-        ListView ssidListView = (ListView) findViewById(R.id.wifi_list);
+        ListView ssidListView = findViewById(R.id.wifi_list);
         ssidListView.setOnItemClickListener(onItemClickListener);
         ssidListView.setAdapter(adapter);
     }
@@ -88,23 +89,30 @@ public class WifiActivity extends AppCompatActivity {
         super.onResume();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
-//        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         intentFilter.addAction(LocationManager.PROVIDERS_CHANGED_ACTION);
         registerReceiver(broadcastReceiver, intentFilter);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        wifiManager = null;
+        locationManager = null;
+        broadcastReceiver = null;
+    }
+
     private void buildAlertMessageGPS() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Se debe activar el servicio de localización.")
-                .setCancelable(true)
-                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+        builder.setMessage(R.string.msg_activar_servicio_localizacion)
+                .setCancelable(false)
+                .setPositiveButton(R.string.str_aceptar, new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
-                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                        startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                     }
                 })
-                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.str_cancelar, new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
-                        dialog.cancel();
+                        dialog.dismiss();
                     }
                 });
         AlertDialog alert = builder.create();
@@ -118,11 +126,11 @@ public class WifiActivity extends AppCompatActivity {
     }
 
     public void loadWifiList() {
-        Toast.makeText(this, "Buscando Dispositivo ...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.msg_buscando_dispositivo, Toast.LENGTH_SHORT).show();
         networkLst = wifiManager.getScanResults();
         for (ScanResult scanResult : networkLst) {
             if(scanResult.SSID.contains("Smappio")) {
-                ssidLst.add(scanResult.SSID);//+ " - " + scanResult.capabilities);
+                ssidLst.add(scanResult.SSID);
             }
         }
         adapter.notifyDataSetChanged();
@@ -165,12 +173,6 @@ public class WifiActivity extends AppCompatActivity {
                     }
                     clearWifiList();
                 }
-//                else if(action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
-//                    WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-//                    if(wifiInfo != null) {
-//                        searchWifi(scanBtn);
-//                    }
-//                }
                 else if(action.equals(LocationManager.PROVIDERS_CHANGED_ACTION)) {
                     if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                         clearWifiList();
@@ -216,20 +218,18 @@ public class WifiActivity extends AppCompatActivity {
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(WifiActivity.this);
                     alertDialogBuilder.setView(popupWifiView);
 
-                    EditText userInput = (EditText) popupWifiView.findViewById(R.id.password_input);
-                    CheckBox checkbox = (CheckBox) popupWifiView.findViewById(R.id.password_ckb);
+                    EditText userInput = popupWifiView.findViewById(R.id.password_input);
+                    CheckBox checkbox = popupWifiView.findViewById(R.id.password_ckb);
 
-                    AlertDialog alertDialog = alertDialogBuilder.setTitle("Conectarse a " + ssid)
+                    AlertDialog alertDialog = alertDialogBuilder.setTitle(getString(R.string.msg_conectarse_a, ssid))
                             .setCancelable(true)
-                            .setPositiveButton("Aceptar",
+                            .setPositiveButton(R.string.str_aceptar,
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
-                                            // get user input from user for password
                                             password = userInput.getText().toString();
-                                            //Call the connectWiFi method to get connected the network
                                             connectWiFi(ssid, password, capabilities);
                                         }
-                                    }).setNegativeButton("Cancelar",
+                                    }).setNegativeButton(R.string.str_cancelar,
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             dialog.cancel();
@@ -271,11 +271,9 @@ public class WifiActivity extends AppCompatActivity {
             }
         }
 
-        public void connectWiFi(String SSID, String password, String Security) {
+        private void connectWiFi(String networkSSID, String networkPass, String Security) {
             try {
-                Log.d("INFO", "Item clicked, SSID " + SSID + " Security : " + Security);
-                String networkSSID = SSID;
-                String networkPass = password;
+                Log.d("INFO", "Item clicked, SSID " + networkSSID + " Security : " + Security);
                 WifiConfiguration conf = new WifiConfiguration();
                 // Please note the quotes. String should contain ssid in quotes
                 conf.SSID = "\"" + networkSSID + "\"";
@@ -328,7 +326,7 @@ public class WifiActivity extends AppCompatActivity {
                 }
 
                 //Connect to the network
-                WifiManager wifiManager = (WifiManager) WifiActivity.this.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+//                WifiManager wifiManager = (WifiManager) WifiActivity.this.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
                 int networkId = wifiManager.addNetwork(conf);
                 Log.v("INFO", "Add result " + networkId);
                 List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
@@ -345,9 +343,9 @@ public class WifiActivity extends AppCompatActivity {
                     }
                 }
 
-                Toast.makeText(WifiActivity.this, "Se conectó al dispositivo", Toast.LENGTH_LONG).show();
+                Toast.makeText(WifiActivity.this, R.string.msg_conecto_a_dispositivo, Toast.LENGTH_LONG).show();
 
-                //Devolver datos al activity padre (Quien inicio con startActivityForResult)
+                // Devolver datos al activity padre (Quien inicio con startActivityForResult)
 //                Intent response = new Intent();
 //                response.putExtra("networkId", networkId);
 //                response.putExtra("ssid", ssid);

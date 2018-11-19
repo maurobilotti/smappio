@@ -60,7 +60,7 @@
         android:layout_height="120dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:background="@drawable/ic_auscultate"
+        android:background="@drawable/ic_stop_auscultate"
         android:visibility="gone"
         android:onClick="stopAuscultate"
         app:layout_constraintBottom_toBottomOf="parent"

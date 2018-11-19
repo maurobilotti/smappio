@@ -20,6 +20,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -80,6 +81,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         registerReceiver(wifiReceiver, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        wifiManager = null;
+        wifiReceiver = null;
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -88,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_files) {
             openFileSystem();
         } else if (id == R.id.nav_help) {
-            // Abrir popup de ayuda
+            openHelpDialog();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -128,18 +136,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // Metodo para chequear y solicitar permisos que necesita la aplicacion
     public void checkTotalPermission() {
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-            !(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-            && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-            && checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
-            && checkSelfPermission(Manifest.permission.WAKE_LOCK) == PackageManager.PERMISSION_GRANTED
-            && checkSelfPermission(Manifest.permission.MODIFY_AUDIO_SETTINGS) == PackageManager.PERMISSION_GRANTED
-            && checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
-            && checkSelfPermission(Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED
-            && checkSelfPermission(Manifest.permission.CHANGE_WIFI_STATE) == PackageManager.PERMISSION_GRANTED
-            && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-            && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-            && checkSelfPermission(Manifest.permission.INTERNET) == PackageManager.PERMISSION_GRANTED)){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                !(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                        && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                        && checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
+                        && checkSelfPermission(Manifest.permission.WAKE_LOCK) == PackageManager.PERMISSION_GRANTED
+                        && checkSelfPermission(Manifest.permission.MODIFY_AUDIO_SETTINGS) == PackageManager.PERMISSION_GRANTED
+                        && checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+                        && checkSelfPermission(Manifest.permission.INTERNET) == PackageManager.PERMISSION_GRANTED
+                        && checkSelfPermission(Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED
+                        && checkSelfPermission(Manifest.permission.CHANGE_WIFI_STATE) == PackageManager.PERMISSION_GRANTED
+                        && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        && checkSelfPermission(Manifest.permission.CHANGE_NETWORK_STATE) == PackageManager.PERMISSION_GRANTED
+                        && checkSelfPermission(Manifest.permission.ACCESS_NETWORK_STATE) == PackageManager.PERMISSION_GRANTED)) {
 
             requestPermissions(new String[]{
                     Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -148,13 +157,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Manifest.permission.WAKE_LOCK,
                     Manifest.permission.MODIFY_AUDIO_SETTINGS,
                     Manifest.permission.RECORD_AUDIO,
+                    Manifest.permission.INTERNET,
                     Manifest.permission.ACCESS_WIFI_STATE,
                     Manifest.permission.CHANGE_WIFI_STATE,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.INTERNET
+                    Manifest.permission.CHANGE_NETWORK_STATE,
+                    Manifest.permission.ACCESS_NETWORK_STATE
             }, Constant.CODE_PERMISSIONS_REQUEST_CODE);
-
         }
     }
 
@@ -239,5 +248,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             connectBtn.setVisibility(View.VISIBLE);
             connectLbl.setVisibility(View.VISIBLE);
         }
+    }
+
+    public void openHelpDialog() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
+        View popupHelp = layoutInflater.inflate(R.layout.popup_help, null);
+        alertDialogBuilder.setView(popupHelp);
+        alertDialogBuilder.setTitle(R.string.str_manual_usuario);
+        alertDialogBuilder
+                .setCancelable(true)
+                .setPositiveButton(R.string.str_cerrar,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 }
