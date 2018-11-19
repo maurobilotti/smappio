@@ -313,9 +313,6 @@ public class AudioPlayerActivity extends AppCompatActivity {
             fileLength = dataFile.length - 44;
         }
 
-        int samplesLength = (fileLength) / 2;
-
-
         List<Integer> integerList = new ArrayList<Integer>();
 
         //indica la densidad de pixeles que tiene la imagen, a menor valor, más datos mostrados
@@ -331,25 +328,102 @@ public class AudioPlayerActivity extends AppCompatActivity {
         int base = 44;
         int index = 0;
 
-        for(int i = 0; i < samples_for_waveForm; i++ )
+        int median = obtainMediansMedia(base, fileLength, scaleY, dataFile);
+
+        for(int i = 0; i < fileLength; i++ )
         {
             //validación para que no supere el tamaño del archivo
             if(base + index + i + 1 > dataFile.length)
                 break;
 
-            int min = (int)dataFile[base + index + i] *scaleY;
+            int min = (int)dataFile[base + index + i] * scaleY;
             int max = (int)dataFile[base + index + i + 1] * scaleY;
 
-            //short val = (short)(((min & 0xFF) << 8) | (max & 0xFF));
+            short value = (short)(((min & 0xFF) << 8) | (max & 0xFF) << 16);
+            if(Math.abs(value) < median)
+            {
+                min /= 2;
+                max /= 2;
+            }
 
             integerList.add(min);
             integerList.add(max);
             index += samples_per_pixel;
         }
 
+
+        /*int accumulator = 0;
+        List<Integer> finalSamplesList = new ArrayList<Integer>();
+        int negativeCounter = 0;
+        for (int i = 0; i < integerList.size(); i += 2)
+        {
+            int min = integerList.get(i);
+            int max = integerList.get(i+1);
+
+            short value = (short)(((min & 0xFF) << 8) | (max & 0xFF));
+            if(value < 0)
+            {
+                negativeCounter++;
+            }
+
+            accumulator += Math.abs(value);
+
+            if(i % samples_per_pixel == 0)
+            {
+                int prom = accumulator / samples_per_pixel;
+                if(negativeCounter > 8)
+                {
+                    prom = prom * -1; //si hubo más negativos, tomamos el valor final como negativo
+                }
+
+                min = (prom & 0xFF);
+                max = (prom >> 8) & 0xFF ;
+                finalSamplesList.add(min * scaleY);
+                finalSamplesList.add(max * scaleY);
+                accumulator = 0;
+            }
+        }*/
+
         waveFormInfo.setData(integerList);
         waveFormInfo.setLength(integerList.size() / 2);
         return waveFormInfo;
     }
 
+    private int obtainMediansMedia(int base, int fileLength, int scaleY, byte[] dataFile)
+    {
+        int mediansLength = 1000;
+
+        //si hay muy pocos elementos ni considero la media
+        if(fileLength < mediansLength)
+            return 0;
+
+        short[] mediansArray = new short[mediansLength]; //array de medianas que luego calculará la media
+        int elementsToTake = fileLength / mediansLength; //si hay 1000, tomamos 100 grupos de 10.
+        int begin = 0; // el inicio que se desplaza
+        int end = elementsToTake; //el final que se desplaza
+        for (int i = 0; i < mediansLength; i++)
+        {
+            int cut = (begin + end) / 2; //el punto de corte
+
+            int min = (int)dataFile[cut] *scaleY;
+            int max = (int)dataFile[cut + 1] * scaleY;
+
+            short value = (short)(((min & 0xFF) << 8) | (max & 0xFF)); // el valor de la mediana
+
+            mediansArray[i] = value;
+
+            begin = end;
+            end += elementsToTake;
+        }
+
+        int accumulator = 0;
+        for(int i = 0; i < mediansLength; i++)
+        {
+            accumulator += Math.abs(mediansArray[i]); //se obtiene el valor absoluto y se acumula
+        }
+
+        int mediansMedia = accumulator / mediansLength; // media de las medianas
+
+        return mediansMedia;
+    }
 }
