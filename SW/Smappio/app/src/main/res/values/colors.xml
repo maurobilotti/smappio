@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Colors appTheme -->
-    <color name="colorPrimary">#34495E</color>
-    <color name="colorPrimaryDark">#17202A</color>
-    <color name="colorAccent">@android:color/holo_blue_light</color>
+    <color name="colorPrimary">#34495e</color>
+    <color name="colorPrimaryDark">#17202a</color>
+    <color name="colorAccent">#ff33b5e5</color>
 
     <!-- Custom Colors -->
     <color name="colorCenter">#283747</color>
-    <color name="ic_launcher_background">@android:color/white</color>
+    <color name="ic_launcher_background">#ffffffff</color>
 	
 	<!-- RingDroid -->
 	<color name="waveform_selected">#33b5e5</color>
 	<color name="waveform_unselected">#195a72</color>
-	<color name="waveform_unselected_bkgnd_overlay">#0a242d</color>
-	<color name="selection_border">#ffffff</color>
-	<color name="playback_indicator">#ffff66</color>
+	<color name="waveform_unselected_bkgnd_overlay">#ffffff</color>
+	<color name="selection_border">#ffaaaaaa</color>
+	<color name="playback_indicator">#ff0000</color>
 	<color name="grid_line">#66ffffff</color>
-	<color name="timecode">#ddffffdd</color>
-	<color name="timecode_shadow">#aa000000</color>
+	<color name="timecode">#555555</color>
 
 </resources>

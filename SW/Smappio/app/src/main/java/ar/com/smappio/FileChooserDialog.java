@@ -1,12 +1,12 @@
 package ar.com.smappio;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Environment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -29,7 +29,7 @@ import java.util.List;
 
 public class FileChooserDialog {
 
-    private final Activity activity;
+    private final AppCompatActivity activity;
     private ListView list;
     private Dialog dialog;
     private Button createButton;
@@ -52,7 +52,7 @@ public class FileChooserDialog {
 
     private FileSelectedListener fileListener;
 
-    public FileChooserDialog(Activity activity) {
+    public FileChooserDialog(AppCompatActivity activity) {
         this.activity = activity;
         LayoutInflater layoutInflater = LayoutInflater.from(activity);
         View popupFileManager = layoutInflater.inflate(R.layout.popup_file_manager, null);

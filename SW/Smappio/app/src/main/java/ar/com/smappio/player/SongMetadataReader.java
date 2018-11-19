@@ -16,16 +16,16 @@
 
 package ar.com.smappio.player;
 
-import java.util.HashMap;
-
-import android.app.Activity;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.v7.app.AppCompatActivity;
+
+import java.util.HashMap;
 
 public class SongMetadataReader {
     public Uri GENRES_URI = MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI;
-    public Activity mActivity = null;
+    public AppCompatActivity mActivity = null;
     public String mFilename = "";
     public String mTitle = "";
     public String mArtist = "";
@@ -33,7 +33,7 @@ public class SongMetadataReader {
     public String mGenre = "";
     public int mYear = -1;
 
-    SongMetadataReader(Activity activity, String filename) {
+    SongMetadataReader(AppCompatActivity activity, String filename) {
         mActivity = activity;
         mFilename = filename;
         mTitle = getBasename(filename);

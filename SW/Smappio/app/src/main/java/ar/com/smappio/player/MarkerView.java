@@ -19,10 +19,10 @@ package ar.com.smappio.player;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.widget.ImageView;
 
 /**
  * Represents a draggable start or end marker.
@@ -34,7 +34,7 @@ import android.widget.ImageView;
  * accelerating as the user holds down the left or right arrows
  * while this control is focused.
  */
-public class MarkerView extends ImageView {
+public class MarkerView extends AppCompatImageView {
 
     public interface MarkerListener {
         public void markerTouchStart(MarkerView marker, float pos);
