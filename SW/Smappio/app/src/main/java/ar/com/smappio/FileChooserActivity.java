@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import ar.com.smappio.WaveFormSmappio.AudioWavePlayerActivity;
+
 public class FileChooserActivity extends AppCompatActivity {
 
     private static final String PARENT_DIR = "..";
@@ -205,17 +207,10 @@ public class FileChooserActivity extends AppCompatActivity {
     }
 
     private void fileSelected(File chosenFile) {
-//        Uri currentFileURI = Uri.fromFile(chosenFile);
-//        Intent intent = new Intent(this, AudioPlayerActivity.class);
-//        intent.putExtra("currentFileURI", currentFileURI);
-//        startActivity(intent);
-
         Uri currentFileURI = Uri.fromFile(chosenFile);
-        Intent intent = new Intent(Intent.ACTION_EDIT, currentFileURI);
-        intent.putExtra("was_get_content_intent", Intent.ACTION_GET_CONTENT);
-        intent.setClassName( "ar.com.smappio", "ar.com.smappio.WaveFormSmappio.RingdroidEditActivity");
+        Intent intent = new Intent(this, AudioWavePlayerActivity.class);
+        intent.putExtra("currentFileURI", currentFileURI);
         startActivity(intent);
-
     }
 
     public void shareFile(MenuItem view) {
