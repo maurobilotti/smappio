@@ -41,7 +41,6 @@
 
         <TextView
             android:id="@+id/info"
-            style="@style/AudioFileInfoOverlayText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -50,32 +49,25 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="62dip"
+            android:layout_height="wrap_content"
             android:gravity="center">
 
             <ImageButton
                 android:id="@+id/rew"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:layout_marginTop="6dip"
-                android:layout_marginBottom="6dip"
                 android:background="@drawable/ic_skip_previous" />
 
             <ImageButton
                 android:id="@+id/play"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:layout_marginTop="6dip"
-                android:layout_marginBottom="6dip"
                 android:background="@drawable/ic_play" />
 
             <ImageButton
                 android:id="@+id/ffwd"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:layout_marginTop="6dip"
-                android:layout_marginRight="5dip"
-                android:layout_marginBottom="6dip"
                 android:background="@drawable/ic_skip_next" />
 
         </LinearLayout>
