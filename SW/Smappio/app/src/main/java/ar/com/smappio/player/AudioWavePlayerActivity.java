@@ -401,10 +401,10 @@ public class AudioWavePlayerActivity extends AppCompatActivity implements Marker
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
         mDensity = metrics.density;
 
-        mMarkerLeftInset = (int)(46 * mDensity);
-        mMarkerRightInset = (int)(48 * mDensity);
-        mMarkerTopOffset = (int)(10 * mDensity);
-        mMarkerBottomOffset = (int)(10 * mDensity);
+        mMarkerLeftInset = (int)(17 * mDensity);
+        mMarkerRightInset = (int)(18 * mDensity);
+        mMarkerTopOffset = (int)(8 * mDensity);
+        mMarkerBottomOffset = (int)(8 * mDensity);
 
         mPlayButton = findViewById(R.id.play);
         mPlayButton.setOnClickListener(mPlayListener);
