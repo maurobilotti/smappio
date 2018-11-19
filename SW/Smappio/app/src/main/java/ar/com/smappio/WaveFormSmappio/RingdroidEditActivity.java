@@ -16,18 +16,15 @@
 
 package ar.com.smappio.WaveFormSmappio;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -50,23 +47,15 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
 
     private long mLoadingLastUpdateTime;
     private boolean mLoadingKeepGoing;
-    private long mRecordingLastUpdateTime;
-    private boolean mRecordingKeepGoing;
-    private double mRecordingTime;
     private boolean mFinishActivity;
-    private TextView mTimerTextView;
     private AlertDialog mAlertDialog;
     private ProgressDialog mProgressDialog;
     private SoundFile mSoundFile;
     private File mFile;
     private String mFilename;
-    private String mArtist;
-    private String mTitle;
     private WaveformView mWaveformView;
     private MarkerView mStartMarker;
     private MarkerView mEndMarker;
-    private TextView mStartText;
-    private TextView mEndText;
     private TextView mInfo;
     private String mInfoContent;
     private ImageButton mPlayButton;
@@ -80,8 +69,6 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
     private int mEndPos;
     private boolean mStartVisible;
     private boolean mEndVisible;
-    private int mLastDisplayedStartPos;
-    private int mLastDisplayedEndPos;
     private int mOffset;
     private int mOffsetGoal;
     private int mFlingVelocity;
@@ -103,26 +90,10 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
     private int mMarkerBottomOffset;
 
     private Thread mLoadSoundFileThread;
-    private Thread mRecordAudioThread;
-    private Thread mSaveSoundFileThread;
 
-    // Result codes
-    private static final int REQUEST_CODE_CHOOSE_CONTACT = 1;
-
-    /**
-     * This is a special intent action that means "edit a sound file".
-     */
-    public static final String EDIT = "ar.com.smappio.action.EDIT";
-
-    //
-    // Public methods and protected overrides
-    //
-
-    /** Called when the activity is first created. */
     @Override
-    public void onCreate(Bundle icicle) {
-        Log.v("Ringdroid", "EditActivity OnCreate");
-        super.onCreate(icicle);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -136,16 +107,8 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
         mProgressDialog = null;
 
         mLoadSoundFileThread = null;
-        mRecordAudioThread = null;
-        mSaveSoundFileThread = null;
 
         Intent intent = getIntent();
-
-        // If the Ringdroid media select activity was launched via a
-        // GET_CONTENT intent, then we shouldn't display a "saved"
-        // message when the user saves, we should just return whatever
-        // they create.
-//        mWasGetContentIntent = intent.getBooleanExtra("was_get_content_intent", false);
 
         mFilename = intent.getData().toString().replaceFirst("file://", "").replaceAll("%20", " ");
         mSoundFile = null;
@@ -157,11 +120,8 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
 
         mHandler.postDelayed(mTimerRunnable, 100);
 
-        if (!mFilename.equals("record")) {
-            loadFromFile();
-        } else {
-            recordAudio();
-        }
+        loadFromFile();
+
     }
 
     private void closeThread(Thread thread) {
@@ -169,23 +129,16 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
             try {
                 thread.join();
             } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
 
-    /** Called when the activity is finally destroyed. */
     @Override
     protected void onDestroy() {
-        Log.v("Ringdroid", "EditActivity OnDestroy");
-
         mLoadingKeepGoing = false;
-        mRecordingKeepGoing = false;
         closeThread(mLoadSoundFileThread);
-        closeThread(mRecordAudioThread);
-        closeThread(mSaveSoundFileThread);
         mLoadSoundFileThread = null;
-        mRecordAudioThread = null;
-        mSaveSoundFileThread = null;
         if(mProgressDialog != null) {
             mProgressDialog.dismiss();
             mProgressDialog = null;
@@ -194,7 +147,6 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
             mAlertDialog.dismiss();
             mAlertDialog = null;
         }
-
         if (mPlayer != null) {
             if (mPlayer.isPlaying() || mPlayer.isPaused()) {
                 mPlayer.stop();
@@ -206,29 +158,8 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
         super.onDestroy();
     }
 
-    /** Called with an Activity we started with an Intent returns. */
-    @Override
-    protected void onActivityResult(int requestCode,
-                                    int resultCode,
-                                    Intent dataIntent) {
-        Log.v("Ringdroid", "EditActivity onActivityResult");
-        if (requestCode == REQUEST_CODE_CHOOSE_CONTACT) {
-            // The user finished saving their ringtone and they're
-            // just applying it to a contact.  When they return here,
-            // they're done.
-            finish();
-            return;
-        }
-    }
-
-    /**
-     * Called when the orientation changes and/or the keyboard is shown
-     * or hidden.  We don't need to recreate the whole activity in this
-     * case, but we do need to redo our layout somewhat.
-     */
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        Log.v("Ringdroid", "EditActivity onConfigurationChanged");
         final int saveZoomLevel = mWaveformView.getZoomLevel();
         super.onConfigurationChanged(newConfig);
 
@@ -257,7 +188,7 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_share) {
-//            shareFile();
+            shareFile();
             return true;
         }
         if (item.getItemId() == android.R.id.home) {
@@ -272,18 +203,9 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
             onPlay(mStartPos);
             return true;
         }
-
         return super.onKeyDown(keyCode, event);
     }
 
-    //
-    // WaveformListener
-    //
-
-    /**
-     * Every time we get a message that our waveform drew, see if we need to
-     * animate and trigger another redraw.
-     */
     public void waveformDraw() {
         mWidth = mWaveformView.getMeasuredWidth();
         if (mOffsetGoal != mOffset && !mKeyDown)
@@ -302,6 +224,10 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
         mFlingVelocity = 0;
         mWaveformTouchStartMsec = getCurrentTime();
     }
+
+    /*
+     * WaveformListener
+     */
 
     public void waveformTouchMove(float x) {
         mOffset = trap((int)(mTouchInitialOffset + (mTouchStart - x)));
@@ -356,9 +282,9 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
         updateDisplay();
     }
 
-    //
-    // MarkerListener
-    //
+    /*
+     * MarkerListener
+     */
 
     public void markerDraw() {
     }
@@ -403,7 +329,6 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
             mEndPos = trap(mEndPos - (saveStart - mStartPos));
             setOffsetGoalStart();
         }
-
         if (marker == mEndMarker) {
             if (mEndPos == mStartPos) {
                 mStartPos = trap(mStartPos - velocity);
@@ -411,7 +336,6 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
             } else {
                 mEndPos = trap(mEndPos - velocity);
             }
-
             setOffsetGoalEnd();
         }
 
@@ -459,10 +383,6 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
         } else {
             setOffsetGoalEndNoUpdate();
         }
-
-        // Delay updaing the display because if this focus was in
-        // response to a touch event, we want to receive the touch
-        // event too before updating the display.
         mHandler.postDelayed(new Runnable() {
                 public void run() {
                     updateDisplay();
@@ -470,37 +390,11 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
             }, 100);
     }
 
-    //
-    // Static About dialog method, also called from RingdroidSelectActivity
-    //
-
-    public static void onAbout(final Activity activity) {
-        String versionName = "";
-        try {
-            PackageManager packageManager = activity.getPackageManager();
-            String packageName = activity.getPackageName();
-            versionName = packageManager.getPackageInfo(packageName, 0).versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            versionName = "unknown";
-        }
-        new AlertDialog.Builder(activity)
-            .setTitle(R.string.about_title)
-            .setMessage(activity.getString(R.string.about_text, versionName))
-            .setPositiveButton(R.string.alert_ok_button, null)
-            .setCancelable(false)
-            .show();
-    }
-
-    //
-    // Internal methods
-    //
-
-    /**
-     * Called from both onCreate and onConfigurationChanged
-     * (if the user switched layouts)
+    /*
+     * Metodos internos
      */
+
     private void loadGui() {
-        // Inflate our UI from its XML layout description.
         setContentView(R.layout.editor);
 
         DisplayMetrics metrics = new DisplayMetrics();
@@ -512,34 +406,22 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
         mMarkerTopOffset = (int)(10 * mDensity);
         mMarkerBottomOffset = (int)(10 * mDensity);
 
-        mStartText = (TextView)findViewById(R.id.starttext);
-        mStartText.addTextChangedListener(mTextWatcher);
-        mEndText = (TextView)findViewById(R.id.endtext);
-        mEndText.addTextChangedListener(mTextWatcher);
-
-        mPlayButton = (ImageButton)findViewById(R.id.play);
+        mPlayButton = findViewById(R.id.play);
         mPlayButton.setOnClickListener(mPlayListener);
-        mRewindButton = (ImageButton)findViewById(R.id.rew);
+        mRewindButton = findViewById(R.id.rew);
         mRewindButton.setOnClickListener(mRewindListener);
-        mFfwdButton = (ImageButton)findViewById(R.id.ffwd);
+        mFfwdButton = findViewById(R.id.ffwd);
         mFfwdButton.setOnClickListener(mFfwdListener);
-
-        TextView markStartButton = (TextView) findViewById(R.id.mark_start);
-        markStartButton.setOnClickListener(mMarkStartListener);
-        TextView markEndButton = (TextView) findViewById(R.id.mark_end);
-        markEndButton.setOnClickListener(mMarkEndListener);
 
         enableDisableButtons();
 
-        mWaveformView = (WaveformView)findViewById(R.id.waveform);
+        mWaveformView = findViewById(R.id.waveform);
         mWaveformView.setListener(this);
 
-        mInfo = (TextView)findViewById(R.id.info);
+        mInfo = findViewById(R.id.info);
         mInfo.setText(mCaption);
 
         mMaxPos = 0;
-        mLastDisplayedStartPos = -1;
-        mLastDisplayedEndPos = -1;
 
         if (mSoundFile != null && !mWaveformView.hasSoundFile()) {
             mWaveformView.setSoundFile(mSoundFile);
@@ -547,14 +429,14 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
             mMaxPos = mWaveformView.maxPos();
         }
 
-        mStartMarker = (MarkerView)findViewById(R.id.startmarker);
+        mStartMarker = findViewById(R.id.startmarker);
         mStartMarker.setListener(this);
         mStartMarker.setAlpha(1f);
         mStartMarker.setFocusable(true);
         mStartMarker.setFocusableInTouchMode(true);
         mStartVisible = true;
 
-        mEndMarker = (MarkerView)findViewById(R.id.endmarker);
+        mEndMarker = findViewById(R.id.endmarker);
         mEndMarker.setListener(this);
         mEndMarker.setAlpha(1f);
         mEndMarker.setFocusable(true);
@@ -566,17 +448,6 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
 
     private void loadFromFile() {
         mFile = new File(mFilename);
-
-        SongMetadataReader metadataReader = new SongMetadataReader(
-            this, mFilename);
-        mTitle = metadataReader.mTitle;
-        mArtist = metadataReader.mArtist;
-
-        String titleLabel = mTitle;
-        if (mArtist != null && mArtist.length() > 0) {
-            titleLabel += " - " + mArtist;
-        }
-        setTitle(titleLabel);
 
         mLoadingLastUpdateTime = getCurrentTime();
         mLoadingKeepGoing = true;
@@ -599,15 +470,13 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
                 public boolean reportProgress(double fractionComplete) {
                     long now = getCurrentTime();
                     if (now - mLoadingLastUpdateTime > 100) {
-                        mProgressDialog.setProgress(
-                                (int) (mProgressDialog.getMax() * fractionComplete));
+                        mProgressDialog.setProgress((int) (mProgressDialog.getMax() * fractionComplete));
                         mLoadingLastUpdateTime = now;
                     }
                     return mLoadingKeepGoing;
                 }
             };
 
-        // Load the sound file in a background thread
         mLoadSoundFileThread = new Thread() {
             public void run() {
                 try {
@@ -670,119 +539,11 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
         mLoadSoundFileThread.start();
     }
 
-    private void recordAudio() {
-        mFile = null;
-        mTitle = null;
-        mArtist = null;
-
-        mRecordingLastUpdateTime = getCurrentTime();
-        mRecordingKeepGoing = true;
-        mFinishActivity = false;
-        AlertDialog.Builder adBuilder = new AlertDialog.Builder(RingdroidEditActivity.this);
-        adBuilder.setTitle(getResources().getText(R.string.progress_dialog_recording));
-        adBuilder.setCancelable(true);
-        adBuilder.setNegativeButton(
-            getResources().getText(R.string.progress_dialog_cancel),
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    mRecordingKeepGoing = false;
-                    mFinishActivity = true;
-                }
-            });
-        adBuilder.setPositiveButton(
-            getResources().getText(R.string.progress_dialog_stop),
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    mRecordingKeepGoing = false;
-                }
-            });
-        // TODO(nfaralli): try to use a FrameLayout and pass it to the following inflate call.
-        // Using null, android:layout_width etc. may not work (hence text is at the top of view).
-        // On the other hand, if the text is big enough, this is good enough.
-        adBuilder.setView(getLayoutInflater().inflate(R.layout.record_audio, null));
-        mAlertDialog = adBuilder.show();
-        mTimerTextView = (TextView)mAlertDialog.findViewById(R.id.record_audio_timer);
-
-        final SoundFile.ProgressListener listener =
-            new SoundFile.ProgressListener() {
-                public boolean reportProgress(double elapsedTime) {
-                    long now = getCurrentTime();
-                    if (now - mRecordingLastUpdateTime > 5) {
-                        mRecordingTime = elapsedTime;
-                        // Only UI thread can update Views such as TextViews.
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                int min = (int)(mRecordingTime/60);
-                                float sec = (float)(mRecordingTime - 60 * min);
-                                mTimerTextView.setText(String.format("%d:%05.2f", min, sec));
-                            }
-                        });
-                        mRecordingLastUpdateTime = now;
-                    }
-                    return mRecordingKeepGoing;
-                }
-            };
-
-        // Record the audio stream in a background thread
-        mRecordAudioThread = new Thread() {
-            public void run() {
-                try {
-                    mSoundFile = SoundFile.record(listener);
-                    if (mSoundFile == null) {
-                        mAlertDialog.dismiss();
-                        Runnable runnable = new Runnable() {
-                            public void run() {
-                                showFinalAlert(
-                                    new Exception(),
-                                    getResources().getText(R.string.record_error)
-                                );
-                            }
-                        };
-                        mHandler.post(runnable);
-                        return;
-                    }
-                    mPlayer = new SamplePlayer(mSoundFile);
-                } catch (final Exception e) {
-                    mAlertDialog.dismiss();
-                    e.printStackTrace();
-                    mInfoContent = e.toString();
-                    runOnUiThread(new Runnable() {
-                        public void run() {
-                            mInfo.setText(mInfoContent);
-                        }
-                    });
-
-                    Runnable runnable = new Runnable() {
-                        public void run() {
-                            showFinalAlert(e, getResources().getText(R.string.record_error));
-                        }
-                    };
-                    mHandler.post(runnable);
-                    return;
-                }
-                mAlertDialog.dismiss();
-                if (mFinishActivity){
-                    RingdroidEditActivity.this.finish();
-                } else {
-                    Runnable runnable = new Runnable() {
-                        public void run() {
-                            finishOpeningSoundFile();
-                        }
-                    };
-                    mHandler.post(runnable);
-                }
-            }
-        };
-        mRecordAudioThread.start();
-    }
-
     private void finishOpeningSoundFile() {
         mWaveformView.setSoundFile(mSoundFile);
         mWaveformView.recomputeHeights(mDensity);
 
         mMaxPos = mWaveformView.maxPos();
-        mLastDisplayedStartPos = -1;
-        mLastDisplayedEndPos = -1;
 
         mTouchDragging = false;
 
@@ -928,31 +689,15 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
 
     private Runnable mTimerRunnable = new Runnable() {
             public void run() {
-                // Updating an EditText is slow on Android.  Make sure
-                // we only do the update if the text has actually changed.
-                if (mStartPos != mLastDisplayedStartPos &&
-                    !mStartText.hasFocus()) {
-                    mStartText.setText(formatTime(mStartPos));
-                    mLastDisplayedStartPos = mStartPos;
-                }
-
-                if (mEndPos != mLastDisplayedEndPos &&
-                    !mEndText.hasFocus()) {
-                    mEndText.setText(formatTime(mEndPos));
-                    mLastDisplayedEndPos = mEndPos;
-                }
-
                 mHandler.postDelayed(mTimerRunnable, 100);
             }
         };
 
     private void enableDisableButtons() {
         if (mIsPlaying) {
-            mPlayButton.setImageResource(android.R.drawable.ic_media_pause);
-            mPlayButton.setContentDescription(getResources().getText(R.string.stop));
+            mPlayButton.setBackgroundResource(R.drawable.ic_pause);
         } else {
-            mPlayButton.setImageResource(android.R.drawable.ic_media_play);
-            mPlayButton.setContentDescription(getResources().getText(R.string.play));
+            mPlayButton.setBackgroundResource(R.drawable.ic_play);
         }
     }
 
@@ -1147,58 +892,6 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
             }
         };
 
-    private OnClickListener mMarkStartListener = new OnClickListener() {
-            public void onClick(View sender) {
-                if (mIsPlaying) {
-                    mStartPos = mWaveformView.millisecsToPixels(
-                        mPlayer.getCurrentPosition());
-                    updateDisplay();
-                }
-            }
-        };
-
-    private OnClickListener mMarkEndListener = new OnClickListener() {
-            public void onClick(View sender) {
-                if (mIsPlaying) {
-                    mEndPos = mWaveformView.millisecsToPixels(
-                        mPlayer.getCurrentPosition());
-                    updateDisplay();
-                    handlePause();
-                }
-            }
-        };
-
-    private TextWatcher mTextWatcher = new TextWatcher() {
-            public void beforeTextChanged(CharSequence s, int start,
-                                          int count, int after) {
-            }
-
-            public void onTextChanged(CharSequence s,
-                                      int start, int before, int count) {
-            }
-
-            public void afterTextChanged(Editable s) {
-                if (mStartText.hasFocus()) {
-                    try {
-                        mStartPos = mWaveformView.secondsToPixels(
-                            Double.parseDouble(
-                                mStartText.getText().toString()));
-                        updateDisplay();
-                    } catch (NumberFormatException e) {
-                    }
-                }
-                if (mEndText.hasFocus()) {
-                    try {
-                        mEndPos = mWaveformView.secondsToPixels(
-                            Double.parseDouble(
-                                mEndText.getText().toString()));
-                        updateDisplay();
-                    } catch (NumberFormatException e) {
-                    }
-                }
-            }
-        };
-
     private long getCurrentTime() {
         return System.nanoTime() / 1000000;
     }
@@ -1207,5 +900,14 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
         StringWriter writer = new StringWriter();
         e.printStackTrace(new PrintWriter(writer));
         return writer.toString();
+    }
+
+    public void shareFile() {
+        if(mFile != null){
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("audio/*");
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(mFile));
+            startActivity(Intent.createChooser(intent, "Compartir archivo de audio"));
+        }
     }
 }

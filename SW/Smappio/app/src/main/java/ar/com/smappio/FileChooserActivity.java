@@ -214,7 +214,7 @@ public class FileChooserActivity extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_EDIT, currentFileURI);
         intent.putExtra("was_get_content_intent", Intent.ACTION_GET_CONTENT);
         intent.setClassName( "ar.com.smappio", "ar.com.smappio.WaveFormSmappio.RingdroidEditActivity");
-        startActivityForResult(intent, REQUEST_CODE_EDIT);
+        startActivity(intent);
 
     }
 

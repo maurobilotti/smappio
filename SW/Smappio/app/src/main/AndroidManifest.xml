@@ -69,7 +69,6 @@
         <activity
             android:name=".WaveFormSmappio.RingdroidEditActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"
             android:hardwareAccelerated="true">
             <intent-filter android:label="@string/edit_intent">
