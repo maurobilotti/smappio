@@ -63,14 +63,10 @@
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".WaveFormSmappio.RingdroidEditActivity"
+            android:name=".player.AudioWavePlayerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:windowSoftInputMode="adjustResize"
             android:hardwareAccelerated="true">
-            <intent-filter android:label="@string/edit_intent">
-                <action android:name="android.intent.action.EDIT" />
-                <data android:mimeType="audio/*" />
-            </intent-filter>
         </activity>
 
     </application>

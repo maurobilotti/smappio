@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ar.com.smappio.WaveFormSmappio;
+package ar.com.smappio.player;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -41,9 +41,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import ar.com.smappio.R;
-import ar.com.smappio.WaveFormSmappio.soundfile.SoundFile;
+import ar.com.smappio.player.soundfile.SoundFile;
 
-public class RingdroidEditActivity extends AppCompatActivity implements MarkerView.MarkerListener, WaveformView.WaveformListener {
+public class AudioWavePlayerActivity extends AppCompatActivity implements MarkerView.MarkerListener, WaveformView.WaveformListener {
 
     private long mLoadingLastUpdateTime;
     private boolean mLoadingKeepGoing;
@@ -108,9 +108,9 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
 
         mLoadSoundFileThread = null;
 
-        Intent intent = getIntent();
+        Bundle extras = getIntent().getExtras();
 
-        mFilename = intent.getData().toString().replaceFirst("file://", "").replaceAll("%20", " ");
+        mFilename = extras.get("currentFileURI").toString().replaceFirst("file://", "").replaceAll("%20", " ");
         mSoundFile = null;
         mKeyDown = false;
 
@@ -452,7 +452,7 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
         mLoadingLastUpdateTime = getCurrentTime();
         mLoadingKeepGoing = true;
         mFinishActivity = false;
-        mProgressDialog = new ProgressDialog(RingdroidEditActivity.this);
+        mProgressDialog = new ProgressDialog(AudioWavePlayerActivity.this);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         mProgressDialog.setTitle(R.string.progress_dialog_loading);
         mProgressDialog.setCancelable(true);
@@ -532,7 +532,7 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
                     };
                     mHandler.post(runnable);
                 } else if (mFinishActivity){
-                    RingdroidEditActivity.this.finish();
+                    AudioWavePlayerActivity.this.finish();
                 }
             }
         };
@@ -782,7 +782,6 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
         }
 
         if (mPlayer == null) {
-            // Not initialized yet
             return;
         }
 
@@ -813,13 +812,6 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
         }
     }
 
-    /**
-     * Show a "final" alert dialog that will exit the activity
-     * after the user clicks on the OK button.  If an exception
-     * is passed, it's assumed to be an error condition, and the
-     * dialog is presented as an error, and the stack trace is
-     * logged.  If there's no exception, it's a success message.
-     */
     private void showFinalAlert(Exception e, CharSequence message) {
         CharSequence title;
         if (e != null) {
@@ -832,7 +824,7 @@ public class RingdroidEditActivity extends AppCompatActivity implements MarkerVi
             title = getResources().getText(R.string.alert_title_success);
         }
 
-        new AlertDialog.Builder(RingdroidEditActivity.this)
+        new AlertDialog.Builder(AudioWavePlayerActivity.this)
             .setTitle(title)
             .setMessage(message)
             .setPositiveButton(

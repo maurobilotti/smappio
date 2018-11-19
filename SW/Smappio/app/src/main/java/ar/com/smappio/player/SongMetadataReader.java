@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ar.com.smappio.WaveFormSmappio;
+package ar.com.smappio.player;
 
 import java.util.HashMap;
 
