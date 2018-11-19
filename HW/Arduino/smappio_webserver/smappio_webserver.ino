@@ -1,9 +1,12 @@
 #include <WiFi.h>
+#include <esp_wifi.h>
+#include <esp_sleep.h>
+#include"driver/rtc_io.h"
 #include "libraries/SmappioSound/SmappioSound.cpp"
 
 WiFiServer server(80);
  
-const char* ssid     = "Smappio 4.6KHz";
+const char* ssid     = "Smappio";
 const char* password = "123456789"; // El pass tiene que tener mas de 8 caracteres
 
 // CONSTANTES
@@ -16,13 +19,18 @@ const char* password = "123456789"; // El pass tiene que tener mas de 8 caracter
 #define WIFI_CHANNEL 1                      // 1  |  6  |  11
 #define CONTROL_ALGHORITM_ENABLED true     // Habilitar para enviar los bits de control
 
+#define ON_LED LED_BUILTIN
+
 // VARIABLES
 int32_t *_buffer;
 uint8_t _dataToSend[BYTES_TO_SEND + 1];
 SmappioSound smappioSound(MEDIA); 
 
 void setup() { 
+  pinMode(ON_LED, OUTPUT);
+  pinMode(GPIO_NUM_4, INPUT_PULLUP); // Boton on/off
   pinMode(DATA_PIN, INPUT); // Supuestamente necesario para que no haya ruido
+  digitalWrite(ON_LED, HIGH);
   smappioSound.begin(_buffer);
 
   // Se crea un Access Point, para poder conectarse al dispositivo
@@ -30,15 +38,20 @@ void setup() {
   delay(300); // DEJAR ESTE DELAY, sino softAP se puede colgar.
 
   // Se setea la ip del dispositivo para poder comunicarse con el
-  IPAddress gateway(192,168,1,1);
+  IPAddress gateway(0,0,0,0);
   IPAddress Ip(192, 168, 1, 2);
   IPAddress NMask(255, 255, 255, 0);
   WiFi.softAPConfig(Ip, gateway, NMask);
   server.begin();
   server.setNoDelay(TCP_NO_DELAY);
+
+  rtc_gpio_pullup_en(GPIO_NUM_4);
+  esp_sleep_enable_ext0_wakeup(GPIO_NUM_4, 0); //1 = High, 0 = Low
 }
 
 void loop() {
+  deepSleepIfButtonPressed();
+  
   // Se escucha a las conexiones a ver si algun cliente se quiere comunicar (iniciar el handshake)
   WiFiClient client = server.available(); 
  
@@ -48,7 +61,9 @@ void loop() {
     client.setNoDelay(TCP_NO_DELAY);  
     int bufferSeqNum = 0;  
     while (client.connected()) 
-    {      
+    {
+      deepSleepIfButtonPressed();
+            
       if(bufferSeqNum == 64)
         bufferSeqNum = 0;
         
@@ -62,6 +77,16 @@ void loop() {
       bufferSeqNum++;
     } 
   } 
+}
+
+void deepSleepIfButtonPressed() {
+  if(digitalRead(GPIO_NUM_4) == 0)
+  {
+    digitalWrite(ON_LED, LOW);
+    delay(1000);
+    esp_wifi_stop();
+    esp_deep_sleep_start();
+  }
 }
 
 // Metodo para bufferear sonido sin bits de control
