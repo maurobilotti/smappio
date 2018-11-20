@@ -44,29 +44,29 @@
 
     <!-- Helps -->
     <string name="msg_ayuda_1">
-        Bienvenido a la aplicación de Smappio, esta es una simple guía para poder conectarse al dispositivo y realizar auscultaciones.
+        Bienvenido a la aplicación de <b>Smappio</b>, esta es una guía básica para poder conectarse al dispositivo y realizar auscultaciones.
         Por favor, siga las instrucciones:
     </string>
     <string name="msg_ayuda_2">
-        Para el uso de esta aplicación será necesario la utilización de auriculares para poder escuchar correctamente los sonidos capturados.
+        Para el uso de esta aplicación será necesario la <b>utilización de auriculares</b> para poder escuchar correctamente los sonidos capturados.
     </string>
     <string name="msg_ayuda_3">
-        - Para vincular este dispositivo con el estetoscopio de Smappio, primero asegurarse de que el mismo
-        esté encendido (puede verificarlo por la luz de color verde). Luego presionar el siguiente botón que figura sobre
+        - Para <b>vincular este dispositivo con el estetoscopio de Smappio</b>, primero asegurarse de que el mismo
+        esté encendido (indicado por la luz de color verde). Luego presionar el siguiente botón que figura sobre
         la pantalla principal para conectarse:
     </string>
     <string name="msg_ayuda_4">
         Luego de haber presionado el botón de conexión, se abrirá la pantalla para buscar el dispositivo de Smappio.
-        Se necesitará tener activado el Wi-Fi y el Servicio de Localización (GPS). En caso de tener deshabilitado
-        el Wi-Fi, podrá activarlo pulsando el switch de la parte superior. A continuación, se debe presionar el botón
-        de búsqueda:
+        Se necesitará tener activado el <b>Wi-Fi</b> y el <b>Servicio de Localización (GPS)</b> (recuerde estar cerca del estetoscopio para realizar la conexión).
+        En caso de tener deshabilitado el Wi-Fi, podrá activarlo pulsando el switch de la parte superior.
+        A continuación, se debe presionar el botón de búsqueda:
     </string>
     <string name="msg_ayuda_5">
-        Una vez realizada la búsqueda, al seleccionar el dispositivo al cual se desea conectar, se solocitará la contraseña del mismo. Luego de
+        Una vez realizada la búsqueda, al seleccionar el dispositivo al cual se desea conectar, se solicitará la contraseña del mismo. Luego de
         haberla ingresado correctamente, se retornará a la pantalla principal.
     </string>
     <string name="msg_ayuda_6">
-        - Para realizar una auscultación, una vez finalizada la vinculación del dispositivo Smappio, aparecerá en
+        - Para <b>realizar una auscultación</b>, una vez finalizada la vinculación del dispositivo Smappio, aparecerá en
         la pantalla principal el siguiente botón que deberá pulsar e inmediatamente podrá tomar la muestra:
     </string>
     <string name="msg_ayuda_7">
