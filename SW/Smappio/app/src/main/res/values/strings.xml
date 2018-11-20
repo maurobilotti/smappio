@@ -45,26 +45,24 @@
     <!-- Helps -->
     <string name="msg_ayuda_1">
         Bienvenido a la aplicación de Smappio, esta es una simple guía para poder conectarse al dispositivo y realizar auscultaciones.
-        Por favor, siga las instrucciones.
+        Por favor, siga las instrucciones:
     </string>
     <string name="msg_ayuda_2">
-        Si desea utilizar esta aplicación se necesita otorgar los permisos solicitados. (Explicar porque)
+        Para el uso de esta aplicación será necesario la utilización de auriculares para poder escuchar correctamente los sonidos capturados.
     </string>
     <string name="msg_ayuda_3">
         - Para vincular este dispositivo con el estetoscopio de Smappio, primero asegurarse de que el mismo
-        esté encendido (puede verificarlo por la luz de color verde). Luego presionar el botón que figura sobre
+        esté encendido (puede verificarlo por la luz de color verde). Luego presionar el siguiente botón que figura sobre
         la pantalla principal para conectarse:
     </string>
     <string name="msg_ayuda_4">
         Luego de haber presionado el botón de conexión, se abrirá la pantalla para buscar el dispositivo de Smappio.
-        Se necesitará tener activada el Wi-Fi y el Servicio de Localización (GPS). En caso de tener deshabilitado
-        el Wi-Fi, podrá activarlo pulsando el switch de la parte superior. Al pulsar sobre el botón "Buscar", se verificará
-        el estado del Servicio de Localización, si se encuentra apagado aparecerá un mensaje y el usuario podrá optar por
-        activarlo o no. Luego de cumplir estas condiciones, se podrá realizar la busqueda del dispositivo y aparecerá
-        en la pantalla.
+        Se necesitará tener activado el Wi-Fi y el Servicio de Localización (GPS). En caso de tener deshabilitado
+        el Wi-Fi, podrá activarlo pulsando el switch de la parte superior. A continuación, se debe presionar el botón
+        de búsqueda:
     </string>
     <string name="msg_ayuda_5">
-        Al presionar sobre el dispositivo al cual se desea conectar, se solocitará la contraseña del mismo. Luego de
+        Una vez realizada la búsqueda, al seleccionar el dispositivo al cual se desea conectar, se solocitará la contraseña del mismo. Luego de
         haberla ingresado correctamente, se retornará a la pantalla principal.
     </string>
     <string name="msg_ayuda_6">
@@ -72,16 +70,14 @@
         la pantalla principal el siguiente botón que deberá pulsar e inmediatamente podrá tomar la muestra:
     </string>
     <string name="msg_ayuda_7">
-        La auscultación tiene un tiempo máximo de 2 minutos. Si desea terminarla antes, deberá presionar sobre el
+        La auscultación tiene un tiempo máximo de 2 minutos. Si desea finalizarla antes de ese tiempo, deberá presionar sobre el
         botón:
     </string>
     <string name="msg_ayuda_8">
-        Luego seguir los pasos para guardar el sonido capturado. Dentro del directorio principal de Smappio
-        (../DCIM/Smappio), se solicitará elegir la carpeta donde guardar el archivo o crear una nueva. Y posteriormente,
-        introducir un nombre de archivo. Queda a disposición del usuario la organización interna y las nomenclaturas a utilizar.
+        Si desea escuchar el sonido capturado, luego de haberlo guardado en la memoria del dispisitivo,
+        se habilitará el botón para su reproducción:
     </string>
-	
-	<!-- RingDroid -->
+    
     <string name="time_seconds">Segundos</string>
     <string name="progress_dialog_loading">Cargando…</string>
     <string name="alert_title_success">Éxito</string>
