@@ -19,7 +19,10 @@ const char* password = "123456789"; // El pass tiene que tener mas de 8 caracter
 #define WIFI_CHANNEL 1                      // 1  |  6  |  11
 #define CONTROL_ALGHORITM_ENABLED true     // Habilitar para enviar los bits de control
 
-#define ON_LED LED_BUILTIN
+#define ON_LED 26
+#define CONNECTED_LED 25
+#define LOW_BATTERY_LED 14
+#define POWER_BUTTON GPIO_NUM_4
 
 // VARIABLES
 int32_t *_buffer;
@@ -28,7 +31,9 @@ SmappioSound smappioSound(MEDIA);
 
 void setup() { 
   pinMode(ON_LED, OUTPUT);
-  pinMode(GPIO_NUM_4, INPUT_PULLUP); // Boton on/off
+  pinMode(CONNECTED_LED, OUTPUT);
+  pinMode(LOW_BATTERY_LED, OUTPUT);
+  pinMode(POWER_BUTTON, INPUT_PULLUP); // Boton on/off
   pinMode(DATA_PIN, INPUT); // Supuestamente necesario para que no haya ruido
   digitalWrite(ON_LED, HIGH);
   smappioSound.begin(_buffer);
@@ -45,8 +50,8 @@ void setup() {
   server.begin();
   server.setNoDelay(TCP_NO_DELAY);
 
-  rtc_gpio_pullup_en(GPIO_NUM_4);
-  esp_sleep_enable_ext0_wakeup(GPIO_NUM_4, 0); //1 = High, 0 = Low
+  rtc_gpio_pullup_en(POWER_BUTTON);
+  esp_sleep_enable_ext0_wakeup(POWER_BUTTON, 0); //1 = High, 0 = Low
 }
 
 void loop() {
@@ -58,6 +63,7 @@ void loop() {
   // Si el cliente inicio el handshake
   if (client) 
   {
+    digitalWrite(CONNECTED_LED, HIGH);
     client.setNoDelay(TCP_NO_DELAY);  
     int bufferSeqNum = 0;  
     while (client.connected()) 
@@ -76,13 +82,18 @@ void loop() {
 
       bufferSeqNum++;
     } 
-  } 
+  }
+  else
+  {
+    digitalWrite(CONNECTED_LED, LOW); 
+  }
 }
 
 void deepSleepIfButtonPressed() {
-  if(digitalRead(GPIO_NUM_4) == 0)
+  if(digitalRead(POWER_BUTTON) == 0)
   {
     digitalWrite(ON_LED, LOW);
+    digitalWrite(CONNECTED_LED, LOW);
     delay(1000);
     esp_wifi_stop();
     esp_deep_sleep_start();
