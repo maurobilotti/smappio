@@ -27,6 +27,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -42,7 +43,7 @@ public class WifiActivity extends AppCompatActivity {
     private List<ScanResult> networkLst = new ArrayList<>();
     private ArrayList<String> ssidLst = new ArrayList<>();
     private ArrayAdapter adapter;
-    private Button scanBtn;
+    private ImageButton scanBtn;
     private Switch wifiBtn;
 
     @Override
@@ -144,6 +145,8 @@ public class WifiActivity extends AppCompatActivity {
             } else {
                 buildAlertMessageGPS();
             }
+        } else {
+            Toast.makeText(WifiActivity.this, R.string.msg_encender_wifi, Toast.LENGTH_LONG).show();
         }
     }
 

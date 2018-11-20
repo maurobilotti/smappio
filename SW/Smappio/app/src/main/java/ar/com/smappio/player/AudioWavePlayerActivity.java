@@ -32,6 +32,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -131,6 +132,14 @@ public class AudioWavePlayerActivity extends AppCompatActivity implements Marker
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mIsPlaying) {
+            handlePause();
         }
     }
 
@@ -689,8 +698,10 @@ public class AudioWavePlayerActivity extends AppCompatActivity implements Marker
     private void enableDisableButtons() {
         if (mIsPlaying) {
             mPlayButton.setBackgroundResource(R.drawable.ic_pause);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         } else {
             mPlayButton.setBackgroundResource(R.drawable.ic_play);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
     }
 
@@ -806,6 +817,7 @@ public class AudioWavePlayerActivity extends AppCompatActivity implements Marker
             mPlayer.start();
             updateDisplay();
             enableDisableButtons();
+
         } catch (Exception e) {
             showFinalAlert(e, R.string.play_error);
             return;

@@ -16,7 +16,6 @@
     <string name="str_archivos">Archivos</string>
     <string name="str_auscultar">Auscultar</string>
     <string name="str_ayuda">Ayuda</string>
-    <string name="str_buscar">Buscar</string>
     <string name="str_cancelar">Cancelar</string>
     <string name="str_cerrar">Cerrar</string>
     <string name="str_compartir">Compartir</string>
@@ -42,6 +41,7 @@
     <string name="msg_guardar_audio">Guardar audio</string>
     <string name="msg_ingrese_nombre_archivo">Por favor, ingrese el nombre del archivo.</string>
     <string name="msg_guardo_archivo_correctamente">Se guardó el archivo correctamente</string>
+    <string name="msg_encender_wifi">Encender el Wi-Fi</string>
 
     <!-- Helps -->
     <string name="msg_ayuda_1">
@@ -58,7 +58,7 @@
     </string>
     <string name="msg_ayuda_4">
         Luego de haber presionado el botón de conexión, se abrirá la pantalla para buscar el dispositivo de Smappio.
-        Se necesitará tener activada la tecnología Wi-Fi y el Servicio de Localización (GPS). En caso de tener deshabilitado
+        Se necesitará tener activada el Wi-Fi y el Servicio de Localización (GPS). En caso de tener deshabilitado
         el Wi-Fi, podrá activarlo pulsando el switch de la parte superior. Al pulsar sobre el botón "Buscar", se verificará
         el estado del Servicio de Localización, si se encuentra apagado aparecerá un mensaje y el usuario podrá optar por
         activarlo o no. Luego de cumplir estas condiciones, se podrá realizar la busqueda del dispositivo y aparecerá
@@ -73,7 +73,7 @@
         la pantalla principal el siguiente botón que deberá pulsar e inmediatamente podrá tomar la muestra:
     </string>
     <string name="msg_ayuda_7">
-        La auscultación tiene un tiempo máximo de 30 segundos. Si desea terminarla antes, deberá presionar sobre el
+        La auscultación tiene un tiempo máximo de 2 minutos. Si desea terminarla antes, deberá presionar sobre el
         botón:
     </string>
     <string name="msg_ayuda_8">

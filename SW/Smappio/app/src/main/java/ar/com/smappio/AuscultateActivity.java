@@ -56,7 +56,7 @@ public class AuscultateActivity extends AppCompatActivity {
     private TextView countUpTimer;
     private ImageButton startAuscultateBtn;
     private ImageButton stopAuscultateBtn;
-    private MenuItem playItem;
+    private ImageButton playAuscultateBtn;
     private MenuItem shareItem;
 
     private static final float maxSampleValue = 131072; // 2^17 (el bit 18 se usa para el signo)
@@ -94,13 +94,13 @@ public class AuscultateActivity extends AppCompatActivity {
         countUpTimer = findViewById(R.id.count_up_timer);
         startAuscultateBtn = findViewById(R.id.start_auscultate_btn);
         stopAuscultateBtn = findViewById(R.id.stop_auscultate_btn);
+        playAuscultateBtn = findViewById(R.id.play_auscultate_btn);
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_auscultate, menu);
-        playItem = menu.findItem(R.id.action_play);
         shareItem = menu.findItem(R.id.action_share);
         return true;
     }
@@ -193,6 +193,10 @@ public class AuscultateActivity extends AppCompatActivity {
     public void auscultate(View view) {
         stopAuscultateBtn.setVisibility(View.VISIBLE);
         startAuscultateBtn.setVisibility(View.GONE);
+        playAuscultateBtn.setEnabled(false);
+        if(shareItem != null) {
+            shareItem.setVisible(false);
+        }
         isPlaying = true;
         thread = new Thread(runnable);
         thread.start();
@@ -203,6 +207,12 @@ public class AuscultateActivity extends AppCompatActivity {
         stopCountUp();
         startAuscultateBtn.setVisibility(View.VISIBLE);
         stopAuscultateBtn.setVisibility(View.GONE);
+        if(currentFile != null) {
+            playAuscultateBtn.setEnabled(true);
+            if(shareItem != null) {
+                shareItem.setVisible(true);
+            }
+        }
         if(isPlaying) {
             buildAlertMessageSaveWav();
             isPlaying = false;
@@ -212,7 +222,7 @@ public class AuscultateActivity extends AppCompatActivity {
     long intervalSeconds = 1;
     CountDownTimer timer = new CountDownTimer(Constant.AUSCULTATE_MAX_TIME * 1000, intervalSeconds * 1000) {
         public void onTick(long millisUntilFinished) {
-            SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat(Constant.FORMAT_MMSS);
             Date date = new Date();
             date.setTime((Constant.AUSCULTATE_MAX_TIME * 1000) - millisUntilFinished);
             countUpTimer.setText(sdf.format(date));
@@ -277,7 +287,7 @@ public class AuscultateActivity extends AppCompatActivity {
                                         currentFile = FileUtils.rawToWave(bufferWav.toByteArray(), filePath);
                                         if(currentFile != null) {
                                             Toast.makeText(AuscultateActivity.this, R.string.msg_guardo_archivo_correctamente, Toast.LENGTH_LONG).show();
-                                            playItem.setVisible(true);
+                                            playAuscultateBtn.setEnabled(true);
                                             shareItem.setVisible(true);
                                         }
                                     } catch (Exception e) {
@@ -533,7 +543,7 @@ public class AuscultateActivity extends AppCompatActivity {
         }
     }
 
-    public void playFile(MenuItem view) {
+    public void playFile(View view) {
         if(currentFile != null) {
             Uri currentFileURI = Uri.fromFile(currentFile);
             Intent intent = new Intent(this, AudioWavePlayerActivity.class);
