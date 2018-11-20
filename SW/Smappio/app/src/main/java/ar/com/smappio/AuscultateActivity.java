@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.media.audiofx.Visualizer;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -16,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -33,6 +35,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import ar.com.smappio.player.AudioWavePlayerActivity;
 
 public class AuscultateActivity extends AppCompatActivity {
 
@@ -52,6 +56,8 @@ public class AuscultateActivity extends AppCompatActivity {
     private TextView countUpTimer;
     private ImageButton startAuscultateBtn;
     private ImageButton stopAuscultateBtn;
+    private MenuItem playItem;
+    private MenuItem shareItem;
 
     private static final float maxSampleValue = 131072; // 2^17 (el bit 18 se usa para el signo)
     private static int playingLength = 345; // Cantidad de bytes en PCM24 a pasar al reproductor por vez
@@ -60,6 +66,7 @@ public class AuscultateActivity extends AppCompatActivity {
     private byte[] bufferAux = new byte[playingLength * 2]; // Buffer en el que se almacenan los bytes extraidos del socket
     private int readedAux = 0; // Bytes leidos del socket cargados en bufferAux
     private ByteArrayOutputStream bufferWav;
+    private File currentFile;
 
 
     @Override
@@ -88,6 +95,14 @@ public class AuscultateActivity extends AppCompatActivity {
         startAuscultateBtn = findViewById(R.id.start_auscultate_btn);
         stopAuscultateBtn = findViewById(R.id.stop_auscultate_btn);
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_auscultate, menu);
+        playItem = menu.findItem(R.id.action_play);
+        shareItem = menu.findItem(R.id.action_share);
+        return true;
     }
 
     @Override
@@ -259,9 +274,11 @@ public class AuscultateActivity extends AppCompatActivity {
                                     String nameFile = userInput.getText().toString();
                                     String filePath = file.getPath() + File.separator + nameFile + ".wav";
                                     try {
-                                        File savedWav = FileUtils.rawToWave(bufferWav.toByteArray(), filePath);
-                                        if(savedWav != null) {
+                                        currentFile = FileUtils.rawToWave(bufferWav.toByteArray(), filePath);
+                                        if(currentFile != null) {
                                             Toast.makeText(AuscultateActivity.this, R.string.msg_guardo_archivo_correctamente, Toast.LENGTH_LONG).show();
+                                            playItem.setVisible(true);
+                                            shareItem.setVisible(true);
                                         }
                                     } catch (Exception e) {
                                         e.printStackTrace();
@@ -504,6 +521,24 @@ public class AuscultateActivity extends AppCompatActivity {
             readedAux += is.read(bufferAux, readedAux, size);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void shareFile(MenuItem view) {
+        if(currentFile != null) {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(currentFile));
+            intent.setType("audio/*");
+            startActivity(intent);
+        }
+    }
+
+    public void playFile(MenuItem view) {
+        if(currentFile != null) {
+            Uri currentFileURI = Uri.fromFile(currentFile);
+            Intent intent = new Intent(this, AudioWavePlayerActivity.class);
+            intent.putExtra("currentFileURI", currentFileURI);
+            startActivity(intent);
         }
     }
 

@@ -207,17 +207,21 @@ public class FileChooserActivity extends AppCompatActivity {
     }
 
     private void fileSelected(File chosenFile) {
-        Uri currentFileURI = Uri.fromFile(chosenFile);
-        Intent intent = new Intent(this, AudioWavePlayerActivity.class);
-        intent.putExtra("currentFileURI", currentFileURI);
-        startActivity(intent);
+        if(chosenFile != null) {
+            Uri currentFileURI = Uri.fromFile(chosenFile);
+            Intent intent = new Intent(this, AudioWavePlayerActivity.class);
+            intent.putExtra("currentFileURI", currentFileURI);
+            startActivity(intent);
+        }
     }
 
     public void shareFile(MenuItem view) {
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(currentFile));
-        intent.setType("audio/*");
-        startActivity(intent);
+        if(currentFile != null) {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(currentFile));
+            intent.setType("audio/*");
+            startActivity(intent);
+        }
     }
 
     public void deleteFile(MenuItem item) {
