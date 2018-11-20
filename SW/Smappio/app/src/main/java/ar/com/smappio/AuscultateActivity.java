@@ -194,6 +194,7 @@ public class AuscultateActivity extends AppCompatActivity {
         stopAuscultateBtn.setVisibility(View.VISIBLE);
         startAuscultateBtn.setVisibility(View.GONE);
         playAuscultateBtn.setEnabled(false);
+        playAuscultateBtn.setBackgroundResource(R.drawable.ic_play_auscultate_disabled);
         if(shareItem != null) {
             shareItem.setVisible(false);
         }
@@ -209,6 +210,7 @@ public class AuscultateActivity extends AppCompatActivity {
         stopAuscultateBtn.setVisibility(View.GONE);
         if(currentFile != null) {
             playAuscultateBtn.setEnabled(true);
+            playAuscultateBtn.setBackgroundResource(R.drawable.ic_play_auscultate);
             if(shareItem != null) {
                 shareItem.setVisible(true);
             }
@@ -288,7 +290,10 @@ public class AuscultateActivity extends AppCompatActivity {
                                         if(currentFile != null) {
                                             Toast.makeText(AuscultateActivity.this, R.string.msg_guardo_archivo_correctamente, Toast.LENGTH_LONG).show();
                                             playAuscultateBtn.setEnabled(true);
-                                            shareItem.setVisible(true);
+                                            playAuscultateBtn.setBackgroundResource(R.drawable.ic_play_auscultate);
+                                            if(shareItem != null) {
+                                                shareItem.setVisible(true);
+                                            }
                                         }
                                     } catch (Exception e) {
                                         e.printStackTrace();
