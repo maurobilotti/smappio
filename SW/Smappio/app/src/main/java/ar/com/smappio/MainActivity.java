@@ -20,7 +20,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -225,7 +224,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void updateConnectInfo(Boolean connected, String ssid) {
         TextView stateLbl = findViewById(R.id.state_lbl);
         ImageButton stateColor = findViewById(R.id.state_icon);
-        TextView deviceConnectedLbl = findViewById(R.id.connected_device_lbl);
         ImageButton connectBtn = findViewById(R.id.connect_btn);
         TextView connectLbl = findViewById(R.id.connect_lbl);
         ImageButton auscultateBtn = findViewById(R.id.auscultate_btn);
@@ -234,7 +232,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if(connected) {
             stateLbl.setText(R.string.str_conectado);
             stateColor.setBackgroundResource(android.R.drawable.presence_online);
-            deviceConnectedLbl.setText(getString(R.string.msg_vinculado_a, ssid));
             auscultateBtn.setVisibility(View.VISIBLE);
             auscultateLbl.setVisibility(View.VISIBLE);
             connectBtn.setVisibility(View.GONE);
@@ -242,7 +239,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             stateLbl.setText(R.string.str_desconectado);
             stateColor.setBackgroundResource(android.R.drawable.presence_offline);
-            deviceConnectedLbl.setText("");
             auscultateBtn.setVisibility(View.GONE);
             auscultateLbl.setVisibility(View.GONE);
             connectBtn.setVisibility(View.VISIBLE);

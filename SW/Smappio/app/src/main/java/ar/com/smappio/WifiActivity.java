@@ -145,8 +145,6 @@ public class WifiActivity extends AppCompatActivity {
             } else {
                 buildAlertMessageGPS();
             }
-        } else {
-            Toast.makeText(WifiActivity.this, R.string.msg_encender_wifi, Toast.LENGTH_LONG).show();
         }
     }
 

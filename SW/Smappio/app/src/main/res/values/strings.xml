@@ -30,7 +30,6 @@
 
     <!-- Messages -->
     <string name="msg_permisos">Para usar esta aplicación debe conceder todos los permisos. Ingrese nuevamente.</string>
-    <string name="msg_vinculado_a">Vinculado a %1$s</string>
     <string name="msg_activar_servicio_localizacion">Se debe activar el servicio de localización.</string>
     <string name="msg_buscando_dispositivo">Buscando Dispositivo …</string>
     <string name="msg_conectarse_a">Conectarse a %1$s</string>

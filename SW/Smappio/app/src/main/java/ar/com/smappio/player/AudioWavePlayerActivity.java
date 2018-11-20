@@ -51,7 +51,6 @@ public class AudioWavePlayerActivity extends AppCompatActivity implements Marker
     private long mLoadingLastUpdateTime;
     private boolean mLoadingKeepGoing;
     private boolean mFinishActivity;
-    private AlertDialog mAlertDialog;
     private ProgressDialog mProgressDialog;
     private SoundFile mSoundFile;
     private File mFile;
@@ -106,7 +105,6 @@ public class AudioWavePlayerActivity extends AppCompatActivity implements Marker
         mPlayer = null;
         mIsPlaying = false;
 
-        mAlertDialog = null;
         mProgressDialog = null;
 
         mLoadSoundFileThread = null;
@@ -154,10 +152,6 @@ public class AudioWavePlayerActivity extends AppCompatActivity implements Marker
             mProgressDialog.dismiss();
             mProgressDialog = null;
         }
-        if(mAlertDialog != null) {
-            mAlertDialog.dismiss();
-            mAlertDialog = null;
-        }
         if (mPlayer != null) {
             if (mPlayer.isPlaying() || mPlayer.isPaused()) {
                 mPlayer.stop();
@@ -200,7 +194,6 @@ public class AudioWavePlayerActivity extends AppCompatActivity implements Marker
         int id = item.getItemId();
         if (id == R.id.action_share) {
             shareFile();
-            return true;
         }
         if (item.getItemId() == android.R.id.home) {
             finish();
@@ -212,7 +205,6 @@ public class AudioWavePlayerActivity extends AppCompatActivity implements Marker
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_SPACE) {
             onPlay(mStartPos);
-            return true;
         }
         return super.onKeyDown(keyCode, event);
     }
@@ -406,7 +398,7 @@ public class AudioWavePlayerActivity extends AppCompatActivity implements Marker
      */
 
     private void loadGui() {
-        setContentView(R.layout.editor);
+        setContentView(R.layout.activity_audio_wave_player);
 
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -829,12 +821,12 @@ public class AudioWavePlayerActivity extends AppCompatActivity implements Marker
     private void showFinalAlert(Exception e, CharSequence message) {
         CharSequence title;
         if (e != null) {
-            Log.e("Ringdroid", "Error: " + message);
-            Log.e("Ringdroid", getStackTrace(e));
+            Log.e("Smappio", "Error: " + message);
+            Log.e("Smappio", getStackTrace(e));
             title = getResources().getText(R.string.alert_title_failure);
             setResult(RESULT_CANCELED, new Intent());
         } else {
-            Log.v("Ringdroid", "Success: " + message);
+            Log.v("Smappio", "Success: " + message);
             title = getResources().getText(R.string.alert_title_success);
         }
 

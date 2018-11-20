@@ -60,6 +60,9 @@ public class AuscultateActivity extends AppCompatActivity {
     private ImageButton stopAuscultateBtn;
     private ImageButton playAuscultateBtn;
     private MenuItem shareItem;
+    private AlertDialog alertDialogDisconnected;
+    private AlertDialog alertDialogSaveFile;
+    private AlertDialog alertDialogSaveWav;
 
     private static final float maxSampleValue = 131072; // 2^17 (el bit 18 se usa para el signo)
     private static int playingLength = 345; // Cantidad de bytes en PCM24 a pasar al reproductor por vez
@@ -82,6 +85,13 @@ public class AuscultateActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
+        progressBarTimer = findViewById(R.id.progress_bar_timer);
+        countUpTimer = findViewById(R.id.count_up_timer);
+        startAuscultateBtn = findViewById(R.id.start_auscultate_btn);
+        stopAuscultateBtn = findViewById(R.id.stop_auscultate_btn);
+        playAuscultateBtn = findViewById(R.id.play_auscultate_btn);
+        equalizerView = findViewById(R.id.equalizer);
+
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         bssid = wifiManager.getConnectionInfo().getBSSID();
 
@@ -89,14 +99,7 @@ public class AuscultateActivity extends AppCompatActivity {
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, Constant.SAMPLE_RATE, Constant.CHANNEL_CONFIG, Constant.AUDIO_ENCODING, minBufferSize * 3, AudioTrack.MODE_STREAM);
         audioTrack.setVolume(1.0f);
 
-        equalizerView = findViewById(R.id.equalizer);
         setupEqualizer();
-
-        progressBarTimer = findViewById(R.id.progress_bar_timer);
-        countUpTimer = findViewById(R.id.count_up_timer);
-        startAuscultateBtn = findViewById(R.id.start_auscultate_btn);
-        stopAuscultateBtn = findViewById(R.id.stop_auscultate_btn);
-        playAuscultateBtn = findViewById(R.id.play_auscultate_btn);
 
     }
 
@@ -151,6 +154,18 @@ public class AuscultateActivity extends AppCompatActivity {
         thread = null;
         runnable = null;
         broadcastReceiver = null;
+        if(alertDialogDisconnected != null) {
+            alertDialogDisconnected.dismiss();
+            alertDialogDisconnected = null;
+        }
+        if(alertDialogSaveFile != null) {
+            alertDialogSaveFile.dismiss();
+            alertDialogSaveFile = null;
+        }
+        if(alertDialogSaveWav != null) {
+            alertDialogSaveWav.dismiss();
+            alertDialogSaveWav = null;
+        }
     }
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -188,8 +203,8 @@ public class AuscultateActivity extends AppCompatActivity {
                         dialog.dismiss();
                     }
                 });
-        AlertDialog alert = builder.create();
-        alert.show();
+        alertDialogDisconnected = builder.create();
+        alertDialogDisconnected.show();
     }
 
     public void auscultate(View view) {
@@ -264,11 +279,11 @@ public class AuscultateActivity extends AppCompatActivity {
                 })
                 .setNegativeButton(R.string.str_cancelar, new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
-                        dialog.cancel();
+                        dialog.dismiss();
                     }
                 });
-        AlertDialog alert = builder.create();
-        alert.show();
+        alertDialogSaveFile = builder.create();
+        alertDialogSaveFile.show();
     }
 
     private void buildAlertSaveWav() {
@@ -279,7 +294,7 @@ public class AuscultateActivity extends AppCompatActivity {
                 EditText userInput = popupSaveFileView.findViewById(R.id.file_name);
                 AlertDialog.Builder builder = new AlertDialog.Builder(AuscultateActivity.this);
                 builder.setView(popupSaveFileView);
-                AlertDialog dialog = builder.setTitle(R.string.msg_guardar_audio)
+                alertDialogSaveWav = builder.setTitle(R.string.msg_guardar_audio)
                         .setMessage(R.string.msg_ingrese_nombre_archivo)
                         .setCancelable(false)
                         .setPositiveButton(R.string.str_aceptar, new DialogInterface.OnClickListener() {
@@ -305,7 +320,7 @@ public class AuscultateActivity extends AppCompatActivity {
                         })
                         .setNegativeButton(R.string.str_cancelar, new DialogInterface.OnClickListener() {
                             public void onClick(final DialogInterface dialog, final int id) {
-                                dialog.cancel();
+                                dialog.dismiss();
                             }
                         })
                         .create();
@@ -320,15 +335,15 @@ public class AuscultateActivity extends AppCompatActivity {
                     @Override
                     public void afterTextChanged(Editable s) {
                         if (userInput.getText() != null && !userInput.getText().toString().isEmpty()){
-                            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                            alertDialogSaveWav.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
                         } else {
-                            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                            alertDialogSaveWav.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
                         }
                     }
                 });
 
-                dialog.show();
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                alertDialogSaveWav.show();
+                alertDialogSaveWav.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
             }
         }).showDialog();
     }
