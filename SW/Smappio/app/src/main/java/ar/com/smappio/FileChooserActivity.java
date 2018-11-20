@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -217,10 +219,19 @@ public class FileChooserActivity extends AppCompatActivity {
 
     public void shareFile(MenuItem view) {
         if(currentFile != null) {
-            Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(currentFile));
-            intent.setType("audio/*");
-            startActivity(intent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                Uri uri = FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".provider", currentFile);
+                intent.putExtra(Intent.EXTRA_STREAM, uri);
+                intent.setType("audio/*");
+                startActivity(intent);
+            } else {
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(currentFile));
+                intent.setType("audio/*");
+                startActivity(intent);
+            }
         }
     }
 

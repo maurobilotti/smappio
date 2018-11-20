@@ -21,8 +21,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
@@ -901,10 +903,19 @@ public class AudioWavePlayerActivity extends AppCompatActivity implements Marker
 
     public void shareFile() {
         if(mFile != null){
-            Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setType("audio/*");
-            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(mFile));
-            startActivity(Intent.createChooser(intent, "Compartir archivo de audio"));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                Uri uri = FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".provider", mFile);
+                intent.putExtra(Intent.EXTRA_STREAM, uri);
+                intent.setType("audio/*");
+                startActivity(intent);
+            } else {
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("audio/*");
+                intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(mFile));
+                startActivity(Intent.createChooser(intent, "Compartir archivo de audio"));
+            }
         }
     }
 }
