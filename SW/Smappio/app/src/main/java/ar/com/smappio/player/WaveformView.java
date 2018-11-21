@@ -110,13 +110,14 @@ public class WaveformView extends View {
         // Lineas verticales de los extremos de seleccion
         mBorderLinePaint = new Paint();
         mBorderLinePaint.setAntiAlias(true);
-        mBorderLinePaint.setStrokeWidth(1.5f);
+        mBorderLinePaint.setStrokeWidth(2.0f);
         mBorderLinePaint.setPathEffect(new DashPathEffect(new float[] { 3.0f, 2.0f }, 0.0f));
         mBorderLinePaint.setColor(res.getColor(R.color.selection_border));
         // Linea de reproduccion actual
         mPlaybackLinePaint = new Paint();
         mPlaybackLinePaint.setAntiAlias(false);
         mPlaybackLinePaint.setColor(res.getColor(R.color.playback_indicator));
+        mPlaybackLinePaint.setStrokeWidth(2.0f);
         // Tiempo en el waveform
         mTimecodePaint = new Paint();
         mTimecodePaint.setTextSize(12);
