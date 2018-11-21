@@ -554,8 +554,9 @@ public class AudioWavePlayerActivity extends AppCompatActivity implements Marker
         mOffsetGoal = 0;
         mFlingVelocity = 0;
         resetPositions();
-        if (mEndPos > mMaxPos)
-            mEndPos = mMaxPos;
+//        if (mEndPos > mMaxPos)
+//            mEndPos = mMaxPos;
+        mEndPos = mMaxPos;
 
         mCaption =
             mSoundFile.getFiletype() + ", " +
