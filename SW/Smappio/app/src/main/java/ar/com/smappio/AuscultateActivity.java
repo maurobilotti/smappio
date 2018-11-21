@@ -291,7 +291,7 @@ public class AuscultateActivity extends AppCompatActivity {
             @Override public void fileSelected(final File file) {
                 LayoutInflater layoutInflater = LayoutInflater.from(AuscultateActivity.this);
                 View popupSaveFileView = layoutInflater.inflate(R.layout.popup_save_file, null);
-                EditText userInput = popupSaveFileView.findViewById(R.id.file_name);
+                final EditText userInput = popupSaveFileView.findViewById(R.id.file_name);
                 AlertDialog.Builder builder = new AlertDialog.Builder(AuscultateActivity.this);
                 builder.setView(popupSaveFileView);
                 alertDialogSaveWav = builder.setTitle(R.string.msg_guardar_audio)

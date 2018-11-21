@@ -193,10 +193,10 @@ public class FileChooserDialog {
         dialog.dismiss();
         LayoutInflater layoutInflater = LayoutInflater.from(activity);
         View popupSaveFileView = layoutInflater.inflate(R.layout.popup_save_file, null);
-        EditText userInput = (EditText) popupSaveFileView.findViewById(R.id.file_name);;
+        final EditText userInput = (EditText) popupSaveFileView.findViewById(R.id.file_name);;
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setView(popupSaveFileView);
-        AlertDialog alertDialog = builder.setTitle("Crear carpeta")
+        final AlertDialog alertDialog = builder.setTitle("Crear carpeta")
                 .setMessage("Ingrese el nombre de la carpeta.")
                 .setCancelable(true)
                 .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {

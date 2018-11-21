@@ -23,7 +23,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -221,10 +220,10 @@ public class WifiActivity extends AppCompatActivity {
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(WifiActivity.this);
                     alertDialogBuilder.setView(popupWifiView);
 
-                    EditText userInput = popupWifiView.findViewById(R.id.password_input);
+                    final EditText userInput = popupWifiView.findViewById(R.id.password_input);
                     CheckBox checkbox = popupWifiView.findViewById(R.id.password_ckb);
 
-                    AlertDialog alertDialog = alertDialogBuilder.setTitle(getString(R.string.msg_conectarse_a, ssid))
+                    final AlertDialog alertDialog = alertDialogBuilder.setTitle(getString(R.string.msg_conectarse_a, ssid))
                             .setCancelable(true)
                             .setPositiveButton(R.string.str_aceptar,
                                     new DialogInterface.OnClickListener() {
