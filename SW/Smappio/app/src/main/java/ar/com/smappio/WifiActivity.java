@@ -167,9 +167,11 @@ public class WifiActivity extends AppCompatActivity {
                 if(action.equals(WifiManager.WIFI_STATE_CHANGED_ACTION)) {
                     if(!wifiManager.isWifiEnabled()) {
                         scanBtn.setEnabled(false);
+                        scanBtn.setAlpha(0.3f);
                         wifiBtn.setChecked(false);
                     } else {
                         scanBtn.setEnabled(true);
+                        scanBtn.setAlpha(1.0f);
                         wifiBtn.setChecked(true);
                     }
                     clearWifiList();
