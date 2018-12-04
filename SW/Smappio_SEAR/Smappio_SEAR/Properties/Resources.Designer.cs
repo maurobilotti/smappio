@@ -22,7 +22,7 @@ namespace Smappio_SEAR.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace Smappio_SEAR.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Smappio_SEAR.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace Smappio_SEAR.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,17 @@ namespace Smappio_SEAR.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Bluetooth {
+        public static System.Drawing.Bitmap auscultate {
+            get {
+                object obj = ResourceManager.GetObject("auscultate", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Bluetooth {
             get {
                 object obj = ResourceManager.GetObject("Bluetooth", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -73,27 +83,7 @@ namespace Smappio_SEAR.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap composite_grid {
-            get {
-                object obj = ResourceManager.GetObject("composite grid", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap composite_grid1 {
-            get {
-                object obj = ResourceManager.GetObject("composite grid1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap eje {
+        public static System.Drawing.Bitmap eje {
             get {
                 object obj = ResourceManager.GetObject("eje", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -103,9 +93,9 @@ namespace Smappio_SEAR.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_outline_filled {
+        public static System.Drawing.Bitmap folder {
             get {
-                object obj = ResourceManager.GetObject("folder-outline-filled", resourceCulture);
+                object obj = ResourceManager.GetObject("folder", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -113,9 +103,9 @@ namespace Smappio_SEAR.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap grid_background_by_inflationking_d4tw1da {
+        public static System.Drawing.Bitmap iconfinder_ic_stop_48px_352144 {
             get {
-                object obj = ResourceManager.GetObject("grid_background_by_inflationking-d4tw1da", resourceCulture);
+                object obj = ResourceManager.GetObject("iconfinder_ic_stop_48px_352144", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -123,37 +113,7 @@ namespace Smappio_SEAR.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap grid_background_in_motion_4ydoij_ox__F0000 {
-            get {
-                object obj = ResourceManager.GetObject("grid-background-in-motion_4ydoij-ox__F0000", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap grid_background_in_motion_4ydoij_ox__F00001 {
-            get {
-                object obj = ResourceManager.GetObject("grid-background-in-motion_4ydoij-ox__F00001", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap if_drop_kbtobexclient_17894 {
-            get {
-                object obj = ResourceManager.GetObject("if_drop kbtobexclient_17894", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap if_MetroUI_Bluetooth_176615 {
+        public static System.Drawing.Bitmap if_MetroUI_Bluetooth_176615 {
             get {
                 object obj = ResourceManager.GetObject("if_MetroUI_Bluetooth_176615", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -163,7 +123,7 @@ namespace Smappio_SEAR.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap if_usb_925801 {
+        public static System.Drawing.Bitmap if_usb_925801 {
             get {
                 object obj = ResourceManager.GetObject("if_usb_925801", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -173,9 +133,9 @@ namespace Smappio_SEAR.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap if_wifi_Logo_925806 {
+        public static System.Drawing.Bitmap logs2 {
             get {
-                object obj = ResourceManager.GetObject("if_wifi_Logo_925806", resourceCulture);
+                object obj = ResourceManager.GetObject("logs2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -183,7 +143,7 @@ namespace Smappio_SEAR.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap play1 {
+        public static System.Drawing.Bitmap play1 {
             get {
                 object obj = ResourceManager.GetObject("play1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -193,7 +153,27 @@ namespace Smappio_SEAR.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap TCP {
+        public static System.Drawing.Bitmap save {
+            get {
+                object obj = ResourceManager.GetObject("save", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap stop {
+            get {
+                object obj = ResourceManager.GetObject("stop", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap TCP {
             get {
                 object obj = ResourceManager.GetObject("TCP", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -203,7 +183,7 @@ namespace Smappio_SEAR.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap TCPIPRN {
+        public static System.Drawing.Bitmap TCPIPRN {
             get {
                 object obj = ResourceManager.GetObject("TCPIPRN", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -213,9 +193,9 @@ namespace Smappio_SEAR.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap user_datagram_protocol_udp_300x242 {
+        public static System.Drawing.Bitmap test {
             get {
-                object obj = ResourceManager.GetObject("user-datagram-protocol-udp-300x242", resourceCulture);
+                object obj = ResourceManager.GetObject("test", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

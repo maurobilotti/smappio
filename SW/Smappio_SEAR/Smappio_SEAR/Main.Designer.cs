@@ -30,7 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
-            this.btnSave = new System.Windows.Forms.Button();
             this._serialPort = new System.IO.Ports.SerialPort(this.components);
             this.lblNotification = new System.Windows.Forms.Label();
             this.lblSamplesReceived = new System.Windows.Forms.Label();
@@ -46,29 +45,29 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.txtPath = new System.Windows.Forms.TextBox();
-            this.btnClear = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.volumeMeter = new NAudio.Gui.VolumeMeter();
+            this.cbEncoding = new System.Windows.Forms.ComboBox();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.toolTipAuscultar = new System.Windows.Forms.ToolTip(this.components);
+            this.toolTipGuardar = new System.Windows.Forms.ToolTip(this.components);
+            this.toolTipStop = new System.Windows.Forms.ToolTip(this.components);
+            this.toolTipTest = new System.Windows.Forms.ToolTip(this.components);
+            this.toolTipLogs = new System.Windows.Forms.ToolTip(this.components);
+            this.btnStop = new System.Windows.Forms.Button();
+            this.btnLogs = new System.Windows.Forms.Button();
+            this.btnTest = new System.Windows.Forms.Button();
             this.btnPlay = new System.Windows.Forms.Button();
             this.btnBrowse = new System.Windows.Forms.Button();
             this.waveformPainter = new NAudio.Gui.WaveformPainter();
-            this.btnTcp = new System.Windows.Forms.Button();
+            this.btnClear = new System.Windows.Forms.Button();
             this.btnSerial = new System.Windows.Forms.Button();
+            this.btnSave = new System.Windows.Forms.Button();
             this.btnBluetooth = new System.Windows.Forms.Button();
-            this.cbEncoding = new System.Windows.Forms.ComboBox();
+            this.btnTcp = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // btnSave
-            // 
-            this.btnSave.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSave.Location = new System.Drawing.Point(822, 23);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(75, 23);
-            this.btnSave.TabIndex = 2;
-            this.btnSave.Text = "Save";
-            this.btnSave.UseVisualStyleBackColor = true;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // lblNotification
             // 
@@ -207,21 +206,10 @@
             // 
             // txtPath
             // 
-            this.txtPath.Location = new System.Drawing.Point(557, 24);
+            this.txtPath.Location = new System.Drawing.Point(673, 39);
             this.txtPath.Name = "txtPath";
-            this.txtPath.Size = new System.Drawing.Size(244, 20);
+            this.txtPath.Size = new System.Drawing.Size(217, 20);
             this.txtPath.TabIndex = 19;
-            // 
-            // btnClear
-            // 
-            this.btnClear.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnClear.Location = new System.Drawing.Point(903, 23);
-            this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(75, 23);
-            this.btnClear.TabIndex = 20;
-            this.btnClear.Text = "Stop";
-            this.btnClear.UseVisualStyleBackColor = true;
-            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
             // panel1
             // 
@@ -240,9 +228,9 @@
             this.panel1.Controls.Add(this.lblBitRate);
             this.panel1.Controls.Add(this.lblSampleRate);
             this.panel1.Controls.Add(this.label6);
-            this.panel1.Location = new System.Drawing.Point(13, 75);
+            this.panel1.Location = new System.Drawing.Point(13, 94);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(965, 83);
+            this.panel1.Size = new System.Drawing.Size(1022, 82);
             this.panel1.TabIndex = 27;
             // 
             // volumeMeter
@@ -252,19 +240,77 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.volumeMeter.BackColor = System.Drawing.Color.WhiteSmoke;
             this.volumeMeter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.volumeMeter.Location = new System.Drawing.Point(12, 164);
+            this.volumeMeter.Location = new System.Drawing.Point(12, 180);
             this.volumeMeter.MaxDb = 18F;
             this.volumeMeter.MinDb = -60F;
             this.volumeMeter.Name = "volumeMeter";
-            this.volumeMeter.Size = new System.Drawing.Size(23, 352);
+            this.volumeMeter.Size = new System.Drawing.Size(23, 414);
             this.volumeMeter.TabIndex = 28;
             this.volumeMeter.Text = "volumeMeter";
+            // 
+            // cbEncoding
+            // 
+            this.cbEncoding.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbEncoding.FormattingEnabled = true;
+            this.cbEncoding.Items.AddRange(new object[] {
+            "PCM 24 bit",
+            "PCM 32 bit Float",
+            "PCM 16 bit"});
+            this.cbEncoding.Location = new System.Drawing.Point(509, 39);
+            this.cbEncoding.Name = "cbEncoding";
+            this.cbEncoding.Size = new System.Drawing.Size(138, 21);
+            this.cbEncoding.TabIndex = 30;
+            this.cbEncoding.SelectedIndexChanged += new System.EventHandler(this.cbEncoding_SelectedIndexChanged);
+            // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.Color.Black;
+            this.panel2.Controls.Add(this.btnTcp);
+            this.panel2.Location = new System.Drawing.Point(198, 8);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(81, 79);
+            this.panel2.TabIndex = 31;
+            // 
+            // btnStop
+            // 
+            this.btnStop.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnStop.BackgroundImage")));
+            this.btnStop.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnStop.Location = new System.Drawing.Point(444, 24);
+            this.btnStop.Name = "btnStop";
+            this.btnStop.Size = new System.Drawing.Size(48, 49);
+            this.btnStop.TabIndex = 33;
+            this.btnStop.UseVisualStyleBackColor = true;
+            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
+            // 
+            // btnLogs
+            // 
+            this.btnLogs.BackgroundImage = global::Smappio_SEAR.Properties.Resources.logs2;
+            this.btnLogs.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnLogs.Location = new System.Drawing.Point(117, 9);
+            this.btnLogs.Name = "btnLogs";
+            this.btnLogs.Size = new System.Drawing.Size(75, 75);
+            this.btnLogs.TabIndex = 32;
+            this.btnLogs.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.toolTipLogs.SetToolTip(this.btnLogs, "Obtener Logs");
+            this.btnLogs.UseVisualStyleBackColor = true;
+            // 
+            // btnTest
+            // 
+            this.btnTest.BackgroundImage = global::Smappio_SEAR.Properties.Resources.test;
+            this.btnTest.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnTest.Location = new System.Drawing.Point(31, 9);
+            this.btnTest.Name = "btnTest";
+            this.btnTest.Size = new System.Drawing.Size(75, 75);
+            this.btnTest.TabIndex = 23;
+            this.btnTest.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.toolTipTest.SetToolTip(this.btnTest, "Test Smappio");
+            this.btnTest.UseVisualStyleBackColor = true;
             // 
             // btnPlay
             // 
             this.btnPlay.BackgroundImage = global::Smappio_SEAR.Properties.Resources.play1;
             this.btnPlay.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnPlay.Location = new System.Drawing.Point(312, 10);
+            this.btnPlay.Location = new System.Drawing.Point(390, 24);
             this.btnPlay.Name = "btnPlay";
             this.btnPlay.Size = new System.Drawing.Size(48, 49);
             this.btnPlay.TabIndex = 26;
@@ -273,9 +319,9 @@
             // 
             // btnBrowse
             // 
-            this.btnBrowse.BackgroundImage = global::Smappio_SEAR.Properties.Resources.folder_outline_filled;
+            this.btnBrowse.BackgroundImage = global::Smappio_SEAR.Properties.Resources.folder;
             this.btnBrowse.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnBrowse.Location = new System.Drawing.Point(256, 10);
+            this.btnBrowse.Location = new System.Drawing.Point(334, 24);
             this.btnBrowse.Name = "btnBrowse";
             this.btnBrowse.Size = new System.Drawing.Size(50, 49);
             this.btnBrowse.TabIndex = 25;
@@ -290,81 +336,97 @@
             this.waveformPainter.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.waveformPainter.BackgroundImage = global::Smappio_SEAR.Properties.Resources.eje;
             this.waveformPainter.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.waveformPainter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.waveformPainter.Location = new System.Drawing.Point(41, 164);
+            this.waveformPainter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+            this.waveformPainter.Location = new System.Drawing.Point(41, 181);
             this.waveformPainter.Name = "waveformPainter";
-            this.waveformPainter.Size = new System.Drawing.Size(937, 352);
+            this.waveformPainter.Size = new System.Drawing.Size(994, 414);
             this.waveformPainter.TabIndex = 24;
-            this.waveformPainter.Text = "waveformPainter1";
             // 
-            // btnTcp
+            // btnClear
             // 
-            this.btnTcp.BackgroundImage = global::Smappio_SEAR.Properties.Resources.TCP;
-            this.btnTcp.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnTcp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnTcp.Location = new System.Drawing.Point(79, 11);
-            this.btnTcp.Name = "btnTcp";
-            this.btnTcp.Size = new System.Drawing.Size(48, 48);
-            this.btnTcp.TabIndex = 22;
-            this.btnTcp.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnTcp.UseVisualStyleBackColor = true;
-            this.btnTcp.Click += new System.EventHandler(this.btnTcp_Click);
+            this.btnClear.BackgroundImage = global::Smappio_SEAR.Properties.Resources.stop;
+            this.btnClear.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnClear.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnClear.Location = new System.Drawing.Point(984, 22);
+            this.btnClear.Name = "btnClear";
+            this.btnClear.Size = new System.Drawing.Size(50, 50);
+            this.btnClear.TabIndex = 20;
+            this.toolTipStop.SetToolTip(this.btnClear, "Finalizar");
+            this.btnClear.UseVisualStyleBackColor = true;
+            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
             // btnSerial
             // 
             this.btnSerial.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSerial.Image = global::Smappio_SEAR.Properties.Resources.if_usb_925801;
-            this.btnSerial.Location = new System.Drawing.Point(142, 11);
+            this.btnSerial.Location = new System.Drawing.Point(-2, 558);
             this.btnSerial.Name = "btnSerial";
             this.btnSerial.Size = new System.Drawing.Size(48, 48);
             this.btnSerial.TabIndex = 7;
             this.btnSerial.UseVisualStyleBackColor = true;
+            this.btnSerial.Visible = false;
             this.btnSerial.Click += new System.EventHandler(this.btnUSB_Click);
+            // 
+            // btnSave
+            // 
+            this.btnSave.BackgroundImage = global::Smappio_SEAR.Properties.Resources.save;
+            this.btnSave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnSave.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSave.Location = new System.Drawing.Point(912, 22);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(50, 50);
+            this.btnSave.TabIndex = 0;
+            this.toolTipGuardar.SetToolTip(this.btnSave, "Guardar");
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // btnBluetooth
             // 
             this.btnBluetooth.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnBluetooth.Image = global::Smappio_SEAR.Properties.Resources.if_drop_kbtobexclient_17894;
-            this.btnBluetooth.Location = new System.Drawing.Point(13, 11);
+            this.btnBluetooth.Image = global::Smappio_SEAR.Properties.Resources.Bluetooth;
+            this.btnBluetooth.Location = new System.Drawing.Point(-2, 558);
             this.btnBluetooth.Name = "btnBluetooth";
             this.btnBluetooth.Size = new System.Drawing.Size(51, 48);
             this.btnBluetooth.TabIndex = 0;
             this.btnBluetooth.UseVisualStyleBackColor = true;
+            this.btnBluetooth.Visible = false;
             this.btnBluetooth.Click += new System.EventHandler(this.btnBluetooth_Click);
             // 
-            // cbEncoding
+            // btnTcp
             // 
-            this.cbEncoding.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbEncoding.FormattingEnabled = true;
-            this.cbEncoding.Items.AddRange(new object[] {
-            "PCM 24 bit",
-            "PCM 32 bit Float",
-            "PCM 16 bit"});
-            this.cbEncoding.Location = new System.Drawing.Point(394, 23);
-            this.cbEncoding.Name = "cbEncoding";
-            this.cbEncoding.Size = new System.Drawing.Size(138, 21);
-            this.cbEncoding.TabIndex = 30;
-            this.cbEncoding.SelectedIndexChanged += new System.EventHandler(this.cbEncoding_SelectedIndexChanged);
+            this.btnTcp.BackgroundImage = global::Smappio_SEAR.Properties.Resources.auscultate;
+            this.btnTcp.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnTcp.Location = new System.Drawing.Point(3, 2);
+            this.btnTcp.Name = "btnTcp";
+            this.btnTcp.Size = new System.Drawing.Size(75, 74);
+            this.btnTcp.TabIndex = 22;
+            this.btnTcp.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.toolTipAuscultar.SetToolTip(this.btnTcp, "Auscultar");
+            this.btnTcp.UseVisualStyleBackColor = true;
+            this.btnTcp.Click += new System.EventHandler(this.btnTcp_Click);
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.AliceBlue;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.ClientSize = new System.Drawing.Size(997, 543);
+            this.ClientSize = new System.Drawing.Size(1054, 605);
+            this.Controls.Add(this.btnStop);
+            this.Controls.Add(this.btnLogs);
+            this.Controls.Add(this.btnTest);
             this.Controls.Add(this.cbEncoding);
             this.Controls.Add(this.volumeMeter);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.btnPlay);
             this.Controls.Add(this.btnBrowse);
             this.Controls.Add(this.waveformPainter);
-            this.Controls.Add(this.btnTcp);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.txtPath);
             this.Controls.Add(this.btnSerial);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnBluetooth);
+            this.Controls.Add(this.panel2);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Main";
             this.Text = "Smappio SEAR";
@@ -372,6 +434,7 @@
             this.Load += new System.EventHandler(this.Main_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -405,6 +468,15 @@
         private System.Windows.Forms.Panel panel1;
         private NAudio.Gui.VolumeMeter volumeMeter;
         private System.Windows.Forms.ComboBox cbEncoding;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Button btnTest;
+        private System.Windows.Forms.Button btnLogs;
+        private System.Windows.Forms.ToolTip toolTipAuscultar;
+        private System.Windows.Forms.ToolTip toolTipLogs;
+        private System.Windows.Forms.ToolTip toolTipTest;
+        private System.Windows.Forms.ToolTip toolTipStop;
+        private System.Windows.Forms.ToolTip toolTipGuardar;
+        private System.Windows.Forms.Button btnStop;
     }
 }
 

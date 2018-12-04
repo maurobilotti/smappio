@@ -38,8 +38,8 @@ namespace Smappio_SEAR
         private MeteringSampleProvider _meteringSampleProvider;
         private int _channels = 1;
         #region Plotter
-        private float _silenceAverage = 0.0187f;
-        private float _soundMultiplier = 15;
+        private readonly float _silenceAverage = 0.0187f;
+        private readonly float _soundMultiplier = 15;
         #endregion
 
 
@@ -81,12 +81,7 @@ namespace Smappio_SEAR
 
         private void OnPostVolumeMeter(object sender, StreamVolumeEventArgs e)
         {
-            //dependiendo el microfono, es necesario utilizar esta funcion para mejorar la imagen
-            //var value = Math.Exp((_soundMultiplier * e.MaxSampleValues[0]) - (_soundMultiplier * _silenceAverage)) - 1;
-            //if (value < 0.005f)
-            //    value = 0.001f;
-            //UI.WavePainter.AddMax((float)value);
-            UI.WavePainter.AddMax(e.MaxSampleValues[0] * 5);
+            UI.WavePainter.AddMax(e.MaxSampleValues[0] * 5);            
         }
 
         private void OnPreVolumeMeter(object sender, StreamVolumeEventArgs e)

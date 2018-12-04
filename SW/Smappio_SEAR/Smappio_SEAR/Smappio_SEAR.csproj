@@ -73,6 +73,11 @@
   <ItemGroup>
     <Compile Include="BluetoothHelper.cs" />
     <Compile Include="PCMHelper.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="UIParams.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
@@ -93,15 +98,10 @@
       <DependentUpon>Main.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -144,9 +144,6 @@
     <Folder Include="Plotter\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\folder-outline-filled.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\play1.png" />
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +163,36 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\eje.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\auscultate.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\stop.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\save.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\test.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\logs.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\logs2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\folder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\stopPlaying.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\iconfinder_icon-stop_211931.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\iconfinder_ic_stop_48px_352144.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

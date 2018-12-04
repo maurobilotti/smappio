@@ -16,6 +16,10 @@ namespace Smappio_SEAR
         {
             InitializeComponent();
             txtPath.Text = filePath;
+            btnPlay.Enabled = false;
+            btnStop.Enabled = false;
+            btnSave.Enabled = false;
+            btnClear.Enabled = false;
             if (!Directory.Exists(filePath))
                 Directory.CreateDirectory(filePath);
         }
@@ -23,6 +27,8 @@ namespace Smappio_SEAR
         private string filePath = "../../AudioSamples/";
         Stopwatch sw = new Stopwatch();
         long elapsedMilliseconds = 0;
+        private readonly float _silenceAverage = 0.0187f;
+        private readonly float _soundMultiplier = 15;
         private bool _notified;
         public Receiver Receiver;
         private string fileName;
@@ -40,26 +46,7 @@ namespace Smappio_SEAR
 
         private void btnBluetooth_Click(object sender, EventArgs e)
         {
-            //EnableFeatures();
-            //try
-            //{
-            //    _serialPort.PortName = BluetoothHelper.GetBluetoothPort("smappio");
-            //    _serialPort.BaudRate = Convert.ToInt32(_baudRate);
-            //    _serialPort.DtrEnable = true;
-            //    _serialPort.RtsEnable = true;
-
-            //    if (!_serialPort.IsOpen)
-            //        _serialPort.Open();
-
-
-            //    lblNotification.Text = "Started";
-            //    _serialPort.DataReceived += SerialPort_DataReceived;
-            //}
-            //catch (Exception ex)
-            //{
-            //    _serialPort.Dispose();
-            //    return;
-            //}
+           
         }
 
         private void btnUdp_Click(object sender, EventArgs e)
@@ -70,6 +57,8 @@ namespace Smappio_SEAR
         private void btnTcp_Click(object sender, EventArgs e)
         {
             InvokeReceiver(new TcpReceiver(UIParams));
+            btnSave.Enabled = true;
+            btnClear.Enabled = true;
         }
 
         private void InvokeReceiver(Receiver receiver)
@@ -217,11 +206,13 @@ namespace Smappio_SEAR
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 fileName = openFileDialog.FileName;
+                btnPlay.Enabled = true;
             }
         }
 
         private void btnPlay_Click(object sender, EventArgs e)
         {
+            btnStop.Enabled = true;
             if (waveOut != null)
             {
                 if (waveOut.PlaybackState == PlaybackState.Playing)
@@ -229,8 +220,8 @@ namespace Smappio_SEAR
                     return;
                 }
                 else if (waveOut.PlaybackState == PlaybackState.Paused)
-                {
-                    waveOut.Play();
+                {                    
+                    waveOut.Play();                    
                 }
             }
 
@@ -244,7 +235,6 @@ namespace Smappio_SEAR
                 MessageBox.Show(String.Format("{0}", createException.Message), "Error Loading File");
                 return;
             }
-
 
             try
             {
@@ -266,14 +256,13 @@ namespace Smappio_SEAR
             setVolumeDelegate = vol => sampleChannel.Volume = vol;
             var postVolumeMeter = new MeteringSampleProvider(sampleChannel);
             postVolumeMeter.StreamVolume += OnPostVolumeMeter;
-
-
+            postVolumeMeter.SamplesPerNotification = 80;
             return postVolumeMeter;
         }
 
         private void OnPostVolumeMeter(object sender, StreamVolumeEventArgs e)
         {
-            waveformPainter.AddMax(e.MaxSampleValues[0]);
+            waveformPainter.AddMax(e.MaxSampleValues[0] * 5);
         }
         #endregion
 
@@ -292,6 +281,12 @@ namespace Smappio_SEAR
         private void cbEncoding_SelectedIndexChanged(object sender, EventArgs e)
         {
             this.UIParams = new UIParams(ref this.waveformPainter, ref this.volumeMeter, (PCMAudioFormat)cbEncoding.SelectedIndex);
+        }
+
+        private void btnStop_Click(object sender, EventArgs e)
+        {
+            waveOut.Stop();
+            ClearContents();
         }
     }
 }
