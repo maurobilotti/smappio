@@ -13,7 +13,7 @@ const char* password = "123456789"; // El pass tiene que tener mas de 8 caracter
 #define MAX_SAMPLE_VALUE 131071
 #define MIN_SAMPLE_VALUE -131072
 
-#define TCP_NO_DELAY true 
+#define TCP_NO_DELAY false 
 #define BYTES_TO_SEND  345                  // 57438 es aparentemente el max   // Tiene que ser multiplo de 3  
 #define MEDIA 13700                         // I2S:  13700  | PCM:  6835   // valor para nivelar a 0 la señal media
 #define WIFI_CHANNEL 1                      // 1  |  6  |  11
@@ -30,6 +30,7 @@ uint8_t _dataToSend[BYTES_TO_SEND + 1];
 SmappioSound smappioSound(MEDIA); 
 
 void setup() { 
+  Serial.begin(9600);
   pinMode(ON_LED, OUTPUT);
   pinMode(CONNECTED_LED, OUTPUT);
   pinMode(LOW_BATTERY_LED, OUTPUT);
@@ -63,25 +64,45 @@ void loop() {
   // Si el cliente inicio el handshake
   if (client) 
   {
-    digitalWrite(CONNECTED_LED, HIGH);
     client.setNoDelay(TCP_NO_DELAY);  
     int bufferSeqNum = 0;  
+    
     while (client.connected()) 
     {
       deepSleepIfButtonPressed();
-            
-      if(bufferSeqNum == 64)
-        bufferSeqNum = 0;
-        
-      // Se agrega el numero de secuencia del bloque en el ultimo byte del mismo, con los 2 primeros bits en '00'y se envia
-      _dataToSend[BYTES_TO_SEND] = bufferSeqNum & 63;
-
-      bufferSamplesToSend();
-
-      client.write(_dataToSend, BYTES_TO_SEND); // Hacer BYTES_TO_SEND + 1 para enviar el bufferSeqNum
-
-      bufferSeqNum++;
-    } 
+      if (client.available()) 
+      {
+        Serial.println("Available.");
+        char c = client.read();   // se lee un caracter
+        Serial.println(c);
+        if (c == 's') 
+        {
+          while (client.connected()) 
+          {
+            digitalWrite(CONNECTED_LED, HIGH);
+            deepSleepIfButtonPressed();
+                  
+            if(bufferSeqNum == 64)
+              bufferSeqNum = 0;
+              
+            // Se agrega el numero de secuencia del bloque en el ultimo byte del mismo, con los 2 primeros bits en '00'y se envia
+            _dataToSend[BYTES_TO_SEND] = bufferSeqNum & 63;
+      
+            bufferSamplesToSend();
+      
+            client.write(_dataToSend, BYTES_TO_SEND); // Hacer BYTES_TO_SEND + 1 para enviar el bufferSeqNum
+      
+            bufferSeqNum++;
+          } // FIN client.connected()de transmision de sonido
+        }
+        else if (c == 't')
+        {
+          digitalWrite(CONNECTED_LED, HIGH);
+          delay(500);
+          digitalWrite(CONNECTED_LED, LOW);
+        }
+      }
+    } // FIN client.connected() del handshake
   }
   else
   {
