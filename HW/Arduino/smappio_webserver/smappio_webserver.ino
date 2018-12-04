@@ -13,7 +13,7 @@ const char* password = "123456789"; // El pass tiene que tener mas de 8 caracter
 #define MAX_SAMPLE_VALUE 131071
 #define MIN_SAMPLE_VALUE -131072
 
-#define TCP_NO_DELAY false 
+#define TCP_NO_DELAY true 
 #define BYTES_TO_SEND  345                  // 57438 es aparentemente el max   // Tiene que ser multiplo de 3  
 #define MEDIA 13700                         // I2S:  13700  | PCM:  6835   // valor para nivelar a 0 la señal media
 #define WIFI_CHANNEL 1                      // 1  |  6  |  11
@@ -24,13 +24,16 @@ const char* password = "123456789"; // El pass tiene que tener mas de 8 caracter
 #define LOW_BATTERY_LED 14
 #define POWER_BUTTON GPIO_NUM_4
 
+#define SMAPPIO_CODE_ERROR -1
+#define SMAPPIO_CODE_SEND_DATA 1
+#define SMAPPIO_CODE_TEST 2
+
 // VARIABLES
 int32_t *_buffer;
 uint8_t _dataToSend[BYTES_TO_SEND + 1];
 SmappioSound smappioSound(MEDIA); 
 
 void setup() { 
-  Serial.begin(9600);
   pinMode(ON_LED, OUTPUT);
   pinMode(CONNECTED_LED, OUTPUT);
   pinMode(LOW_BATTERY_LED, OUTPUT);
@@ -65,49 +68,91 @@ void loop() {
   if (client) 
   {
     client.setNoDelay(TCP_NO_DELAY);  
-    int bufferSeqNum = 0;  
     
     while (client.connected()) 
     {
       deepSleepIfButtonPressed();
-      if (client.available()) 
+      int code = readCode(client);    // send = 1  |  test = 2
+      clearBuffer(client);
+
+      if(code != SMAPPIO_CODE_ERROR)
+        digitalWrite(CONNECTED_LED, HIGH);
+      
+      if (code == SMAPPIO_CODE_SEND_DATA)
       {
-        Serial.println("Available.");
-        char c = client.read();   // se lee un caracter
-        Serial.println(c);
-        if (c == 's') 
+        int bufferSeqNum = 0;  
+        while (client.connected()) 
         {
-          while (client.connected()) 
-          {
-            digitalWrite(CONNECTED_LED, HIGH);
-            deepSleepIfButtonPressed();
-                  
-            if(bufferSeqNum == 64)
-              bufferSeqNum = 0;
-              
-            // Se agrega el numero de secuencia del bloque en el ultimo byte del mismo, con los 2 primeros bits en '00'y se envia
-            _dataToSend[BYTES_TO_SEND] = bufferSeqNum & 63;
-      
-            bufferSamplesToSend();
-      
-            client.write(_dataToSend, BYTES_TO_SEND); // Hacer BYTES_TO_SEND + 1 para enviar el bufferSeqNum
-      
-            bufferSeqNum++;
-          } // FIN client.connected()de transmision de sonido
-        }
-        else if (c == 't')
-        {
-          digitalWrite(CONNECTED_LED, HIGH);
-          delay(500);
-          digitalWrite(CONNECTED_LED, LOW);
+          deepSleepIfButtonPressed();
+                
+          if(bufferSeqNum == 64)
+            bufferSeqNum = 0;
+            
+          // Se agrega el numero de secuencia del bloque en el ultimo byte del mismo, con los 2 primeros bits en '00'y se envia
+          _dataToSend[BYTES_TO_SEND] = bufferSeqNum & 63;
+    
+          bufferSamplesToSend();
+    
+          client.write(_dataToSend, BYTES_TO_SEND); // Hacer BYTES_TO_SEND + 1 para enviar el bufferSeqNum
+    
+          bufferSeqNum++;
         }
       }
-    } // FIN client.connected() del handshake
+      else if (code == SMAPPIO_CODE_TEST)
+      {
+        while(client.connected())
+        {
+          deepSleepIfButtonPressed();
+          bufferAlternateMinMaxValue();
+          client.write(_dataToSend, BYTES_TO_SEND);
+          sleep(1); // Para no saturar la transferencia 
+        }
+      }
+    }
   }
   else
   {
     digitalWrite(CONNECTED_LED, LOW); 
   }
+}
+
+int readCode(WiFiClient client)
+{
+  char firstChar;
+  if (client.available())
+  {
+    firstChar = readChar(client);
+    if(firstChar == 's')
+    {
+      if(readChar(client) == 'e')
+        if(readChar(client) == 'n')
+          if(readChar(client) == 'd')
+            return SMAPPIO_CODE_SEND_DATA;
+    }
+    else if(firstChar == 't')
+    {
+      if(readChar(client) == 'e')
+        if(readChar(client) == 's')
+          if(readChar(client) == 't')
+            return SMAPPIO_CODE_TEST;
+    }
+  }
+  return -1; // error
+}
+
+char readChar(WiFiClient client)
+{
+  while(!client.available())
+  {
+    // do nothing
+  }
+  return client.read();
+}
+
+void clearBuffer(WiFiClient client)
+{
+  //esto es un workaround que funciono en algun momento, lo dejo por las dudas
+  //client.write(63); // envia el byte 00111111
 }
 
 void deepSleepIfButtonPressed() {
@@ -231,20 +276,20 @@ void bufferAlternateSignTest()
   }  
 }
 
-void bufferAlternateOneAndMinusOne()
+void bufferAlternateMinMaxValue()
 {
   int32_t value = 0;
 
   for(int i = 0; i < BYTES_TO_SEND; i += 3)
   {
-    value = 1;
+    value = MAX_SAMPLE_VALUE;
     if(i % 2 == 0)
-      value = -1;
+      value = MIN_SAMPLE_VALUE;
 
     // Se bufferean los 3 bytes del sample
     // OJO Con el flag CONTROL_ALGHORITM_ENABLED
     addSampleToBuffer(i, value);
-  }  
+  } 
 }
 
 /////////////////////////////      FIN REGION DE FUNCIONES DE PRUEBA DE TRANSMISION      /////////////////////////////

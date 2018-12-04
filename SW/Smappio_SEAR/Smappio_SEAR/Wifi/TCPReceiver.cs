@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -76,6 +77,14 @@ namespace Smappio_SEAR.Wifi
         private void ReceiveData()
         {
             netStream = TcpClient.GetStream();
+
+            while (!TcpClient.Connected || !netStream.CanWrite)
+            {
+                // do nothing
+            }
+            byte[] myWriteBuffer = Encoding.ASCII.GetBytes("send");
+            //byte[] myWriteBuffer = Encoding.ASCII.GetBytes("test");
+            netStream.Write(myWriteBuffer, 0, myWriteBuffer.Length);
 
             while (TcpClient.Connected)
             {
