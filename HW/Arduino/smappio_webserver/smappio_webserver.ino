@@ -29,7 +29,7 @@ const char* password = "123456789"; // El pass tiene que tener mas de 8 caracter
 #define SMAPPIO_CODE_TEST 2
 #define SMAPPIO_CODE_LOGS 3
 
-#define LOGGER_SIZE 100
+#define LOGGER_SIZE 40
 
 enum logAudit {
   ON, // 0
@@ -140,11 +140,25 @@ void loop() {
       }
       else if(code == SMAPPIO_CODE_LOGS)
       {
+        bool sended = false;
         while(client.connected())
         {
           deepSleepIfButtonPressed();
-          int bytesSizeToSend = bufferLogsToSend();
-          client.write(_dataToSend, bytesSizeToSend);
+          if(!sended)
+          {
+            sended = true;
+            int bytesSizeToSend = bufferLogsToSend();
+            client.write(_dataToSend, bytesSizeToSend);
+          }
+          else //Se rellena con 0s para que envie el paquete tcp
+          {
+            for (int i = 0; i < BYTES_TO_SEND; i++)
+            {
+              _dataToSend[i] = 0;
+            }
+            client.write(_dataToSend, BYTES_TO_SEND);
+          }
+          sleep(1); // Para no saturar la transferencia 
         }
       }
     }
@@ -194,8 +208,6 @@ int bufferLogsToSend()
   {
     for(int i = indexLog; i < LOGGER_SIZE; i++)
     {
-      baseIndex += (i - indexLog) * 8;
-            
       // ID de log
       _dataToSend[baseIndex] = (logger[i].idLog & 255);
       _dataToSend[baseIndex + 1] = (logger[i].idLog >> 6) & 255;
@@ -207,14 +219,14 @@ int bufferLogsToSend()
       _dataToSend[baseIndex + 5] = (logger[i].codeLog >> 6) & 255;
       _dataToSend[baseIndex + 6] = (logger[i].codeLog >> 12) & 255;
       _dataToSend[baseIndex + 7] = (logger[i].codeLog >> 24) & 255;
+      
+      baseIndex += 8;
     }
-    baseIndex += 8; // por la ultima pasada
   }
   
   // Siempre pasa por este for
   for(int i = 0; i < indexLog; i++)
   {
-    baseIndex += i * 8;
     // ID de log
     _dataToSend[baseIndex] = (logger[i].idLog & 255);
     _dataToSend[baseIndex + 1] = (logger[i].idLog >> 6) & 255;
@@ -226,9 +238,11 @@ int bufferLogsToSend()
     _dataToSend[baseIndex + 5] = (logger[i].codeLog >> 6) & 255;
     _dataToSend[baseIndex + 6] = (logger[i].codeLog >> 12) & 255;
     _dataToSend[baseIndex + 7] = (logger[i].codeLog >> 24) & 255;
+    
+    baseIndex += 8;
   }
 
-  return baseIndex + 8; // por la ultima pasada
+  return baseIndex; // por la ultima pasada
 }
 
 int readCode(WiFiClient client)

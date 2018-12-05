@@ -262,7 +262,7 @@ namespace Smappio_SEAR
 
                 TestResult = errorFreeBuffer.Length == _playingLength;
                 if (TestResult)
-                    Close();
+                    ClearAndClose();
             }
         }
 
@@ -273,12 +273,13 @@ namespace Smappio_SEAR
                 readedAux = ReadFromPort(bufferAux, 0, AvailableBytes);
 
                 ReceivedBytes.AddRange(bufferAux);
-                AddLogs();
-                Close();
+                var canClose = AddLogs();
+                if (canClose)
+                    ClearAndClose();
             }
         }
 
-        private void AddLogs()
+        private bool AddLogs()
         {
             var bytes = ReceivedBytes.ToArray();
 
@@ -299,18 +300,20 @@ namespace Smappio_SEAR
 
                 var id = BitConverter.ToInt32(idArray, 0);
 
-                if (id == 0 || Math.Abs(id) > 100000)
-                    continue;
+                if (id == 0)
+                    return true;
 
                 var code = (LogAudit)BitConverter.ToInt32(logAuditArray, 0);
 
                 this.Logs.Add(new Log(id, code));
             }
+            return false;
         }
 
         public void ClearAndClose()
         {
-            _waveOut.Dispose();
+            if(_waveOut.PlaybackState != PlaybackState.Stopped)
+                _waveOut.Dispose();
             ReceivedBytes.Clear();
             Close();
         }
