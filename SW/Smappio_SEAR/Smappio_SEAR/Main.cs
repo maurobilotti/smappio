@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Smappio_SEAR
@@ -306,7 +305,9 @@ namespace Smappio_SEAR
                 }
                 else
                 {
+                    //waits for the Receiver to end.
                     Thread.Sleep(2000);
+
                     if (this.Receiver.TestResult)
                     {
                         MessageBox.Show("OK: The data was received correctly and the device is responding as expected.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -334,12 +335,25 @@ namespace Smappio_SEAR
                 var result = InvokeReceiver(new TcpReceiver(UIParams));
 
                 if (!result)
+                {
                     MessageBox.Show("Issue: The device is not connected.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }                    
+
+                //waits for the Receiver to end.
+                Thread.Sleep(2000);
+
+                if(this.Receiver.Logs.Count > 0)
+                {
+                    new Logs(this.Receiver.Logs).ShowDialog();
+                    this.Receiver.Logs.Clear();
+                }                
             }
             catch (Exception)
             {
                 throw;
             }
+
             SetButtonStatus(true);
         }
     }

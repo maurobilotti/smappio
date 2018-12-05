@@ -327,7 +327,7 @@
             // 
             this.btnLogs.BackgroundImage = global::Smappio_SEAR.Properties.Resources.logs2;
             this.btnLogs.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnLogs.Location = new System.Drawing.Point(117, 9);
+            this.btnLogs.Location = new System.Drawing.Point(114, 9);
             this.btnLogs.Name = "btnLogs";
             this.btnLogs.Size = new System.Drawing.Size(75, 75);
             this.btnLogs.TabIndex = 32;

@@ -274,7 +274,7 @@ namespace Smappio_SEAR
 
                 ReceivedBytes.AddRange(bufferAux);
                 AddLogs();
-                ClearAndClose();
+                Close();
             }
         }
 
