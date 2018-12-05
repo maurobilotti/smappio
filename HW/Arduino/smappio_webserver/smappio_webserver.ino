@@ -27,7 +27,7 @@ const char* password = "123456789"; // El pass tiene que tener mas de 8 caracter
 #define SMAPPIO_CODE_ERROR -1
 #define SMAPPIO_CODE_SEND_DATA 1
 #define SMAPPIO_CODE_TEST 2
-#define SMAPPIO_CODE_LOGS 2
+#define SMAPPIO_CODE_LOGS 3
 
 #define LOGGER_SIZE 10
 

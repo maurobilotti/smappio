@@ -19,7 +19,7 @@ namespace Smappio_SEAR
         private readonly int _sampleRate = 4600;// No modificar, pues modifica el audio escuchado.
         private readonly int _bytesDepth = 3;
         private readonly int _bitDepth = 24;
-        private readonly BufferedWaveProvider _provider;        
+        private readonly BufferedWaveProvider _provider;
         private WaveOut _waveOut = new WaveOut();
         public bool Connected = false;
         public TransmissionMethod TransmissionMethod;
@@ -36,7 +36,7 @@ namespace Smappio_SEAR
         protected WaveFormat _waveFormat;
         private Action<float> setVolumeDelegate;
         private MeteringSampleProvider _meteringSampleProvider;
-        private int _channels = 1;        
+        private int _channels = 1;
         public bool TestResult = false;
         public List<Log> Logs = new List<Log>();
 
@@ -62,8 +62,8 @@ namespace Smappio_SEAR
             setVolumeDelegate = vol => sampleChannel.Volume = vol;
             _meteringSampleProvider = new MeteringSampleProvider(sampleChannel);
             //indica la cantidad de samples que representan un punto en la grafica
-            _meteringSampleProvider.SamplesPerNotification = 80; 
-            _meteringSampleProvider.StreamVolume += OnPostVolumeMeter;            
+            _meteringSampleProvider.SamplesPerNotification = 80;
+            _meteringSampleProvider.StreamVolume += OnPostVolumeMeter;
         }
 
         private WaveFormat GetWaveFormat(PCMAudioFormat format)
@@ -78,12 +78,12 @@ namespace Smappio_SEAR
 
         private void OnPostVolumeMeter(object sender, StreamVolumeEventArgs e)
         {
-            UI.WavePainter.AddMax(e.MaxSampleValues[0] * 5);            
+            UI.WavePainter.AddMax(e.MaxSampleValues[0] * 5);
         }
 
         private void OnPreVolumeMeter(object sender, StreamVolumeEventArgs e)
         {
-            UI.VolumeMeter.Amplitude = e.MaxSampleValues[0];            
+            UI.VolumeMeter.Amplitude = e.MaxSampleValues[0];
         }
 
         #region Public Methods
@@ -101,9 +101,9 @@ namespace Smappio_SEAR
             string absolutePath = Path.GetFullPath(_filePath);
             string fileName = $"{DateTime.Now.ToString("yyyy-MM-dd_hhmmss")}.wav";
             string fullPath = Path.Combine(absolutePath, fileName);
-            var bytes = pcmHelper.GetBufferForPlaying(ReceivedBytes.ToArray());            
+            var bytes = pcmHelper.GetBufferForPlaying(ReceivedBytes.ToArray());
             RawSourceWaveStream source = new RawSourceWaveStream(bytes, 0, bytes.Length, _waveFormat);
-            WaveFileWriter.CreateWaveFile(fullPath, source);            
+            WaveFileWriter.CreateWaveFile(fullPath, source);
         }
 
         public void AddSamplesToPlayer()
@@ -112,9 +112,9 @@ namespace Smappio_SEAR
 
             var bufferForPlaying = pcmHelper.GetBufferForPlaying(auxBuffer);
 
-            _offset += errorFreeReaded;            
-            
-            _provider.AddSamples(bufferForPlaying, 0, bufferForPlaying.Length);  
+            _offset += errorFreeReaded;
+
+            _provider.AddSamples(bufferForPlaying, 0, bufferForPlaying.Length);
         }
 
         protected byte[] ControlAlgorithm()
@@ -198,7 +198,7 @@ namespace Smappio_SEAR
                     }
 
                     // Se amplifica el sonido multiplicando por la constante '_amplitudeMultiplier' si está en PCM-24
-                    if(UI.Format == PCMAudioFormat.PCM_24)
+                    if (UI.Format == PCMAudioFormat.PCM_24)
                     {
                         sample = BitConverter.ToInt32(sampleAsByteArray, 0) * _amplitudeMultiplier;
                     }
@@ -206,7 +206,7 @@ namespace Smappio_SEAR
                     {
                         sample = BitConverter.ToInt32(sampleAsByteArray, 0);
                     }
-                    
+
                     sampleAsByteArray = BitConverter.GetBytes(sample);
 
                     errorFreeBuffer[errorFreeBaseIndex] = sampleAsByteArray[0];
@@ -239,7 +239,7 @@ namespace Smappio_SEAR
                 ReceivedBytes.AddRange(errorFreeBuffer);
                 if (ReceivedBytes.Count > _playingLength * _prebufferingSize)
                 {
-                    if(_prebuffering)
+                    if (_prebuffering)
                     {
                         _prebuffering = false;
                         for (int i = 0; i < _prebufferingSize - 1; i++)
@@ -261,22 +261,20 @@ namespace Smappio_SEAR
                 byte[] errorFreeBuffer = ControlAlgorithm();
 
                 TestResult = errorFreeBuffer.Length == _playingLength;
-                if(TestResult)
+                if (TestResult)
                     Close();
-            }                        
+            }
         }
 
         protected void AddLogsSamples()
         {
-            if (AvailableBytes >= _playingLength)
+            if (AvailableBytes > 0)
             {
-                readedAux = ReadFromPort(bufferAux, 0, _playingLength);
-                
+                readedAux = ReadFromPort(bufferAux, 0, AvailableBytes);
+
                 ReceivedBytes.AddRange(bufferAux);
-                if (ReceivedBytes.Count > _playingLength)
-                {
-                    AddLogs();
-                }
+                AddLogs();
+                ClearAndClose();
             }
         }
 
@@ -284,27 +282,36 @@ namespace Smappio_SEAR
         {
             var bytes = ReceivedBytes.ToArray();
 
-            for (int i = 0; i < bytes.Length; i++)
+            for (int i = 0; i < bytes.Length - 8; i += 8)
             {
                 var idArray = new byte[4];
                 var logAuditArray = new byte[4];
 
-                if(i % 4 <= 3)
-                {
-                    idArray[i] = bytes[i];
-                }
+                idArray[0] = bytes[i];
+                idArray[1] = bytes[i + 1];
+                idArray[2] = bytes[i + 2];
+                idArray[3] = bytes[i + 3];
 
-                if (i % 8 > 3 && i % 8 <= 7)
-                {
-                    logAuditArray[i] = bytes[i];
-                }
+                logAuditArray[0] = bytes[i + 4];
+                logAuditArray[1] = bytes[i + 5];
+                logAuditArray[2] = bytes[i + 6];
+                logAuditArray[3] = bytes[i + 7];
+
+                var id = BitConverter.ToInt32(idArray, 0);
+
+                if (id == 0)
+                    continue;
+
+                var code = (LogAudit)BitConverter.ToInt32(logAuditArray, 0);
+
+                this.Logs.Add(new Log(id, code));
             }
         }
 
         public void ClearAndClose()
         {
             _waveOut.Dispose();
-            ReceivedBytes.Clear();            
+            ReceivedBytes.Clear();
             Close();
         }
 
