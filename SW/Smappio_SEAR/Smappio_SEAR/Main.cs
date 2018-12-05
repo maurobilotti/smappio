@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Smappio_SEAR
@@ -27,8 +29,6 @@ namespace Smappio_SEAR
         private string filePath = "../../AudioSamples/";
         Stopwatch sw = new Stopwatch();
         long elapsedMilliseconds = 0;
-        private readonly float _silenceAverage = 0.0187f;
-        private readonly float _soundMultiplier = 15;
         private bool _notified;
         public Receiver Receiver;
         private string fileName;
@@ -46,7 +46,7 @@ namespace Smappio_SEAR
 
         private void btnBluetooth_Click(object sender, EventArgs e)
         {
-           
+
         }
 
         private void btnUdp_Click(object sender, EventArgs e)
@@ -54,21 +54,21 @@ namespace Smappio_SEAR
             InvokeReceiver(new UdpReceiver());
         }
 
-        private void btnTcp_Click(object sender, EventArgs e)
+        private void btnAuscultate_Click(object sender, EventArgs e)
         {
             InvokeReceiver(new TcpReceiver(UIParams));
             btnSave.Enabled = true;
             btnClear.Enabled = true;
         }
 
-        private void InvokeReceiver(Receiver receiver)
+        private bool InvokeReceiver(Receiver receiver)
         {
             Receiver = receiver;
 
             if (!Receiver.Connected)
             {
                 SetNotificationLabel(Receiver.PortName + " Not Available");
-                return;
+                return false;
             }
 
             Receiver.Receive();
@@ -78,6 +78,8 @@ namespace Smappio_SEAR
 
             if (!sw.IsRunning)
                 sw.Start();
+
+            return true;
         }
 
         #endregion
@@ -85,7 +87,7 @@ namespace Smappio_SEAR
         #region Program features
 
         #region TextBox_Methods
-        
+
 
         delegate void SetNotificationLabelCallback(string text);
         private void SetNotificationLabel(string text)
@@ -165,17 +167,17 @@ namespace Smappio_SEAR
             }
 
             Receiver.SaveFile();
-            Receiver.ClearAndClose();            
+            Receiver.ClearAndClose();
         }
 
         private void btnClear_Click(object sender, EventArgs e)
         {
-            ClearContents();            
+            ClearContents();
         }
 
         private void ClearContents()
         {
-            if(Receiver != null)
+            if (Receiver != null)
                 Receiver.ClearAndClose();
 
             SetButtonStatus(true);
@@ -191,7 +193,7 @@ namespace Smappio_SEAR
 
         private void SetButtonStatus(bool status = false)
         {
-            btnBluetooth.Enabled = btnTcp.Enabled = btnSerial.Enabled = status;
+            btnBluetooth.Enabled = btnAuscultate.Enabled = btnSerial.Enabled = status;
         }
 
         #endregion
@@ -220,8 +222,8 @@ namespace Smappio_SEAR
                     return;
                 }
                 else if (waveOut.PlaybackState == PlaybackState.Paused)
-                {                    
-                    waveOut.Play();                    
+                {
+                    waveOut.Play();
                 }
             }
 
@@ -274,7 +276,7 @@ namespace Smappio_SEAR
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if(Receiver != null)
+            if (Receiver != null)
                 Receiver.ClearAndClose();
         }
 
@@ -287,6 +289,58 @@ namespace Smappio_SEAR
         {
             waveOut.Stop();
             ClearContents();
+        }
+
+        private void btnTest_Click(object sender, EventArgs e)
+        {
+            this.UIParams = new UIParams(ref this.waveformPainter, ref this.volumeMeter, (PCMAudioFormat)cbEncoding.SelectedIndex, Mode.Test);
+            try
+            {
+                bool result;
+                result = InvokeReceiver(new TcpReceiver(UIParams));
+
+                if (!result)
+                {
+                    MessageBox.Show("Issue: The device is not connected.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                else
+                {
+                    Thread.Sleep(2000);
+                    if (this.Receiver.TestResult)
+                    {
+                        MessageBox.Show("OK: The data was received correctly and the device is responding as expected.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        SetNotificationLabel("Test PASSED.");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error: There are connection errors. The data was not received correctly.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        SetNotificationLabel("Test not passed.");
+                    }                    
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            SetButtonStatus(true);
+        }
+
+        private void btnLogs_Click(object sender, EventArgs e)
+        {
+            this.UIParams = new UIParams(ref this.waveformPainter, ref this.volumeMeter, (PCMAudioFormat)cbEncoding.SelectedIndex, Mode.Logs);
+            try
+            {
+                var result = InvokeReceiver(new TcpReceiver(UIParams));
+
+                if (!result)
+                    MessageBox.Show("Issue: The device is not connected.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            SetButtonStatus(true);
         }
     }
 }

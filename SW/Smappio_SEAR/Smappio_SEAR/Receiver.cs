@@ -36,7 +36,8 @@ namespace Smappio_SEAR
         protected WaveFormat _waveFormat;
         private Action<float> setVolumeDelegate;
         private MeteringSampleProvider _meteringSampleProvider;
-        private int _channels = 1;
+        private int _channels = 1;        
+        public bool TestResult = false;
         #region Plotter
         private readonly float _silenceAverage = 0.0187f;
         private readonly float _soundMultiplier = 15;
@@ -117,8 +118,7 @@ namespace Smappio_SEAR
 
             _offset += errorFreeReaded;            
             
-            _provider.AddSamples(bufferForPlaying, 0, bufferForPlaying.Length);              
-            
+            _provider.AddSamples(bufferForPlaying, 0, bufferForPlaying.Length);  
         }
 
         protected byte[] ControlAlgorithm()
@@ -244,6 +244,43 @@ namespace Smappio_SEAR
                 if (ReceivedBytes.Count > _playingLength * _prebufferingSize)
                 {
                     if(_prebuffering)
+                    {
+                        _prebuffering = false;
+                        for (int i = 0; i < _prebufferingSize - 1; i++)
+                        {
+                            AddSamplesToPlayer();
+                        }
+                        this.Play();
+                    }
+                    AddSamplesToPlayer();
+                }
+            }
+        }
+
+        protected void AddTestSamples()
+        {
+            if (AvailableBytes >= _playingLength)
+            {
+                readedAux = ReadFromPort(bufferAux, 0, _playingLength);
+                byte[] errorFreeBuffer = ControlAlgorithm();
+
+                TestResult = errorFreeBuffer.Length == _playingLength;
+                if(TestResult)
+                    Close();
+            }                        
+        }
+
+        protected void AddLogsSamples()
+        {
+            if (AvailableBytes >= _playingLength)
+            {
+                readedAux = ReadFromPort(bufferAux, 0, _playingLength);
+                byte[] errorFreeBuffer = ControlAlgorithm();
+
+                ReceivedBytes.AddRange(errorFreeBuffer);
+                if (ReceivedBytes.Count > _playingLength * _prebufferingSize)
+                {
+                    if (_prebuffering)
                     {
                         _prebuffering = false;
                         for (int i = 0; i < _prebufferingSize - 1; i++)

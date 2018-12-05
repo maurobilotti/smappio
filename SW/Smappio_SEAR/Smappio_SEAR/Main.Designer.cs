@@ -49,22 +49,22 @@
             this.volumeMeter = new NAudio.Gui.VolumeMeter();
             this.cbEncoding = new System.Windows.Forms.ComboBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.btnAuscultate = new System.Windows.Forms.Button();
             this.toolTipAuscultar = new System.Windows.Forms.ToolTip(this.components);
             this.toolTipGuardar = new System.Windows.Forms.ToolTip(this.components);
+            this.btnSave = new System.Windows.Forms.Button();
             this.toolTipStop = new System.Windows.Forms.ToolTip(this.components);
+            this.btnClear = new System.Windows.Forms.Button();
             this.toolTipTest = new System.Windows.Forms.ToolTip(this.components);
-            this.toolTipLogs = new System.Windows.Forms.ToolTip(this.components);
-            this.btnStop = new System.Windows.Forms.Button();
-            this.btnLogs = new System.Windows.Forms.Button();
             this.btnTest = new System.Windows.Forms.Button();
+            this.toolTipLogs = new System.Windows.Forms.ToolTip(this.components);
+            this.btnLogs = new System.Windows.Forms.Button();
+            this.btnStop = new System.Windows.Forms.Button();
             this.btnPlay = new System.Windows.Forms.Button();
             this.btnBrowse = new System.Windows.Forms.Button();
             this.waveformPainter = new NAudio.Gui.WaveformPainter();
-            this.btnClear = new System.Windows.Forms.Button();
             this.btnSerial = new System.Windows.Forms.Button();
-            this.btnSave = new System.Windows.Forms.Button();
             this.btnBluetooth = new System.Windows.Forms.Button();
-            this.btnTcp = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -73,7 +73,7 @@
             // 
             this.lblNotification.AutoSize = true;
             this.lblNotification.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblNotification.Location = new System.Drawing.Point(112, 14);
+            this.lblNotification.Location = new System.Drawing.Point(112, 11);
             this.lblNotification.Name = "lblNotification";
             this.lblNotification.Size = new System.Drawing.Size(105, 18);
             this.lblNotification.TabIndex = 3;
@@ -83,7 +83,7 @@
             // 
             this.lblSamplesReceived.AutoSize = true;
             this.lblSamplesReceived.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblSamplesReceived.Location = new System.Drawing.Point(474, 11);
+            this.lblSamplesReceived.Location = new System.Drawing.Point(555, 11);
             this.lblSamplesReceived.Name = "lblSamplesReceived";
             this.lblSamplesReceived.Size = new System.Drawing.Size(16, 18);
             this.lblSamplesReceived.TabIndex = 6;
@@ -94,7 +94,7 @@
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.Red;
-            this.label1.Location = new System.Drawing.Point(333, 11);
+            this.label1.Location = new System.Drawing.Point(414, 11);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(135, 18);
             this.label1.TabIndex = 8;
@@ -105,7 +105,7 @@
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.Red;
-            this.label2.Location = new System.Drawing.Point(15, 14);
+            this.label2.Location = new System.Drawing.Point(15, 11);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(86, 18);
             this.label2.TabIndex = 9;
@@ -137,7 +137,7 @@
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.Red;
-            this.label4.Location = new System.Drawing.Point(333, 45);
+            this.label4.Location = new System.Drawing.Point(414, 45);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(91, 18);
             this.label4.TabIndex = 12;
@@ -147,7 +147,7 @@
             // 
             this.lblSampleRate.AutoSize = true;
             this.lblSampleRate.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblSampleRate.Location = new System.Drawing.Point(438, 45);
+            this.lblSampleRate.Location = new System.Drawing.Point(524, 45);
             this.lblSampleRate.Name = "lblSampleRate";
             this.lblSampleRate.Size = new System.Drawing.Size(16, 18);
             this.lblSampleRate.TabIndex = 13;
@@ -157,7 +157,7 @@
             // 
             this.lblBitRate.AutoSize = true;
             this.lblBitRate.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBitRate.Location = new System.Drawing.Point(734, 14);
+            this.lblBitRate.Location = new System.Drawing.Point(732, 11);
             this.lblBitRate.Name = "lblBitRate";
             this.lblBitRate.Size = new System.Drawing.Size(16, 18);
             this.lblBitRate.TabIndex = 15;
@@ -168,7 +168,7 @@
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label6.ForeColor = System.Drawing.Color.Red;
-            this.label6.Location = new System.Drawing.Point(656, 14);
+            this.label6.Location = new System.Drawing.Point(656, 11);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(58, 18);
             this.label6.TabIndex = 14;
@@ -178,7 +178,7 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(793, 14);
+            this.label7.Location = new System.Drawing.Point(788, 11);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(40, 18);
             this.label7.TabIndex = 16;
@@ -188,7 +188,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(513, 45);
+            this.label5.Location = new System.Drawing.Point(594, 45);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(27, 18);
             this.label5.TabIndex = 17;
@@ -240,7 +240,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.volumeMeter.BackColor = System.Drawing.Color.WhiteSmoke;
             this.volumeMeter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.volumeMeter.Location = new System.Drawing.Point(12, 180);
+            this.volumeMeter.Location = new System.Drawing.Point(13, 179);
             this.volumeMeter.MaxDb = 18F;
             this.volumeMeter.MinDb = -60F;
             this.volumeMeter.Name = "volumeMeter";
@@ -265,34 +265,50 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.Black;
-            this.panel2.Controls.Add(this.btnTcp);
+            this.panel2.Controls.Add(this.btnAuscultate);
             this.panel2.Location = new System.Drawing.Point(198, 8);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(81, 79);
             this.panel2.TabIndex = 31;
             // 
-            // btnStop
+            // btnAuscultate
             // 
-            this.btnStop.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnStop.BackgroundImage")));
-            this.btnStop.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnStop.Location = new System.Drawing.Point(444, 24);
-            this.btnStop.Name = "btnStop";
-            this.btnStop.Size = new System.Drawing.Size(48, 49);
-            this.btnStop.TabIndex = 33;
-            this.btnStop.UseVisualStyleBackColor = true;
-            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
+            this.btnAuscultate.BackgroundImage = global::Smappio_SEAR.Properties.Resources.auscultate;
+            this.btnAuscultate.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnAuscultate.Location = new System.Drawing.Point(3, 2);
+            this.btnAuscultate.Name = "btnAuscultate";
+            this.btnAuscultate.Size = new System.Drawing.Size(75, 74);
+            this.btnAuscultate.TabIndex = 22;
+            this.btnAuscultate.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.toolTipAuscultar.SetToolTip(this.btnAuscultate, "Auscultar");
+            this.btnAuscultate.UseVisualStyleBackColor = true;
+            this.btnAuscultate.Click += new System.EventHandler(this.btnAuscultate_Click);
             // 
-            // btnLogs
+            // btnSave
             // 
-            this.btnLogs.BackgroundImage = global::Smappio_SEAR.Properties.Resources.logs2;
-            this.btnLogs.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnLogs.Location = new System.Drawing.Point(117, 9);
-            this.btnLogs.Name = "btnLogs";
-            this.btnLogs.Size = new System.Drawing.Size(75, 75);
-            this.btnLogs.TabIndex = 32;
-            this.btnLogs.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.toolTipLogs.SetToolTip(this.btnLogs, "Obtener Logs");
-            this.btnLogs.UseVisualStyleBackColor = true;
+            this.btnSave.BackgroundImage = global::Smappio_SEAR.Properties.Resources.save;
+            this.btnSave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnSave.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSave.Location = new System.Drawing.Point(912, 22);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(50, 50);
+            this.btnSave.TabIndex = 0;
+            this.toolTipGuardar.SetToolTip(this.btnSave, "Guardar");
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // btnClear
+            // 
+            this.btnClear.BackgroundImage = global::Smappio_SEAR.Properties.Resources.stop;
+            this.btnClear.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnClear.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnClear.Location = new System.Drawing.Point(984, 22);
+            this.btnClear.Name = "btnClear";
+            this.btnClear.Size = new System.Drawing.Size(50, 50);
+            this.btnClear.TabIndex = 20;
+            this.toolTipStop.SetToolTip(this.btnClear, "Finalizar");
+            this.btnClear.UseVisualStyleBackColor = true;
+            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
             // btnTest
             // 
@@ -305,6 +321,31 @@
             this.btnTest.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.toolTipTest.SetToolTip(this.btnTest, "Test Smappio");
             this.btnTest.UseVisualStyleBackColor = true;
+            this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
+            // 
+            // btnLogs
+            // 
+            this.btnLogs.BackgroundImage = global::Smappio_SEAR.Properties.Resources.logs2;
+            this.btnLogs.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnLogs.Location = new System.Drawing.Point(117, 9);
+            this.btnLogs.Name = "btnLogs";
+            this.btnLogs.Size = new System.Drawing.Size(75, 75);
+            this.btnLogs.TabIndex = 32;
+            this.btnLogs.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.toolTipLogs.SetToolTip(this.btnLogs, "Obtener Logs");
+            this.btnLogs.UseVisualStyleBackColor = true;
+            this.btnLogs.Click += new System.EventHandler(this.btnLogs_Click);
+            // 
+            // btnStop
+            // 
+            this.btnStop.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnStop.BackgroundImage")));
+            this.btnStop.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnStop.Location = new System.Drawing.Point(444, 24);
+            this.btnStop.Name = "btnStop";
+            this.btnStop.Size = new System.Drawing.Size(48, 49);
+            this.btnStop.TabIndex = 33;
+            this.btnStop.UseVisualStyleBackColor = true;
+            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
             // 
             // btnPlay
             // 
@@ -342,19 +383,6 @@
             this.waveformPainter.Size = new System.Drawing.Size(994, 414);
             this.waveformPainter.TabIndex = 24;
             // 
-            // btnClear
-            // 
-            this.btnClear.BackgroundImage = global::Smappio_SEAR.Properties.Resources.stop;
-            this.btnClear.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnClear.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnClear.Location = new System.Drawing.Point(984, 22);
-            this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(50, 50);
-            this.btnClear.TabIndex = 20;
-            this.toolTipStop.SetToolTip(this.btnClear, "Finalizar");
-            this.btnClear.UseVisualStyleBackColor = true;
-            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
-            // 
             // btnSerial
             // 
             this.btnSerial.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -367,19 +395,6 @@
             this.btnSerial.Visible = false;
             this.btnSerial.Click += new System.EventHandler(this.btnUSB_Click);
             // 
-            // btnSave
-            // 
-            this.btnSave.BackgroundImage = global::Smappio_SEAR.Properties.Resources.save;
-            this.btnSave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnSave.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSave.Location = new System.Drawing.Point(912, 22);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(50, 50);
-            this.btnSave.TabIndex = 0;
-            this.toolTipGuardar.SetToolTip(this.btnSave, "Guardar");
-            this.btnSave.UseVisualStyleBackColor = true;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
-            // 
             // btnBluetooth
             // 
             this.btnBluetooth.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -391,19 +406,6 @@
             this.btnBluetooth.UseVisualStyleBackColor = true;
             this.btnBluetooth.Visible = false;
             this.btnBluetooth.Click += new System.EventHandler(this.btnBluetooth_Click);
-            // 
-            // btnTcp
-            // 
-            this.btnTcp.BackgroundImage = global::Smappio_SEAR.Properties.Resources.auscultate;
-            this.btnTcp.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnTcp.Location = new System.Drawing.Point(3, 2);
-            this.btnTcp.Name = "btnTcp";
-            this.btnTcp.Size = new System.Drawing.Size(75, 74);
-            this.btnTcp.TabIndex = 22;
-            this.btnTcp.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.toolTipAuscultar.SetToolTip(this.btnTcp, "Auscultar");
-            this.btnTcp.UseVisualStyleBackColor = true;
-            this.btnTcp.Click += new System.EventHandler(this.btnTcp_Click);
             // 
             // Main
             // 
@@ -461,7 +463,7 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox txtPath;
         private System.Windows.Forms.Button btnClear;
-        private System.Windows.Forms.Button btnTcp;
+        private System.Windows.Forms.Button btnAuscultate;
         private NAudio.Gui.WaveformPainter waveformPainter;
         private System.Windows.Forms.Button btnPlay;
         private System.Windows.Forms.Button btnBrowse;

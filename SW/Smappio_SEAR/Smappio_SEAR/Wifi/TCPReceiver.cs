@@ -1,10 +1,6 @@
-﻿using NAudio.Gui;
-using System;
-using System.Linq;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Windows.Forms;
 
 namespace Smappio_SEAR.Wifi
 {
@@ -82,15 +78,41 @@ namespace Smappio_SEAR.Wifi
             {
                 // do nothing
             }
-            byte[] myWriteBuffer = Encoding.ASCII.GetBytes("send");
-            //byte[] myWriteBuffer = Encoding.ASCII.GetBytes("test");
+
+            var command = Encoding.ASCII.GetBytes("send");
+            if (UI.Mode == Mode.Test)
+            {
+                command = Encoding.ASCII.GetBytes("test");
+            }
+            if (UI.Mode == Mode.Logs)
+            {
+                command = Encoding.ASCII.GetBytes("logs");
+            }
+
+            byte[] myWriteBuffer = command;
+            
+            //transfiere el handshake
             netStream.Write(myWriteBuffer, 0, myWriteBuffer.Length);
 
             while (TcpClient.Connected)
             {
                 if (netStream.CanRead)
                 {
-                    AddFreeErrorSamples();
+                    switch (UI.Mode)
+                    {
+                        case Mode.Auscultate:
+                            AddFreeErrorSamples();
+                            break;
+                        case Mode.Test:
+                            AddTestSamples();
+                            break;
+                        case Mode.Logs:
+                            AddLogsSamples();
+                            break;
+
+
+                        default: throw new System.Exception("Mode not found");
+                    }
                 }
             }
         }
