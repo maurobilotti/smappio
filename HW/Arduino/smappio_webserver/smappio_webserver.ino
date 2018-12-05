@@ -126,6 +126,7 @@ void loop() {
           bufferSeqNum++;
           addLogAudit(TRANSMITTED);
         }
+        client.stop();
       }
       else if (code == SMAPPIO_CODE_TEST)
       {
@@ -137,6 +138,7 @@ void loop() {
           sleep(1); // Para no saturar la transferencia 
           addLogAudit(TESTED);
         }
+        client.stop();
       }
       else if(code == SMAPPIO_CODE_LOGS)
       {
@@ -157,13 +159,14 @@ void loop() {
               _dataToSend[i] = 0;
             }
             client.write(_dataToSend, BYTES_TO_SEND);
+            client.stop();
           }
-          sleep(1); // Para no saturar la transferencia 
+          //sleep(1); // Para no saturar la transferencia 
         }
       }
     }
   }
-  else
+  else // not client
   {
     digitalWrite(CONNECTED_LED, LOW);
     addLogAudit(DISCONNECTED);
