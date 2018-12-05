@@ -29,5 +29,5 @@ namespace Smappio_SEAR
         Auscultate = 0,
         Test = 1,
         Logs = 2
-    }
+    }   
 }

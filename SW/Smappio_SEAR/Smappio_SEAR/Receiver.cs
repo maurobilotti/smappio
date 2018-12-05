@@ -38,11 +38,7 @@ namespace Smappio_SEAR
         private MeteringSampleProvider _meteringSampleProvider;
         private int _channels = 1;        
         public bool TestResult = false;
-        #region Plotter
-        private readonly float _silenceAverage = 0.0187f;
-        private readonly float _soundMultiplier = 15;
-        #endregion
-
+        public List<Log> Logs = new List<Log>();
 
         public Receiver()
         {
@@ -275,21 +271,32 @@ namespace Smappio_SEAR
             if (AvailableBytes >= _playingLength)
             {
                 readedAux = ReadFromPort(bufferAux, 0, _playingLength);
-                byte[] errorFreeBuffer = ControlAlgorithm();
-
-                ReceivedBytes.AddRange(errorFreeBuffer);
-                if (ReceivedBytes.Count > _playingLength * _prebufferingSize)
+                
+                ReceivedBytes.AddRange(bufferAux);
+                if (ReceivedBytes.Count > _playingLength)
                 {
-                    if (_prebuffering)
-                    {
-                        _prebuffering = false;
-                        for (int i = 0; i < _prebufferingSize - 1; i++)
-                        {
-                            AddSamplesToPlayer();
-                        }
-                        this.Play();
-                    }
-                    AddSamplesToPlayer();
+                    AddLogs();
+                }
+            }
+        }
+
+        private void AddLogs()
+        {
+            var bytes = ReceivedBytes.ToArray();
+
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                var idArray = new byte[4];
+                var logAuditArray = new byte[4];
+
+                if(i % 4 <= 3)
+                {
+                    idArray[i] = bytes[i];
+                }
+
+                if (i % 8 > 3 && i % 8 <= 7)
+                {
+                    logAuditArray[i] = bytes[i];
                 }
             }
         }
