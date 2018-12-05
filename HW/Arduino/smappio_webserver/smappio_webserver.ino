@@ -27,16 +27,17 @@ const char* password = "123456789"; // El pass tiene que tener mas de 8 caracter
 #define SMAPPIO_CODE_ERROR -1
 #define SMAPPIO_CODE_SEND_DATA 1
 #define SMAPPIO_CODE_TEST 2
+#define SMAPPIO_CODE_LOGS 2
 
-#define LOGGER_SIZE 100
+#define LOGGER_SIZE 10
 
 enum logAudit {
-  ON,
-  OFF,
-  CONNECTED,
-  DISCONNECTED,
-  TRANSMITTED,
-  TESTED
+  ON, // 0
+  OFF, // 1
+  CONNECTED, // 2
+  DISCONNECTED, // 3
+  TRANSMITTED, // 4
+  TESTED // 5
 };
 
 //ESTRUCTURAS
@@ -66,8 +67,6 @@ void setup() {
   digitalWrite(ON_LED, HIGH);
   smappioSound.begin(_buffer);
   
-  Serial.begin(9600);
-  
   // Se crea un Access Point, para poder conectarse al dispositivo
   WiFi.softAP(ssid, password, WIFI_CHANNEL);
   delay(300); // DEJAR ESTE DELAY, sino softAP se puede colgar.
@@ -82,7 +81,7 @@ void setup() {
 
   rtc_gpio_pullup_en(POWER_BUTTON);
   esp_sleep_enable_ext0_wakeup(POWER_BUTTON, 0); //1 = High, 0 = Low
-
+  
   addLogAudit(ON);
 }
 
@@ -139,6 +138,14 @@ void loop() {
           addLogAudit(TESTED);
         }
       }
+      else if(code == SMAPPIO_CODE_LOGS)
+      {
+        if(client.connected())
+        {
+          int bytesSizeToSend = bufferLogsToSend();
+          client.write(_dataToSend, bytesSizeToSend);
+        }
+      }
     }
   }
   else
@@ -154,13 +161,15 @@ void addLogAudit(logAudit codeLog)
   if(indexLog == 0)
   { 
     if(loggerFull)
-      previousIndex == LOGGER_SIZE - 1;
+      previousIndex = LOGGER_SIZE - 1;
   }
   else
-    previousIndex == indexLog-1;
+  {
+    previousIndex = indexLog - 1;
+  }  
   
-  if((previousIndex != -1 && logger[previousIndex].codeLog != codeLog) 
-    && ((codeLog == DISCONNECTED && logger[previousIndex].codeLog != ON) || codeLog != DISCONNECTED))
+  if((previousIndex == -1 || logger[previousIndex].codeLog != codeLog) // si es el primero O si el anterior es distinto
+    && (codeLog != DISCONNECTED || (codeLog == DISCONNECTED && logger[previousIndex].codeLog != ON))) // si el codigo NO es disconnected o si al ser disconnected, el anterior no es ON
   {
     logger[indexLog].idLog = idLog;
     logger[indexLog].codeLog = codeLog;
@@ -173,11 +182,52 @@ void addLogAudit(logAudit codeLog)
       }
     else
       indexLog++;
-
-      //Serial.print(logger[indexLog].idLog);
-      //Serial.print(logger[indexLog].codeLog);
-      //Serial.print(" || ");
   }
+}
+
+// Bufferea los logs a enviar. Retorna la cantidad de bytes a enviar
+int bufferLogsToSend() 
+{
+  int baseIndex = 0;
+  if(loggerFull)
+  {
+    for(int i = indexLog; i < LOGGER_SIZE; i++)
+    {
+      baseIndex += (i - indexLog) * 8;
+            
+      // ID de log
+      _dataToSend[baseIndex] = (logger[i].idLog & 255);
+      _dataToSend[baseIndex + 1] = (logger[i].idLog >> 6) & 255;
+      _dataToSend[baseIndex + 2] = (logger[i].idLog >> 12) & 255;
+      _dataToSend[baseIndex + 3] = (logger[i].idLog >> 24) & 255;
+
+      // Codigo de log
+      _dataToSend[baseIndex + 4] = (logger[i].codeLog & 255);
+      _dataToSend[baseIndex + 5] = (logger[i].codeLog >> 6) & 255;
+      _dataToSend[baseIndex + 6] = (logger[i].codeLog >> 12) & 255;
+      _dataToSend[baseIndex + 7] = (logger[i].codeLog >> 24) & 255;
+    }
+    baseIndex += 8; // por la ultima pasada
+  }
+  
+  // Siempre pasa por este for
+  for(int i = 0; i < indexLog; i++)
+  {
+    baseIndex += i * 8;
+    // ID de log
+    _dataToSend[baseIndex] = (logger[i].idLog & 255);
+    _dataToSend[baseIndex + 1] = (logger[i].idLog >> 6) & 255;
+    _dataToSend[baseIndex + 2] = (logger[i].idLog >> 12) & 255;
+    _dataToSend[baseIndex + 3] = (logger[i].idLog >> 24) & 255;
+
+    // Codigo de log
+    _dataToSend[baseIndex + 4] = (logger[i].codeLog & 255);
+    _dataToSend[baseIndex + 5] = (logger[i].codeLog >> 6) & 255;
+    _dataToSend[baseIndex + 6] = (logger[i].codeLog >> 12) & 255;
+    _dataToSend[baseIndex + 7] = (logger[i].codeLog >> 24) & 255;
+  }
+
+  return baseIndex + 8; // por la ultima pasada
 }
 
 int readCode(WiFiClient client)
@@ -199,6 +249,13 @@ int readCode(WiFiClient client)
         if(readChar(client) == 's')
           if(readChar(client) == 't')
             return SMAPPIO_CODE_TEST;
+    }
+    else if(firstChar == 'l')
+    {
+      if(readChar(client) == 'o')
+        if(readChar(client) == 'g')
+          if(readChar(client) == 's')
+            return SMAPPIO_CODE_LOGS;
     }
   }
   return -1; // error
