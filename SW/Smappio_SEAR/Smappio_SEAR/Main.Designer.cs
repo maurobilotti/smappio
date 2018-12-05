@@ -228,9 +228,9 @@
             this.panel1.Controls.Add(this.lblBitRate);
             this.panel1.Controls.Add(this.lblSampleRate);
             this.panel1.Controls.Add(this.label6);
-            this.panel1.Location = new System.Drawing.Point(13, 94);
+            this.panel1.Location = new System.Drawing.Point(41, 94);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1022, 82);
+            this.panel1.Size = new System.Drawing.Size(994, 82);
             this.panel1.TabIndex = 27;
             // 
             // volumeMeter
@@ -266,7 +266,7 @@
             // 
             this.panel2.BackColor = System.Drawing.Color.Black;
             this.panel2.Controls.Add(this.btnAuscultate);
-            this.panel2.Location = new System.Drawing.Point(198, 8);
+            this.panel2.Location = new System.Drawing.Point(209, 8);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(81, 79);
             this.panel2.TabIndex = 31;
@@ -314,7 +314,7 @@
             // 
             this.btnTest.BackgroundImage = global::Smappio_SEAR.Properties.Resources.test;
             this.btnTest.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnTest.Location = new System.Drawing.Point(31, 9);
+            this.btnTest.Location = new System.Drawing.Point(42, 9);
             this.btnTest.Name = "btnTest";
             this.btnTest.Size = new System.Drawing.Size(75, 75);
             this.btnTest.TabIndex = 23;
@@ -327,7 +327,7 @@
             // 
             this.btnLogs.BackgroundImage = global::Smappio_SEAR.Properties.Resources.logs2;
             this.btnLogs.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnLogs.Location = new System.Drawing.Point(114, 9);
+            this.btnLogs.Location = new System.Drawing.Point(125, 9);
             this.btnLogs.Name = "btnLogs";
             this.btnLogs.Size = new System.Drawing.Size(75, 75);
             this.btnLogs.TabIndex = 32;

@@ -299,7 +299,7 @@ namespace Smappio_SEAR
 
                 var id = BitConverter.ToInt32(idArray, 0);
 
-                if (id == 0)
+                if (id == 0 || Math.Abs(id) > 100000)
                     continue;
 
                 var code = (LogAudit)BitConverter.ToInt32(logAuditArray, 0);
