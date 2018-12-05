@@ -28,10 +28,34 @@ const char* password = "123456789"; // El pass tiene que tener mas de 8 caracter
 #define SMAPPIO_CODE_SEND_DATA 1
 #define SMAPPIO_CODE_TEST 2
 
+#define LOGGER_SIZE 100
+
+enum logAudit {
+  ON,
+  OFF,
+  CONNECTED,
+  DISCONNECTED,
+  TRANSMITTED,
+  TESTED
+};
+
+//ESTRUCTURAS
+struct Log
+{  
+ int idLog;//Autonumerico
+ logAudit codeLog; // Código de acción auditada
+};
+  
 // VARIABLES
 int32_t *_buffer;
 uint8_t _dataToSend[BYTES_TO_SEND + 1];
 SmappioSound smappioSound(MEDIA); 
+
+//AUDITORIA
+RTC_DATA_ATTR Log logger[LOGGER_SIZE];
+RTC_DATA_ATTR int indexLog = 0;
+RTC_DATA_ATTR bool loggerFull = false;
+RTC_DATA_ATTR int idLog = 1;
 
 void setup() { 
   pinMode(ON_LED, OUTPUT);
@@ -41,7 +65,9 @@ void setup() {
   pinMode(DATA_PIN, INPUT); // Supuestamente necesario para que no haya ruido
   digitalWrite(ON_LED, HIGH);
   smappioSound.begin(_buffer);
-
+  
+  Serial.begin(9600);
+  
   // Se crea un Access Point, para poder conectarse al dispositivo
   WiFi.softAP(ssid, password, WIFI_CHANNEL);
   delay(300); // DEJAR ESTE DELAY, sino softAP se puede colgar.
@@ -56,6 +82,8 @@ void setup() {
 
   rtc_gpio_pullup_en(POWER_BUTTON);
   esp_sleep_enable_ext0_wakeup(POWER_BUTTON, 0); //1 = High, 0 = Low
+
+  addLogAudit(ON);
 }
 
 void loop() {
@@ -68,6 +96,7 @@ void loop() {
   if (client) 
   {
     client.setNoDelay(TCP_NO_DELAY);  
+    addLogAudit(CONNECTED);
     
     while (client.connected()) 
     {
@@ -96,6 +125,7 @@ void loop() {
           client.write(_dataToSend, BYTES_TO_SEND); // Hacer BYTES_TO_SEND + 1 para enviar el bufferSeqNum
     
           bufferSeqNum++;
+          addLogAudit(TRANSMITTED);
         }
       }
       else if (code == SMAPPIO_CODE_TEST)
@@ -106,13 +136,47 @@ void loop() {
           bufferAlternateMinMaxValue();
           client.write(_dataToSend, BYTES_TO_SEND);
           sleep(1); // Para no saturar la transferencia 
+          addLogAudit(TESTED);
         }
       }
     }
   }
   else
   {
-    digitalWrite(CONNECTED_LED, LOW); 
+    digitalWrite(CONNECTED_LED, LOW);
+    addLogAudit(DISCONNECTED);
+  }
+}
+
+void addLogAudit(logAudit codeLog)
+{
+  int previousIndex = -1;
+  if(indexLog == 0)
+  { 
+    if(loggerFull)
+      previousIndex == LOGGER_SIZE - 1;
+  }
+  else
+    previousIndex == indexLog-1;
+  
+  if((previousIndex != -1 && logger[previousIndex].codeLog != codeLog) 
+    && ((codeLog == DISCONNECTED && logger[previousIndex].codeLog != ON) || codeLog != DISCONNECTED))
+  {
+    logger[indexLog].idLog = idLog;
+    logger[indexLog].codeLog = codeLog;
+  
+    idLog++;
+    if(indexLog == LOGGER_SIZE - 1)
+      {
+        indexLog = 0;
+        loggerFull = true;
+      }
+    else
+      indexLog++;
+
+      //Serial.print(logger[indexLog].idLog);
+      //Serial.print(logger[indexLog].codeLog);
+      //Serial.print(" || ");
   }
 }
 
@@ -160,6 +224,7 @@ void deepSleepIfButtonPressed() {
   {
     digitalWrite(ON_LED, LOW);
     digitalWrite(CONNECTED_LED, LOW);
+    addLogAudit(OFF);
     delay(1000);
     esp_wifi_stop();
     esp_deep_sleep_start();
